@@ -1,0 +1,48 @@
+{
+   "task" : {
+      // Metric to be used for the reward function. See regression.py for
+      // supported metrics.
+      "metric" : "inv_nrmse",
+      "metric_params" : [1.0],
+      // With protected=false, floating-point errors (e.g. log of negative
+      // number) will simply returns a minimal reward. With protected=true,
+      // "protected" functions will prevent floating-point errors, but may
+      // introduce discontinuities in the learned functions.
+      "protected" : false,
+      "normalize_variance" : false
+   },
+
+   // Only the key training hyperparameters are listed here. See
+   // config_common.json for the full list.
+   "training" : {
+      "n_epochs": 20,
+      "batch_size" : 256,
+      "epsilon" : 0.2,
+      // <R> is the sample average _after_ epsilon sub-sampling and  R_e is the (1-epsilon)-quantile estimate.
+      // (1) "ewma_R" : b = EWMA(<R>) (2) "R_e" : b = R_e (3) "ewma_R_e" : b = EWMA(R_e) (4) "combined" : b = R_e + EWMA(<R> - R_e)
+      "baseline" : "ewma_R"
+   },
+
+   // Only the key RNN controller hyperparameters are listed here. See
+   // config_common.json for the full list.
+   "expression_decoder" : {
+      // Optimizer hyperparameters.
+      "initializer" : "var_scale",
+      "learning_rate" : 0.005,
+      "optimizer" : "adam",
+      "entropy_weight" : 0.03,
+      "entropy_gamma" : 0.7,
+      // Priority queue training hyperparameters.
+      "pqt" : false,                      //Train with priority queue training (PQT)?
+      "pqt_k" : 0,
+      "pqt_batch_size" : 1,
+      "pqt_weight" : 200.0,
+      "pqt_use_pg" : false,
+      // RNN architectural hyperparameters.
+      "cell" : "lstm",
+      "num_layers" : 1,
+      "num_units" : 128,
+      "debug": 2
+   }
+
+}
