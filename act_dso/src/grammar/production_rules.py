@@ -20,7 +20,7 @@ from sympy import Symbol, Float, Integer, Rational
 def concate_production_rules_to_expr(list_of_production_rules):
     """
     Convert a list of production rules to the exact symbolic ODEs.
-    For example ['f|g->A|B', 'A->X0', 'B->X1'] => f=X0; g=X1
+    For example ['f||g->A||B', 'A->X0', 'B->X1'] => f=X0; g=X1
     """
     seq = ['f']
     for one_rule in list_of_production_rules:

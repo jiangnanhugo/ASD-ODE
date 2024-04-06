@@ -1,0 +1,1 @@
+python covariance_matrix.py --N 4 --M 2
