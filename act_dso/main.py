@@ -4,10 +4,10 @@ import click
 from scibench.symbolic_data_generator import *
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 
-from grammar.grammar import ContextSensitiveGrammar
-from grammar.grammar_regress_task import RegressTask
-from grammar.production_rules import get_production_rules, get_var_i_production_rules
-from grammar.grammar_program import grammarProgram
+from src.grammar import ContextFreeGrammar
+from src.grammar import RegressTask
+from src.grammar import get_production_rules, get_var_i_production_rules
+from src.grammar import grammarProgram
 from deep_symbolic_optimizer import VSRDeepSymbolicRegression
 from utils import load_config, create_uniform_generations, create_reward_threshold
 
@@ -62,12 +62,13 @@ def main(config_template, optimizer, equation_name, metric_name, noise_type, noi
     # get basic production rules
     production_rules = get_production_rules(0, function_set)
     reward_thresh = create_reward_threshold(10, len(num_iterations))
+    nt_nodes = construct_non_terminal_nodes(nvar)
+    start_symbols= construct_start_symbols(nvar)
     nt_nodes = ['A']
     start_symbols = ['A']
     best_expressions = None
 
     best_expressions_Q = []
-    stand_alone_constants = []
     g_start = time.time()
     for round_idx in range(len(num_iterations)):
         print('++++++++++++ ROUND {}  ++++++++++++'.format(round_idx))
@@ -77,7 +78,7 @@ def main(config_template, optimizer, equation_name, metric_name, noise_type, noi
         print("grammars:", production_rules)
         print("start_symbols:", start_symbols, nt_nodes[0] in start_symbols[0])
 
-        grammar_model = ContextSensitiveGrammar(
+        grammar_model = ContextFreeGrammar(
             nvars=nvar,
             production_rules=production_rules,
             start_symbols=start_symbols[0],
@@ -89,8 +90,6 @@ def main(config_template, optimizer, equation_name, metric_name, noise_type, noi
         grammar_model.expr_obj_thres = threshold_values[metric_name]['expr_obj_thres']
         grammar_model.task = task
         grammar_model.program = program
-        grammar_model.task.set_vf(round_idx)
-        grammar_model.task.set_allowed_inputs(grammar_model.task.get_vf())
 
         """Trains DSO and returns dict of reward, expressions"""
         model = VSRDeepSymbolicRegression(config, grammar_model)
@@ -107,26 +106,22 @@ def main(config_template, optimizer, equation_name, metric_name, noise_type, noi
             )
             end_time = time.time() - start
 
-            print("cvdso time {} mins".format(np.round(end_time / 60, 3)))
+            print("dso time {} mins".format(np.round(end_time / 60, 3)))
             best_expressions_Q.extend(best_expressions)
         else:
             print("skipping training......")
 
         if round_idx < len(num_iterations) - 1:
             # the last round does not need freeze
-            start_symbols, stand_alone_constants = grammar_model.freeze_equations(best_expressions,
-                                                                                  stand_alone_constants,
-                                                                                  round_idx + 1)
 
-            print("The discovered expression template (with control variable {})".format(grammar_model.task.vf))
             print(start_symbols)
 
             production_rules = [gi for gi in production_rules if str(round_idx) not in gi]
 
-        grammar_model.print_hofs(mode='global', verbose=True)
+        grammar_model.print_hofs(verbose=True)
         best_expressions_Q = grammar_model.print_and_sort_global_Qs(best_expressions_Q)
     end_time = time.time() - g_start
-    print("Final cvdso time {} mins".format(np.round(end_time / 60, 3)))
+    print("Final dso time {} mins".format(np.round(end_time / 60, 3)))
 
 
 if __name__ == "__main__":

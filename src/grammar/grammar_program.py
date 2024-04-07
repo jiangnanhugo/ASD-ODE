@@ -1,5 +1,4 @@
 """Class for symbolic expression optimization."""
-import time
 
 import numpy as np
 import warnings
@@ -10,29 +9,31 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify
 
 from scipy.optimize import minimize
-from scipy.optimize import basinhopping, shgo, dual_annealing
-from grammar.utils import pprint_ntuple
-from grammar.grammar_utils import pretty_print_expr
-from grammar.production_rules import production_rules_to_expr
-from grammar.metrics import all_metrics
+from scipy.optimize import basinhopping, shgo, dual_annealing, direct
+from grammar import pretty_print_expr
+from grammar.production_rules import concate_production_rules_to_expr
+from grammar import all_metrics
 from pathos.multiprocessing import ProcessPool
-import psutil
 from itertools import chain
-import os, sys
+from scipy.integrate import solve_ivp
+import sys
 
 
-class SymbolicExpression(object):
-
+class SymbolicDifferentialEquations(object):
+    """
+    this class is used to represent symbolic ordinary differential equations.
+    For n variables settings, there will be n total expressions.
+    """
     def __init__(self, list_of_rules):
         self.traversal = list_of_rules
-        self.expr_template = production_rules_to_expr(list_of_rules)
+        self.expr_template = concate_production_rules_to_expr(list_of_rules)
         self.reward = None
         self.fitted_eq = None
         self.invalid = False
         self.all_metrics = None
 
     def __repr__(self):
-        return f" r={self.reward}, eq={self.fitted_eq}"
+        return f"r={self.reward}, eq={self.fitted_eq}"
 
     def print_all_metrics(self):
         print('-' * 30)
@@ -72,7 +73,7 @@ class grammarProgram(object):
         result = []
         print("many_seqs_of_rules:", len(many_seqs_of_rules))
         for one_list_rules in many_seqs_of_rules:
-            one_expr = SymbolicExpression(one_list_rules)
+            one_expr = SymbolicDifferentialEquations(one_list_rules)
             reward, fitted_eq, _, _ = optimize(
                 one_expr.expr_template,
                 dataX,
@@ -93,13 +94,16 @@ class grammarProgram(object):
         """
         here we assume the input will be a valid expression
         """
+
         def chunks(lst, n):
             """Yield successive n-sized chunks from lst."""
             chunk_size = len(lst) // n
             for i in range(0, len(lst), chunk_size):
                 yield lst[i:i + chunk_size]
 
-        many_expr_tempaltes = chunks([SymbolicExpression(one_rules) for one_rules in many_seqs_of_rules], self.n_cores)
+        many_expr_tempaltes = chunks(
+            [SymbolicDifferentialEquations(one_rules) for one_rules in many_seqs_of_rules],
+            self.n_cores)
         dataXes = [dataX for _ in range(self.n_cores)]
         y_trues = [y_true for _ in range(self.n_cores)]
         input_var_Xes = [input_var_Xs for _ in range(self.n_cores)]
@@ -116,7 +120,8 @@ class grammarProgram(object):
         return result
 
 
-def fit_one_expr(one_expr_batch, dataX, y_true, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter, optimizer_name):
+def fit_one_expr(one_expr_batch, dataX, y_true, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter,
+                 optimizer_name):
     results = []
     for one_expr in one_expr_batch:
         reward, fitted_eq, _, _ = optimize(one_expr.expr_template,
@@ -131,7 +136,8 @@ def fit_one_expr(one_expr_batch, dataX, y_true, input_var_Xs, evaluate_loss, max
     return results
 
 
-def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter, optimizer_name, user_scpeficied_iters=-1,
+def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter, optimizer_name,
+             user_scpeficied_iters=-1,
              verbose=False):
     """
     Calculate reward score for a complete parse tree
@@ -176,7 +182,7 @@ def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants
             eq_est = eq_est.replace('+ +', '+')
             y_pred = execute(eq_est, data_X.T, input_var_Xs)
             var_ytrue = np.var(y_true)
-            loss_val= -evaluate_loss(y_pred, y_true, var_ytrue)
+            loss_val = -evaluate_loss(y_pred, y_true, var_ytrue)
             return loss_val
 
         # do more than one experiment,
@@ -233,7 +239,7 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
             used_idx.append(idx)
             used_vars.append(xi)
     try:
-        if len(used_idx) ==0:
+        if len(used_idx) == 0:
             return float(expr)
         f = lambdify(used_vars, expr, 'numpy')
         if len(used_idx) != 0:
@@ -254,7 +260,8 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
 def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
     # optimize the open constants in the expression
     if optimizer == 'Nelder-Mead':
-        opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
+        opt_result = minimize(f, x0, method='Nelder-Mead',
+                              options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
     elif optimizer == 'BFGS':
         opt_result = minimize(f, x0, method='BFGS', options={'maxiter': max_opt_iter})
     elif optimizer == 'CG':
@@ -279,14 +286,22 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
         up = [5] * num_changing_consts
         bounds = list(zip(lw, up))
         opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
-    # elif optimizer == "direct":
-    #     lw = [-10] * num_changing_consts
-    #     up = [10] * num_changing_consts
-    #     bounds = list(zip(lw, up))
-    #     opt_result = direct(f, bounds, maxiter=max_opt_iter)
+    elif optimizer == "direct":
+        lw = [-10] * num_changing_consts
+        up = [10] * num_changing_consts
+        bounds = list(zip(lw, up))
+        opt_result = direct(f, bounds, maxiter=max_opt_iter)
 
     return opt_result
 
+def compute_time_trajectory(func, init_cond, t_span, t_eval=np.linspace(0, 10, 50) ):
+    """
+    given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
+    https://docs.sympy.org/latest/guides/solving/solve-ode.html
+    """
+    solution =  solve_ivp(func, t_span=t_span, y0=init_cond, t_eval=t_eval)
+    # Extract the y (concentration) values from SciPy solution result
+    return solution.y
 
 def simplify_template(eq):
     for i in range(10):

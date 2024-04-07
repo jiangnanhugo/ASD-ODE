@@ -1,20 +1,18 @@
-import copy
 import numpy as np
 from sympy import Symbol
 from sympy.parsing.sympy_parser import parse_expr
 
-from grammar.grammar_program import execute, SymbolicExpression, optimize
-from grammar.grammar_utils import pretty_print_expr, expression_to_template, nth_repl
+from src.grammar import execute, SymbolicDifferentialEquations
 
 
-class VectorizedContextFreeGrammar(object):
+class ContextFreeGrammar(object):
     # will link to regression_task
     task = None
     # will link to grammarProgram
     program = None
     # threshold for deciding constants as summary or standalone constant
     opt_num_expriments = 5  # number of experiments done for multi-trail control variable experiments
-    expr_obj_thres = 1e-6
+
     expr_consts_thres = 1e-3
 
     noise_std = 0.0
@@ -36,7 +34,7 @@ class VectorizedContextFreeGrammar(object):
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
         self.production_rules = production_rules
 
-        self.start_symbol = "|".join(["f" for _ in range(self.nvars)])+'->' + start_symbols
+        self.start_symbol = "||".join(["f" for _ in range(self.nvars)])+'->' + "||".join(start_symbols)
         self.non_terminal_nodes = non_terminal_nodes
         self.max_length = max_length
         self.hof_size = hof_size
@@ -118,17 +116,19 @@ class VectorizedContextFreeGrammar(object):
         self.task.rand_draw_data_with_X_fixed()
         y_true = self.task.evaluate()
         if self.program.n_cores == 1:
-            many_expressions = self.program.fitting_new_expressions(filtered_many_rules, self.task.X, y_true,
+            many_expressions = self.program.fitting_new_expressions(filtered_many_rules,
+                                                                    self.task.X, y_true,
                                                                     self.input_var_Xs)
         elif self.program.n_cores >= 2:
-            many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules, self.task.X, y_true,
+            many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules,
+                                                                                self.task.X, y_true,
                                                                                 self.input_var_Xs)
         # for one_expression in many_expressions:
         #     if one_expression.reward != -np.inf:
         #         one_expression.all_metrics = self.print_reward_function_all_metrics(one_expression.fitted_eq)
         return many_expressions
 
-    def update_hall_of_fame(self, one_fitted_expression: SymbolicExpression):
+    def update_hall_of_fame(self, one_fitted_expression: SymbolicDifferentialEquations):
 
         if one_fitted_expression.traversal.count(';') <= self.max_length:
             if not self.hall_of_fame:
@@ -137,17 +137,17 @@ class VectorizedContextFreeGrammar(object):
                 if len(self.hall_of_fame) < self.hof_size:
                     self.hall_of_fame.append(one_fitted_expression)
                     # sorting the list in ascending order
-                    self.hall_of_fame = sorted(self.hall_of_fame, key=lambda x: x.reward, reverse=False)
+                    self.hall_of_fame = sorted(self.hall_of_fame,
+                                               key=lambda x: x.reward,
+                                               reverse=False)
                 else:
                     if one_fitted_expression.reward > self.hall_of_fame[-1].reward:
                         # sorting the list in ascending order
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [one_fitted_expression],
-                                                   key=lambda x: x.reward, reverse=False)
+                                                   key=lambda x: x.reward,
+                                                   reverse=False)
 
-    def print_hofs(self, mode: str, verbose=False):
-        """
-        mode: if global, then we rank on no variable controlled.
-        """
+    def print_hofs(self, verbose=False):
         self.task.rand_draw_data_with_X_fixed()
         print(f"PRINT Best Equations (free variables={self.task.fixed_column})")
         print("=" * 20)
@@ -186,8 +186,7 @@ class VectorizedContextFreeGrammar(object):
         """used for print the error for all metrics between the predicted program `p` and true program."""
         y_hat = execute(expr_str, self.task.X.T, self.input_var_Xs)
         dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.X, y_hat)
-        # dict_of_result['tree_edit_distance'] = self.task.data_query_oracle.compute_normalized_tree_edit_distance(
-        #     expr_str)
+
         if verbose:
             print('-' * 30)
             for mertic_name in dict_of_result:

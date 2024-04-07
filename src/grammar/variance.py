@@ -1,6 +1,6 @@
 import numpy as np
 
-from grammar.utils import weighted_quantile
+from src.grammar.utils import weighted_quantile
 
 
 def quantile_variance(memory_queue, neural_expression_decoder, grammar_model, batch_size, epsilon, step,

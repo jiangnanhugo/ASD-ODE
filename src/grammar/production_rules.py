@@ -1,28 +1,12 @@
 from sympy import Symbol, Float, Integer, Rational
 
 
-# def production_rules_to_expr(list_of_production_rules):
-#     """
-#     Convert a list of production rules to the exact symbolic equation.
-#     For example ['f->A', 'A->(A-A)', 'A->X0', 'A->X1'] => X0*X1
-#     """
-#     seq = ['f']
-#     for one_rule in list_of_production_rules:
-#         for ix, s in enumerate(seq):
-#             if s == one_rule[0]:
-#                 seq = seq[:ix] + list(one_rule[3:]) + seq[ix + 1:]
-#                 break
-#     output = ''.join(seq)
-#     return output
-
-
-
-def concate_production_rules_to_expr(list_of_production_rules):
+def production_rules_to_expr(idx, list_of_production_rules):
     """
-    Convert a list of production rules to the exact symbolic ODEs.
-    For example ['f||g->A||B', 'A->X0', 'B->X1'] => f=X0; g=X1
+    Convert a list of production rules to the exact symbolic equation.
+    For example ['f->A', 'A->(A-A)', 'A->X0', 'A->X1'] => X0*X1
     """
-    seq = ['f']
+    seq = ['f{}'.format(idx)]
     for one_rule in list_of_production_rules:
         for ix, s in enumerate(seq):
             if s == one_rule[0]:
@@ -30,6 +14,22 @@ def concate_production_rules_to_expr(list_of_production_rules):
                 break
     output = ''.join(seq)
     return output
+
+
+def concate_production_rules_to_expr(list_of_production_rules) -> list:
+    """
+    Convert a list of production rules to the exact symbolic ODEs.
+    For example ['f||g->A||B', 'A->X0', 'B->X1'] => f=X0; g=X1
+    return a list of expressions for the ODE
+    """
+    left_symbols, right_symbols = list_of_production_rules[0].split("->")
+    stack = {}
+    for key, val in zip(left_symbols.split("||"), right_symbols.split("||")):
+        stack[val] = []
+    for one_rule in list_of_production_rules[1:]:
+        stack[one_rule[0]].append(one_rule)
+    full_expressions = [production_rules_to_expr(idx, one_bin) for idx, one_bin in enumerate(stack.values())]
+    return full_expressions
 
 
 def to_binary_expr_tree(expr):

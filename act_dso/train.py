@@ -7,10 +7,10 @@ from itertools import compress
 import tensorflow as tf
 import numpy as np
 
-from grammar.grammar import ContextSensitiveGrammar
-from grammar.utils import empirical_entropy, weighted_quantile
-from grammar.memory import Batch, make_queue
-from grammar.variance import quantile_variance
+from src.grammar import ContextSensitiveGrammar
+from src.grammar import empirical_entropy, weighted_quantile
+from src.grammar import Batch, make_queue
+from src.grammar import quantile_variance
 import sys
 # Ignore TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'

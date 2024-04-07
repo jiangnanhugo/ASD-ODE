@@ -19,16 +19,16 @@ class RegressTask(object):
         self.dataX = dataX
         self.data_query_oracle = data_query_oracle
 
-        self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
+
         self.X_fixed = np.random.rand(self.n_input)
 
     def set_allowed_inputs(self, allowed_inputs):
         self.allowed_input = np.copy(allowed_inputs)
-        self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
+
 
     def set_allowed_input(self, i, flag):
         self.allowed_input[i] = flag
-        self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
+
 
     def rand_draw_X_non_fixed(self):
         self.X = self.dataX.randn(sample_size=self.batchsize).T
@@ -39,13 +39,9 @@ class RegressTask(object):
     def rand_draw_X_fixed_with_index(self, xi):
         X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
         self.X_fixed[xi] = X_fixed[xi]
-        if len(self.fixed_column):
-            self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def rand_draw_data_with_X_fixed(self):
         self.X = self.dataX.randn(sample_size=self.batchsize).T
-        if len(self.fixed_column):
-            self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def evaluate(self):
         return self.data_query_oracle.evaluate(self.X)

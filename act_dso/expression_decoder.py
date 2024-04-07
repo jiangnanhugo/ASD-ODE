@@ -2,9 +2,9 @@
 import tensorflow as tf
 import numpy as np
 
-from grammar.grammar import ContextSensitiveGrammar
-from grammar.memory import Batch
-from grammar.subroutines import parents_siblings
+from src.grammar import ContextFreeGrammar
+from src.grammar import Batch
+from src.grammar import parents_siblings
 
 
 class LinearWrapper:
@@ -50,7 +50,7 @@ class NeuralExpressionDecoder(object):
 
     def __init__(self,
                  # grammar
-                 cfg: ContextSensitiveGrammar,
+                 cfg: ContextFreeGrammar,
                  sess,
                  input_embedding_layer,
                  # RNN cell hyperparameters
