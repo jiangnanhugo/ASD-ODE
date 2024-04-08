@@ -1,22 +1,25 @@
 """Class for symbolic expression optimization."""
 
-import numpy as np
-import warnings
-
-warnings.filterwarnings("ignore", category=RuntimeWarning)
-np.set_printoptions(precision=4, linewidth=np.inf)
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify
 
+from itertools import chain
+import sys
+import numpy as np
+import warnings
+
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, shgo, dual_annealing, direct
+from scipy.integrate import solve_ivp
+
 from grammar.grammar_utils import pretty_print_expr
 from grammar.production_rules import concate_production_rules_to_expr
 from grammar.metrics import all_metrics
+
 from pathos.multiprocessing import ProcessPool
-from itertools import chain
-from scipy.integrate import solve_ivp
-import sys
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+np.set_printoptions(precision=4, linewidth=np.inf)
 
 
 class SymbolicDifferentialEquations(object):
@@ -24,6 +27,7 @@ class SymbolicDifferentialEquations(object):
     this class is used to represent symbolic ordinary differential equations.
     For n variables settings, there will be n total expressions.
     """
+
     def __init__(self, list_of_rules):
         self.traversal = list_of_rules
         self.expr_template = concate_production_rules_to_expr(list_of_rules)
@@ -41,8 +45,8 @@ class SymbolicDifferentialEquations(object):
             print("No metrics")
             print('-' * 30)
             return
-        for mertic_name in self.all_metrics:
-            print(f"{mertic_name} {self.all_metrics[mertic_name]}")
+        for metric_name in self.all_metrics:
+            print(f"{metric_name} {self.all_metrics[metric_name]}")
         print('-' * 30)
 
 
@@ -65,9 +69,11 @@ class grammarProgram(object):
         self.evaluate_loss = all_metrics[metric_name]
         self.pool = ProcessPool(nodes=self.n_cores)
 
-    def fitting_new_expressions(self, many_seqs_of_rules, dataX: np.ndarray, y_true, input_var_Xs):
+    def fitting_new_expressions(self, many_seqs_of_rules, init_cond: np.ndarray, true_trajectories, input_var_Xs):
         """
-        here we assume the input must be a valid expression
+        we assume the input must be a valid expression
+        init_cond: [batch_size, nvars].
+        y_true: [batch_size, time_steps, nvars]. the correct trajectories.
         """
         result = []
         print("many_seqs_of_rules:", len(many_seqs_of_rules))
@@ -75,8 +81,8 @@ class grammarProgram(object):
             one_expr = SymbolicDifferentialEquations(one_list_rules)
             reward, fitted_eq, _, _ = optimize(
                 one_expr.expr_template,
-                dataX,
-                y_true,
+                init_cond,
+                true_trajectories,
                 input_var_Xs,
                 self.evaluate_loss,
                 self.max_open_constants,
@@ -89,10 +95,12 @@ class grammarProgram(object):
             result.append(one_expr)
         return result
 
-    def fitting_new_expressions_in_parallel(self, many_seqs_of_rules, dataX: np.ndarray, y_true, input_var_Xs):
+    def fitting_new_expressions_in_parallel(self, many_seqs_of_rules, init_cond: np.ndarray, true_trajectories,
+                                            input_var_Xs):
         """
         here we assume the input will be a valid expression
         """
+
         def chunks(lst, n):
             """Yield successive n-sized chunks from lst."""
             chunk_size = len(lst) // n
@@ -102,15 +110,16 @@ class grammarProgram(object):
         many_expr_tempaltes = chunks(
             [SymbolicDifferentialEquations(one_rules) for one_rules in many_seqs_of_rules],
             self.n_cores)
-        dataXes = [dataX for _ in range(self.n_cores)]
-        y_trues = [y_true for _ in range(self.n_cores)]
+        init_cond_ncores = [init_cond for _ in range(self.n_cores)]
+        true_trajectories_ncores = [true_trajectories for _ in range(self.n_cores)]
         input_var_Xes = [input_var_Xs for _ in range(self.n_cores)]
         evaluate_losses = [self.evaluate_loss for _ in range(self.n_cores)]
         max_open_constantes = [self.max_open_constants for _ in range(self.n_cores)]
         max_opt_iteres = [self.max_opt_iter for _ in range(self.n_cores)]
         optimizeres = [self.optimizer for _ in range(self.n_cores)]
 
-        result = self.pool.map(fit_one_expr, many_expr_tempaltes, dataXes, y_trues, input_var_Xes, evaluate_losses,
+        result = self.pool.map(fit_one_expr, many_expr_tempaltes, init_cond_ncores, true_trajectories_ncores,
+                               input_var_Xes, evaluate_losses,
                                max_open_constantes, max_opt_iteres, optimizeres)
         result = list(chain.from_iterable(result))
         print("Done with optimization!")
@@ -118,13 +127,14 @@ class grammarProgram(object):
         return result
 
 
-def fit_one_expr(one_expr_batch, dataX, y_true, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter,
+def fit_one_expr(one_expr_batch, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_open_constants,
+                 max_opt_iter,
                  optimizer_name):
     results = []
     for one_expr in one_expr_batch:
         reward, fitted_eq, _, _ = optimize(one_expr.expr_template,
-                                           dataX,
-                                           y_true,
+                                           init_cond,
+                                           true_trajectories,
                                            input_var_Xs,
                                            evaluate_loss, max_open_constants, max_opt_iter, optimizer_name)
 
@@ -134,7 +144,8 @@ def fit_one_expr(one_expr_batch, dataX, y_true, input_var_Xs, evaluate_loss, max
     return results
 
 
-def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter, optimizer_name,
+def optimize(eq, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter,
+             optimizer_name,
              user_scpeficied_iters=-1,
              verbose=False):
     """
@@ -144,14 +155,9 @@ def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants
 
     Parameters
     ----------
-    eq : Str object. the discovered equation (with placeholders for coefficients).
-    tree_size: number of production rules in the complete parse tree.
-    (data_X, y_true) : 2-d numpy array.
-
-    Returns
-    -------
-    score: discovered equations.
-    eq: discovered equations with estimated numerical values.
+    eq : Str. the discovered equation (with placeholders for coefficients).
+    init_cond: [batch_size, nvars]. the initial conditions of each variables.
+    true_trajectories: [batch_size, time_steps, nvars]. the true trajectories.
     """
     eq = simplify_template(eq)
     if 'A' in eq or 'B' in eq:  # not a valid equation
@@ -161,8 +167,8 @@ def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants
     num_changing_consts = eq.count('C')
     t_optimized_constants, t_optimized_obj = 0, np.inf
     if num_changing_consts == 0:  # zero constant
-        var_ytrue = np.var(y_true)
-        y_pred = execute(eq, data_X.T, input_var_Xs)
+        var_ytrue = np.var(true_trajectories)
+        y_pred = execute(eq, init_cond.T, input_var_Xs)
     elif num_changing_consts >= max_open_constants:  # discourage over complicated numerical estimations
         return -np.inf, eq, t_optimized_constants, t_optimized_obj
     else:
@@ -178,9 +184,9 @@ def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants
             eq_est = eq_est.replace('- -', '+')
             eq_est = eq_est.replace('- +', '-')
             eq_est = eq_est.replace('+ +', '+')
-            y_pred = execute(eq_est, data_X.T, input_var_Xs)
-            var_ytrue = np.var(y_true)
-            loss_val = -evaluate_loss(y_pred, y_true, var_ytrue)
+            y_pred = execute(eq_est, init_cond.T, input_var_Xs)
+            var_ytrue = np.var(true_trajectories)
+            loss_val = -evaluate_loss(y_pred, true_trajectories, var_ytrue)
             return loss_val
 
         # do more than one experiment,
@@ -208,22 +214,20 @@ def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants
             eq_est = eq_est.replace('- +', '-')
             eq_est = eq_est.replace('+ +', '+')
 
-            y_pred = execute(eq_est, data_X.T, input_var_Xs)
-            var_ytrue = np.var(y_true)
+            y_pred = execute(eq_est, init_cond.T, input_var_Xs)
+            var_ytrue = np.var(true_trajectories)
 
             eq = pretty_print_expr(parse_expr(eq_est))
 
-            print('\t loss:', -evaluate_loss(y_pred, y_true, var_ytrue), '\t fitted eq:', eq)
+            print('\t loss:', -evaluate_loss(y_pred, true_trajectories, var_ytrue), '\t fitted eq:', eq)
         except Exception as e:
             print(e)
             return -np.inf, eq, 0, np.inf
 
     # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(y_pred, y_true, var_ytrue)))
-    reward = evaluate_loss(y_pred, y_true, var_ytrue)
+    reward = evaluate_loss(y_pred, true_trajectories, var_ytrue)
 
     return reward, eq, t_optimized_constants, t_optimized_obj
-
-
 
 
 def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
@@ -263,45 +267,32 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
 
     return opt_result
 
-def compute_time_trajectory(func, init_cond, t_span, t_eval=np.linspace(0, 10, 50) ):
+
+def execute(expr_str: str, init_cond: np.ndarray, input_var_Xs, time_span, t_eval=np.linspace(0, 10, 50)):
     """
+
     given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
     https://docs.sympy.org/latest/guides/solving/solve-ode.html
     """
-    solution = solve_ivp(func, t_span=t_span, y0=init_cond, t_eval=t_eval)
-    # Extract the y (concentration) values from SciPy solution result
-    return solution.y
-
-
-def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
-    """
-    evaluate the output of expression with the given input.
-    consts: list of constants.
-    """
     expr = parse_expr(expr_str)
-
-    used_vars, used_idx = [], []
-    for idx, xi in enumerate(input_var_Xs):
-        if str(xi) in expr_str:
-            used_idx.append(idx)
-            used_vars.append(xi)
+    t = symbols('t')  # not used in this case
     try:
-        if len(used_idx) == 0:
-            return float(expr)
-        f = lambdify(used_vars, expr, 'numpy')
-        if len(used_idx) != 0:
-            y_hat = f(*[data_X[i] for i in used_idx])
-        else:
-            y_hat = float(expr)
-        if y_hat is complex:
-            return np.ones(data_X.shape[-1]) * np.infty
+        # if len(used_idx) == 0:
+        #     return float(expr)
+        func = lambdify((t, input_var_Xs), expr, 'numpy')
+        solution = solve_ivp(func, t_span=time_span, y0=init_cond, t_eval=t_eval)
+        # Extract the y (concentration) values from SciPy solution result
+        time_trajectories = solution.y
+        if time_trajectories is complex:
+            return np.ones(init_cond.shape[-1]) * np.infty
     except TypeError as e:
         # print(e, expr, input_var_Xs, data_X.shape)
-        y_hat = np.ones(data_X.shape[-1]) * np.infty
+        time_trajectories = np.ones(init_cond.shape[-1]) * np.infty
     except KeyError as e:
         # print(e, expr)
-        y_hat = np.ones(data_X.shape[-1]) * np.infty
-    return y_hat
+        time_trajectories = np.ones(init_cond.shape[-1]) * np.infty
+    return time_trajectories
+
 
 def simplify_template(eq):
     for i in range(10):
@@ -322,3 +313,41 @@ if __name__ == '__main__':
     expr_temp = 'sqrt(sqrt(C))*(sqrt(X0)+C)'
 
     simplify_template(expr_temp)
+    from sympy import symbols, lambdify
+    import numpy as np
+    import scipy.integrate
+    import matplotlib.pyplot as plt
+
+    # Create symbols y0, y1, and y2
+    y = symbols('y:3')
+    c1,c2 = symbols('c1 c2')
+    rf = c1 * y[0] ** 2 * y[1]
+    rb = c2 * y[2] ** 2
+    # Derivative of the function y(t); values for the three chemical species
+    # for input values y, kf, and kb
+    ydot = [2 * (rb - rf), rb - rf, 2 * (rf - rb)]
+    print(ydot)
+    t = symbols('t')  # not used in this case
+    # Convert the SymPy symbolic expression for ydot into a form that
+    # SciPy can evaluate numerically, f
+    f = lambdify((t, y, c1, c2), ydot)
+    k_vals = np.array([0.42, 0.17])  # arbitrary in this case
+    y0 = [1, 1, 0]  # initial condition (initial values)
+    t_eval = np.linspace(0, 10, 50)  # evaluate integral from t = 0-10 for 50 points
+    # Call SciPy's ODE initial value problem solver solve_ivp by passing it
+    #   the function f,
+    #   the interval of integration,
+    #   the initial state, and
+    #   the arguments to pass to the function f
+    solution = scipy.integrate.solve_ivp(f, (0, 10), y0, t_eval=t_eval, args=k_vals)
+    # Extract the y (concentration) values from SciPy solution result
+    y = solution.y
+    # Plot the result graphically using matplotlib
+    plt.plot(t_eval, y.T)
+    # Add title, legend, and axis labels to the plot
+    plt.title('Chemical Kinetics')
+    plt.legend(['NO', 'Br$_2$', 'NOBr'], shadow=True)
+    plt.xlabel('time')
+    plt.ylabel('concentration')
+    # Finally, display the annotated plot
+    plt.show()

@@ -20,73 +20,10 @@ def get_eq_obj(key, **kwargs):
     raise KeyError(f'`{key}` is not expected as a equation object key')
 
 
-
-
-
-
-@register_eq_class
-class cylinder_wake(KnownEquation):
-    # Mean field model from Noack et al. 2003
-    # "A hierarchy of low-dimensional models for the transient and post-transient
-    # cylinder wake", B.R. Noack et al.
-
-    _eq_name = 'cylinder_wake'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const']
-    expr_obj_thres = 1e-6
-    expr_consts_thres = None
-
-    def __init__(self):
-        mu = 0.01
-        self.dim = [1, 1, 1]
-
-        vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
-                                LogUniformSampling(1e-2, 10.0, only_positive=True),
-                                LogUniformSampling(1e-2, 10.0, only_positive=True)]
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
-        x = self.x
-
-        self.sympy_eq = [
-        mu * x[0] - x[1] - x[0] * x[2],
-        mu * x[1] + x[0] - x[1] * x[2],
-        -x[2] + x[0] ** 2 + x[1] ** 2,
-    ]
-
-
-@register_eq_class
-class Atmospheric(KnownEquation):
-    # Atmospheric oscillator from Tuwankotta et al and Trapping SINDy paper
-    _eq_name = 'Atmospheric'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const']
-    expr_obj_thres = 1e-6
-    expr_consts_thres = None
-
-    def __init__(self):
-        mu1 = 0.05
-        mu2 = -0.01
-        omega = 3.0
-        alpha = -2.0
-        beta = -5.0
-        sigma = 1.1
-        self.dim = [1, 1, 1]
-
-        vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
-                                LogUniformSampling(1e-2, 10.0, only_positive=True),
-                                LogUniformSampling(1e-2, 10.0, only_positive=True)]
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
-        x = self.x
-
-        self.sympy_eq = [
-            mu1 * x[0] + sigma * x[0] * x[1],
-            mu2 * x[1] + (omega + alpha * x[1] + beta * x[2]) * x[2] - sigma * x[0] ** 2,
-            mu2 * x[2] - (omega + alpha * x[1] + beta * x[2]) * x[1],
-        ]
-
-
-
 @register_eq_class
 class Lorenz(KnownEquation):
     _eq_name = 'Lorenz'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
     expr_consts_thres = None
 
@@ -99,7 +36,7 @@ class Lorenz(KnownEquation):
         vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True)]
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
 
         self.sympy_eq = [
@@ -112,7 +49,7 @@ class Lorenz(KnownEquation):
 @register_eq_class
 class Glycolytic_oscillator(KnownEquation):
     _eq_name = 'Glycolytic_oscillator'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'n4', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'n4', 'const']
     expr_obj_thres = 1e-6
 
     def __init__(self):
@@ -138,18 +75,16 @@ class Glycolytic_oscillator(KnownEquation):
                                 LogUniformSampling(0.08, 0.30, only_positive=True),
                                 LogUniformSampling(0.14, 2.67, only_positive=True),
                                 LogUniformSampling(0.05, 0.10, only_positive=True)]
-        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=7)
         x = self.x
 
         self.sympy_eq = [
             self.J0 - (self.k1 * x[0] * x[5]) / (1 + (x[5] / self.K1) ** self.q),
-            2 * (self.k1 * x[0] * x[5]) / (1 + (x[5] / self.K1) ** self.q) - self.k2 * x[1] * (
-                        self.N - x[4]) - self.k6 * x[1] * x[4],
+            2 * (self.k1 * x[0] * x[5]) / (1 + (x[5] / self.K1) ** self.q) - self.k2 * x[1] * (self.N - x[4]) - self.k6 * x[1] * x[4],
             self.k2 * x[1] * (self.N - x[4]) - self.k3 * x[2] * (self.A - x[5]),
             self.k3 * x[2] * (self.A - x[5]) - self.k4 * x[3] * x[4] - self.kappa * (x[3] - x[6]),
             self.k2 * x[1] * (self.N - x[4]) - self.k4 * x[3] * x[4] - self.k6 * x[1] * x[4],
-            -2 * self.k1 * x[0] * x[5] / (1 + (x[5] / self.K1) ** self.q) + 2 * self.k3 * x[2] * (
-                        self.A - x[5]) - self.k5 * x[5],
+            -2 * self.k1 * x[0] * x[5] / (1 + (x[5] / self.K1) ** self.q) + 2 * self.k3 * x[2] * (self.A - x[5]) - self.k5 * x[5],
             self.phi * self.kappa * (x[3] - x[6]) - self.K * x[6]
         ]
 
@@ -158,9 +93,8 @@ class Glycolytic_oscillator(KnownEquation):
 @register_eq_class
 class mhd(KnownEquation):
     _eq_name = 'mhd'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
-
     def __init__(self, nu=0.1, mu=0.2, sigma=0.3):
         vars_range_and_types = [LogUniformSampling(0.001, 10, only_positive=True),
                                 LogUniformSampling(0.001, 10, only_positive=True),
@@ -168,7 +102,7 @@ class mhd(KnownEquation):
                                 LogUniformSampling(0.001, 10, only_positive=True),
                                 LogUniformSampling(0.001, 10, only_positive=True),
                                 LogUniformSampling(0.001, 10, only_positive=True)]
-        super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=6)
         x = self.x
 
         self.sympy_eq = [
@@ -184,7 +118,7 @@ class mhd(KnownEquation):
 @register_eq_class
 class Pendulum_on_cart(KnownEquation):
     _eq_name = 'Pendulum_on_cart'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'cos', 'sin', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'n2', 'cos', 'sin', 'const']
     expr_obj_thres = 1e-6
 
     def __init__(self, m=1, M=1, L=1, F=0, g=9.81):
@@ -192,7 +126,7 @@ class Pendulum_on_cart(KnownEquation):
                                 LogUniformSampling(0.001, 10, only_positive=True),
                                 LogUniformSampling(0.001, 10, only_positive=True),
                                 LogUniformSampling(0.001, 10, only_positive=True)]
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
 
         self.sympy_eq = [
@@ -205,15 +139,14 @@ class Pendulum_on_cart(KnownEquation):
             ) / (
                     L * (M + m * sympy.sin(x[0]) ** 2)
             ),
-            (m * L * sympy.sin(x[0]) * x[2] ** 2 + F - m * g * sympy.sin(x[0]) * sympy.cos(x[0])) / (
-                        M + m * sympy.sin(x[0]) ** 2),
+            (m * L * sympy.sin(x[0]) * x[2] ** 2 + F - m * g * sympy.sin(x[0]) * sympy.cos(x[0])) / (M + m * sympy.sin(x[0]) ** 2),
         ]
 
 
 @register_eq_class
 class Double_pendulum(KnownEquation):
     _eq_name = 'Double_pendulum'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'sin', 'cos', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'n2', 'sin', 'cos', 'const']
     expr_obj_thres = 1e-6
 
     def __init__(self):
@@ -233,7 +166,7 @@ class Double_pendulum(KnownEquation):
                                 LogUniformSampling(0.001, 10, only_positive=True),
                                 LogUniformSampling(0.001, 10, only_positive=True),
                                 LogUniformSampling(0.001, 10, only_positive=True)]
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
 
         self.sympy_eq = [
@@ -280,8 +213,8 @@ class Double_pendulum(KnownEquation):
         ]
 
 #
-
-# https://arxiv.org/pdf/2003.07140.pdf
+# # ---------------------
+# # https://arxiv.org/pdf/2003.07140.pdf
 # @register_eq_class
 # class Glycolytic_a_simple_reaction_network(KnownEquation):
 #     _eq_name = 'Glycolytic_a_simple_reaction_network'
@@ -297,7 +230,7 @@ class Double_pendulum(KnownEquation):
 #                                 LogUniformSampling(0.19, 2.16, only_positive=True),
 #                                 LogUniformSampling(0.04, 0.20, only_positive=True),
 #                                 LogUniformSampling(0.10, 0.35, only_positive=True), ]
-#         super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+#         super().__init__(num_vars=7)
 #         x = self.x
 #         # v1 − k1s1x1 + k−1x2,
 #         self.sympy_eqs = [
@@ -305,31 +238,32 @@ class Double_pendulum(KnownEquation):
 #             self.k2*x[1]-gamma*k3*s2**gamma*sympy.e+gmma *k_neg3*x[0] ]
 
 
-# Lotka–Volterra equation
-@register_eq_class
-class Lotka_Volterra(KnownEquation):
-    _eq_name = 'Lotka–Volterra'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const']
-    expr_obj_thres = 1e-6
-
-    def __init__(self):
-        # https://ulissigroup.cheme.cmu.edu/math-methods-chemical-engineering/notes/ordinary_differential_equations/19-linear-stability.html
-        alpha = 1
-        beta = 0.2
-        delta = 0.5
-        gamma = 0.2
-
-        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
-                                LogUniformSampling(0.19, 2.16, only_positive=True),
-                                LogUniformSampling(0.04, 0.20, only_positive=True),
-                                LogUniformSampling(0.10, 0.35, only_positive=True), ]
-        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
-        x = self.x
-
-        self.sympy_eqs = [alpha * x[0] - beta * x[0] * x[1],
-                          delta * x[0] * x[1] - gamma * x[1]]
-
+# # %Lotka–Volterra equation
+# # s
+# @register_eq_class
+# class Lotka_Volterra(KnownEquation):
+#     _eq_name = 'Lotka–Volterra'
+#     _function_set = ['add', 'sub', 'mul', 'div', 'const']
+#     expr_obj_thres = 1e-6
 #
+#     def __init__(self):
+#         # https://ulissigroup.cheme.cmu.edu/math-methods-chemical-engineering/notes/ordinary_differential_equations/19-linear-stability.html
+#         alpha = 1
+#         beta = 0.2
+#         delta = 0.5
+#         gamma = 0.2
+#
+#         vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+#                                 LogUniformSampling(0.19, 2.16, only_positive=True),
+#                                 LogUniformSampling(0.04, 0.20, only_positive=True),
+#                                 LogUniformSampling(0.10, 0.35, only_positive=True), ]
+#         super().__init__(num_vars=7)
+#         x = self.x
+#
+#         self.sympy_eqs = [alpha * x[0] - beta * x[0] * x[1],
+#                           delta * x[0] * x[1] - gamma * x[1]]
+
+
 # # %Competitive Lotka–Volterra equation
 # # https://en.wikipedia.org/wiki/Competitive_Lotka%E2%80%93Volterra_equations
 #         # https://arxiv.org/pdf/2303.04919.pdf

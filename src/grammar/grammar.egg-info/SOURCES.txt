@@ -1,0 +1,17 @@
+setup.py
+grammar/__init__.py
+grammar/grammar.py
+grammar/grammar_program.py
+grammar/grammar_regress_task.py
+grammar/grammar_utils.py
+grammar/memory.py
+grammar/metrics.py
+grammar/production_rules.py
+grammar/subroutines.py
+grammar/utils.py
+grammar/variance.py
+grammar.egg-info/PKG-INFO
+grammar.egg-info/SOURCES.txt
+grammar.egg-info/dependency_links.txt
+grammar.egg-info/requires.txt
+grammar.egg-info/top_level.txt

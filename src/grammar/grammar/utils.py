@@ -1,6 +1,5 @@
 """Utility functions used in deep symbolic optimization."""
 
-
 import numpy as np
 
 from psutil._common import bytes2human
@@ -12,6 +11,7 @@ def pprint_ntuple(nt):
         if name != 'percent':
             value = bytes2human(value)
         print('%-10s : %7s' % (name.capitalize(), value))
+
 
 def weighted_quantile(values, weights, q):
     """
@@ -32,24 +32,19 @@ def weighted_quantile(values, weights, q):
     i_quantile = np.argmax(cum_sorted_weights >= q)
     quantile = sorted_values[i_quantile]
 
-    # NOTE: This implementation is equivalent to (but much faster than) the
-    # following:
-    # from scipy import stats
-    # empirical_dist = stats.rv_discrete(name='empirical_dist', values=(values, weights))
-    # quantile = empirical_dist.ppf(q)
+
 
     return quantile
 
 
 # Entropy computation in batch
 def empirical_entropy(labels):
-
     n_labels = len(labels)
 
     if n_labels <= 1:
         return 0
 
-    value,counts = np.unique(labels, return_counts=True)
+    value, counts = np.unique(labels, return_counts=True)
     probs = counts / n_labels
     n_classes = np.count_nonzero(probs)
 

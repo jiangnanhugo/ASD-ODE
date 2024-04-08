@@ -7,10 +7,10 @@ from itertools import compress
 import tensorflow as tf
 import numpy as np
 
-from grammar.grammar import ContextSensitiveGrammar
-from grammar import empirical_entropy, weighted_quantile
+from grammar.grammar import ContextFreeGrammar
+from grammar.utils import empirical_entropy, weighted_quantile
 from grammar.memory import Batch, make_queue
-from grammar.utils import quantile_variance
+from grammar.variance import quantile_variance
 import sys
 # Ignore TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -74,11 +74,7 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
     save_positional_entropy : bool, optional.  Whether to save evolution of positional entropy for each iteration.
 
     save_top_samples_per_batch : float, optional. Whether to store X% top-performer samples in every batch.
-    save_cache : bool. Whether to save the str, count, and r of each Program in the cache.
-
-    save_cache_r_min : float or None
-        If not None, only keep Programs with r >= r_min when saving cache.
-
+    
     save_freq : int or None. Statistics are flushed to file every save_freq epochs (default == 1). If < 0, uses save_freq = inf
     save_token_count : bool. Whether to save token counts each batch.
 
@@ -86,7 +82,7 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
     """
 
 
-def learn(grammar_model: ContextSensitiveGrammar,
+def learn(grammar_model: ContextFreeGrammar,
           sess, expression_decoder,
           n_epochs=12, dataset_size=None, batch_size=1000,
           reward_threshold=0.999999,
@@ -121,7 +117,6 @@ def learn(grammar_model: ContextSensitiveGrammar,
         print("sampled actions:", actions)
         # construct program based on the input token indices
 
-
         grammar_expressions = grammar_model.construct_expression(actions)
         rewards = np.array([p.r for p in grammar_expressions])
         expr_lengths = np.array([len(p.traversal.split(";")) for p in grammar_expressions])
@@ -148,7 +143,6 @@ def learn(grammar_model: ContextSensitiveGrammar,
     sys.stdout.flush()
     for epoch in range(n_epochs):
         # Set of str representations for all Programs ever seen
-        # s_history = set(grammar_model.program.cache.keys())
 
         # Sample batch of expressions from the expression_decoder
         # Shape of actions: (batch_size, max_length)
@@ -331,4 +325,3 @@ def print_var_means(sess):
     tvars_vals = sess.run(tvars)
     for var, val in zip(tvars, tvars_vals):
         print(var.name, "mean:", val.mean(), "var:", val.var())
-        # print(val)

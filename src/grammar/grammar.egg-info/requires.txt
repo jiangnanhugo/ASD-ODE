@@ -1,0 +1,10 @@
+cython
+numpy
+tensorflow==2.15.0
+numba
+sympy
+click
+tqdm
+commentjson
+PyYAML
+pathos

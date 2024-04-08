@@ -12,16 +12,11 @@
 # Dependencies
 ###############################################################################
 
-import time
-import random
-import torch
-import torch.nn as nn
 import numpy as np
-from torch.autograd import Variable
-from operators import Operators
-from rnn import DSRRNN
-from expression_utils import *
-from collections import Counter
+from act_dso.operators import Operators
+from act_dso.rnn import DSRRNN
+from act_dso.expression_utils import *
+
 
 ###############################################################################
 # Main Training loop
@@ -190,7 +185,7 @@ def train(
         # Sample for next batch
         sequences, sequence_lengths, log_probabilities, entropies = dsr_rnn.sample_sequence(batch_size)
 
-    if (summary_print):
+    if summary_print:
         print(f"""
         Time Elapsed: {round(float(time.time() - start), 2)}s
         Epochs Required: {i+1}

@@ -80,12 +80,12 @@ class MCTS(object):
         ntn = self.get_non_terminal_nodes(action) + ntn
 
         if not ntn:
-            self.task.rand_draw_data_with_X_fixed()
+            self.task.rand_draw_init_cond()
             y_true = self.task.evaluate()
             expr_template = production_rules_to_expr(state.split(','))
             reward, eq, _, _ = self.program.optimize(expr_template,
                                                      len(state.split(',')),
-                                                     self.task.X,
+                                                     self.task.init_cond,
                                                      y_true,
                                                      self.input_var_Xs,
                                                      eta=self.eta,
@@ -109,11 +109,11 @@ class MCTS(object):
         print('expr template is"', expr_template)
         for _ in range(opt_num_expr):
             self.task.rand_draw_X_fixed()
-            self.task.rand_draw_data_with_X_fixed()
+            self.task.rand_draw_init_cond()
             y_true = self.task.evaluate()
             _, eq, opt_consts, opt_obj = self.program.optimize(expr_template,
                                                                len(state.split(',')),
-                                                               self.task.X,
+                                                               self.task.init_cond,
                                                                y_true,
                                                                self.input_var_Xs,
                                                                eta=self.eta,
@@ -154,7 +154,7 @@ class MCTS(object):
                     y_true = self.task.evaluate()
                     _, eq, opt_consts, opt_obj = self.program.optimize(new_expr_template,
                                                                        len(state.split(',')),
-                                                                       self.task.X,
+                                                                       self.task.init_cond,
                                                                        y_true,
                                                                        self.input_var_Xs,
                                                                        eta=self.eta,
@@ -581,7 +581,7 @@ class MCTS(object):
             self.program.vf = [1, ] * self.nvars
             self.task.set_allowed_inputs(self.program.get_vf())
             print("new vf for HOF ranking", self.program.get_vf(), self.task.fixed_column)
-        self.task.rand_draw_data_with_X_fixed()
+        self.task.rand_draw_init_cond()
         print(f"PRINT HOF (free variables={self.task.fixed_column})")
         print("=" * 20)
         for pr in self.hall_of_fame[-len(self.hall_of_fame):]:
@@ -598,8 +598,8 @@ class MCTS(object):
 
     def print_reward_function_all_metrics(self, expr_str):
         """used for print the error for all metrics between the predicted program `p` and true program."""
-        y_hat = execute(expr_str, self.task.X.T, self.input_var_Xs)
-        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.X, y_hat)
+        y_hat = execute(expr_str, self.task.init_cond.T, self.input_var_Xs)
+        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.init_cond, y_hat)
         # dict_of_result['tree_edit_distance'] = self.task.data_query_oracle.compute_normalized_tree_edit_distance(expr_str)
         print('-' * 30)
         for mertic_name in dict_of_result:

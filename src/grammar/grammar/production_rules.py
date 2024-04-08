@@ -58,6 +58,13 @@ def construct_non_terminal_nodes_and_start_symbols(nvar):
     return non_terminal_nodes, start_symbolis
 
 
+def check_non_terminal_nodes(eq, non_terminal_nodes):
+    for nt in non_terminal_nodes:
+        if nt in eq:
+            return True
+    return False
+
+
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
     nvars: number of input variables.

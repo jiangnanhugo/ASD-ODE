@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 import numpy as np
 
@@ -71,10 +70,9 @@ class NeuralExpressionDecoder(object):
                  pqt_weight=200.0,  # Coefficient for PQT loss function.
                  pqt_use_pg=False,  # Use policy gradient loss when using PQT?
                  # Other hyperparameters
-                 debug=0, summary=False, max_length=30):
+                 debug=0, max_length=30):
 
         self.sess = sess
-        self.summary = summary
         # set max length of decoding
         self.max_length = max_length
 
@@ -100,11 +98,13 @@ class NeuralExpressionDecoder(object):
             if isinstance(num_units, int):
                 num_units = [num_units] * num_layers
             initializer = make_initializer(initializer)
-            cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([make_cell(cell, n, initializer=initializer) for n in num_units])
+            cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell(
+                [make_cell(cell, n, initializer=initializer) for n in num_units])
             cell = LinearWrapper(cell=cell, output_size=decoder_output_vocab_size)
 
             initial_obs = self.initial_obs()
-            input_embedding_layer.setup_input_embedding(self, cfg.n_parent_inputs, cfg.n_parent_inputs, cfg.n_parent_inputs)
+            input_embedding_layer.setup_input_embedding(self, cfg.n_parent_inputs, cfg.n_parent_inputs,
+                                                        cfg.n_parent_inputs)
             initial_obs = tf.broadcast_to(initial_obs, [self.batch_size, len(initial_obs)])  # (?, obs_dim)
 
             # Define loop function to be used by tf.nn.raw_rnn
@@ -117,11 +117,12 @@ class NeuralExpressionDecoder(object):
                     next_cell_state = cell.zero_state(batch_size=self.batch_size,
                                                       dtype=tf.float32)  # 2-tuple, each shape (?, num_units)
                     emit_output = None
-                    actions_ta = tf.TensorArray(dtype=tf.int32, size=0, dynamic_size=True, clear_after_read=False)  # Read twice
+                    actions_ta = tf.TensorArray(dtype=tf.int32, size=0, dynamic_size=True,
+                                                clear_after_read=False)  # Read twice
                     obs_ta = tf.TensorArray(dtype=tf.float32, size=0, dynamic_size=True, clear_after_read=True)
 
                     lengths = tf.ones(shape=[self.batch_size], dtype=tf.int32)
-                    next_loop_state = (actions_ta, obs_ta, obs,  lengths,  # Unused until implementing variable length
+                    next_loop_state = (actions_ta, obs_ta, obs, lengths,  # Unused until implementing variable length
                                        finished)
                 else:
                     actions_ta, obs_ta, obs, lengths, finished = loop_state
@@ -188,7 +189,8 @@ class NeuralExpressionDecoder(object):
             with tf.compat.v1.variable_scope('policy', reuse=True):
                 logits, _ = tf.compat.v1.nn.dynamic_rnn(cell=cell,
                                                         inputs=input_embedding_layer.get_tensor_input(B.obs),
-                                                        sequence_length=B.lengths,  # Backpropagates only through sequence length
+                                                        sequence_length=B.lengths,
+                                                        # Backpropagates only through sequence length
                                                         dtype=tf.float32)
 
             probs = tf.nn.softmax(logits)
@@ -273,8 +275,6 @@ class NeuralExpressionDecoder(object):
                 print("  Parameters:", n_parameters)
             print("Total parameters:", total_parameters)
 
-
-
     def initial_obs(self):
         """
         Returns the initial observation: empty action, parent, and sibling, and
@@ -329,7 +329,7 @@ class NeuralExpressionDecoder(object):
         return probs
 
     def train_step(self, b, sampled_batch, pqt_batch):
-        """Computes loss, trains model, and returns summaries."""
+        """Computes loss and trains model."""
         feed_dict = {
             self.baseline: b,
             self.sampled_batch_ph: sampled_batch
@@ -340,9 +340,7 @@ class NeuralExpressionDecoder(object):
                 self.pqt_batch_ph: pqt_batch
             })
 
-        summaries, _ = self.sess.run([self.train_op], feed_dict=feed_dict)
-
-        return summaries
+        _ = self.sess.run(self.train_op, feed_dict=feed_dict)
 
 
 def make_initializer(name):

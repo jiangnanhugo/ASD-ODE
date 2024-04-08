@@ -8,8 +8,8 @@ from mcts_model import MCTS
 from utils import create_uniform_generations, create_reward_threshold
 import random
 import numpy as np
-from scibench.symbolic_data_generator import DataX
-from scibench.symbolic_equation_evaluator_public import Equation_evaluator
+from scibench import DataX
+from scibench import Equation_evaluator
 from regress_task import RegressTask
 from program import Program
 
