@@ -54,5 +54,5 @@ def parents_siblings(tokens,  empty_parent, empty_sibling):
     return adj_parents, siblings
 
 
-    
+
 

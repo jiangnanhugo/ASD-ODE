@@ -2,7 +2,7 @@ import numpy as np
 from sympy import Symbol
 from sympy.parsing.sympy_parser import parse_expr
 
-from src.grammar import execute, SymbolicDifferentialEquations
+from grammar.grammar_program import execute, SymbolicDifferentialEquations
 
 
 class ContextFreeGrammar(object):
@@ -11,8 +11,6 @@ class ContextFreeGrammar(object):
     # will link to grammarProgram
     program = None
     # threshold for deciding constants as summary or standalone constant
-    opt_num_expriments = 5  # number of experiments done for multi-trail control variable experiments
-
     expr_consts_thres = 1e-3
 
     noise_std = 0.0
@@ -55,34 +53,22 @@ class ContextFreeGrammar(object):
         self.EMPTY_PARENT = self.n_parent_inputs - 1
         self.EMPTY_SIBLING = self.n_sibling_inputs - 1
 
-    def allowed_grammar_indices(self, vc: set) -> list:
-        """
-        return the list of indices for all grammars that do not have the rules for controlled variables.
-        :param vc: the set of controlled variables
-        """
-        filtered_grammars = []
-        for idx, g in enumerate(self.production_rules):
-            if sum([vi in g for vi in vc]) == 0:
-                filtered_grammars.append(idx)
-        return filtered_grammars
-
     @property
     def output_vocab_size(self):
         return len(self.production_rules)
 
     def print_grammar_vocabulary(self):
-        print('============== GRAMMAR Vocabulary ==============')
+        print('============== GRAMMAR ==============')
         print('{0: >8} {1: >20}'.format('ID', 'NAME'))
         for i in range(len(self.production_rules)):
             print('{0: >8} {1: >20}'.format(i + 1, self.production_rules[i]))
-        print('========== END OF GRAMMAR Vocabulary ===========')
+        print('========== END OF GRAMMAR ===========')
 
     def valid_production_rules(self, Node):
         # Get index of all possible production rules starting with a given node
         return [self.production_rules.index(x) for x in self.production_rules if x.startswith(Node)]
 
     def get_non_terminal_nodes(self, prod) -> list:
-
         # Get all the non-terminal nodes from right-hand side of a production rule grammar
         return [i for i in prod[3:] if i in self.non_terminal_nodes]
 
@@ -113,15 +99,15 @@ class ContextFreeGrammar(object):
             one_list_of_rules = self.complete_rules(one_seq_of_rules)
             filtered_many_rules.append(one_list_of_rules)
             # print("pruned list_of_rules:", one_list_of_rules)
-        self.task.rand_draw_data_with_X_fixed()
+        self.task.rand_draw_init_cond()
         y_true = self.task.evaluate()
         if self.program.n_cores == 1:
             many_expressions = self.program.fitting_new_expressions(filtered_many_rules,
-                                                                    self.task.X, y_true,
+                                                                    self.task.init_cond, y_true,
                                                                     self.input_var_Xs)
         elif self.program.n_cores >= 2:
             many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules,
-                                                                                self.task.X, y_true,
+                                                                                self.task.init_cond, y_true,
                                                                                 self.input_var_Xs)
         # for one_expression in many_expressions:
         #     if one_expression.reward != -np.inf:
@@ -148,8 +134,8 @@ class ContextFreeGrammar(object):
                                                    reverse=False)
 
     def print_hofs(self, verbose=False):
-        self.task.rand_draw_data_with_X_fixed()
-        print(f"PRINT Best Equations (free variables={self.task.fixed_column})")
+        self.task.rand_draw_init_cond()
+        print(f"PRINT Best Equations")
         print("=" * 20)
         for pr in self.hall_of_fame[:self.hof_size]:
             if verbose:
@@ -166,7 +152,7 @@ class ContextFreeGrammar(object):
         """
         mode: if global, then we rank on no variable controlled.
         """
-        self.task.rand_draw_data_with_X_fixed()
+        self.task.rand_draw_init_cond()
 
         for pr in Q:
             fitness_scores = self.print_reward_function_all_metrics(pr.fitted_eq, verbose=False)
@@ -184,8 +170,8 @@ class ContextFreeGrammar(object):
 
     def print_reward_function_all_metrics(self, expr_str, verbose=False):
         """used for print the error for all metrics between the predicted program `p` and true program."""
-        y_hat = execute(expr_str, self.task.X.T, self.input_var_Xs)
-        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.X, y_hat)
+        y_hat = execute(expr_str, self.task.init_cond.T, self.input_var_Xs)
+        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.init_cond, y_hat)
 
         if verbose:
             print('-' * 30)

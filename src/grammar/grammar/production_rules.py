@@ -19,7 +19,7 @@ def production_rules_to_expr(idx, list_of_production_rules):
 def concate_production_rules_to_expr(list_of_production_rules) -> list:
     """
     Convert a list of production rules to the exact symbolic ODEs.
-    For example ['f||g->A||B', 'A->X0', 'B->X1'] => f=X0; g=X1
+    For example: ['f||g->A||B', 'A->X0', 'B->X1'], it represents f=X0; g=X1
     return a list of expressions for the ODE
     """
     left_symbols, right_symbols = list_of_production_rules[0].split("->")
@@ -47,6 +47,15 @@ def to_binary_expr_tree(expr):
             left = to_binary_expr_tree(args[0])
             right = to_binary_expr_tree(op(*args[1:]))
             return [op.__name__, left, right]
+
+
+def construct_non_terminal_nodes_and_start_symbols(nvar):
+    listed = 'ABDEFGHIJKLMNOPQRSTUWVXYZ'
+    assert nvar <= len(listed)
+    listed = listed[:nvar]
+    non_terminal_nodes = [x for x in listed]
+    start_symbolis = "||".join(non_terminal_nodes)
+    return non_terminal_nodes, start_symbolis
 
 
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):

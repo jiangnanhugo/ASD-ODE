@@ -4,11 +4,11 @@ import click
 from scibench.symbolic_data_generator import *
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 
-from src.grammar import ContextFreeGrammar
-from src.grammar import RegressTask
-from src.grammar import get_production_rules, get_var_i_production_rules
-from src.grammar import grammarProgram
-from deep_symbolic_optimizer import VSRDeepSymbolicRegression
+from grammar.grammar import ContextFreeGrammar
+from grammar.grammar_regress_task import RegressTask
+from grammar.production_rules import get_production_rules, get_var_i_production_rules, construct_non_terminal_nodes_and_start_symbols
+from grammar.grammar_program import grammarProgram
+from deep_symbolic_optimizer import ActDeepSymbolicRegression
 from utils import load_config, create_uniform_generations, create_reward_threshold
 
 averaged_var_y = 10
@@ -21,15 +21,6 @@ threshold_values = {
     'inv_nmse': {'reward_threshold': 1 / (1 + 1e-6), 'expr_obj_thres': -1 / (1 + 1e-6)},
     'inv_nrmse': {'reward_threshold': 1 / (1 + 1e-6), 'expr_obj_thres': -1 / (1 + 1e-6)},
 }
-
-
-def extract_all_relevant_variables(grammar_model, total_navrs):
-    relevant_variables = []
-    for round_idx in range(total_navrs):
-        start_symbols, _ = grammar_model.freeze_equations("",
-                                                          [],
-                                                          round_idx + 1)
-    return relevant_variables
 
 
 @click.command()
@@ -62,8 +53,8 @@ def main(config_template, optimizer, equation_name, metric_name, noise_type, noi
     # get basic production rules
     production_rules = get_production_rules(0, function_set)
     reward_thresh = create_reward_threshold(10, len(num_iterations))
-    nt_nodes = construct_non_terminal_nodes(nvar)
-    start_symbols= construct_start_symbols(nvar)
+    nt_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvar)
+
     nt_nodes = ['A']
     start_symbols = ['A']
     best_expressions = None
@@ -92,7 +83,7 @@ def main(config_template, optimizer, equation_name, metric_name, noise_type, noi
         grammar_model.program = program
 
         """Trains DSO and returns dict of reward, expressions"""
-        model = VSRDeepSymbolicRegression(config, grammar_model)
+        model = ActDeepSymbolicRegression(config, grammar_model)
         start = time.time()
         print("deep model setup.....")
 

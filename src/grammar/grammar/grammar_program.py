@@ -10,9 +10,9 @@ from sympy import lambdify
 
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, shgo, dual_annealing, direct
-from grammar import pretty_print_expr
+from grammar.grammar_utils import pretty_print_expr
 from grammar.production_rules import concate_production_rules_to_expr
-from grammar import all_metrics
+from grammar.metrics import all_metrics
 from pathos.multiprocessing import ProcessPool
 from itertools import chain
 from scipy.integrate import solve_ivp
@@ -33,7 +33,7 @@ class SymbolicDifferentialEquations(object):
         self.all_metrics = None
 
     def __repr__(self):
-        return f"r={self.reward}, eq={self.fitted_eq}"
+        return " reward={}, equation=\n{}".format(self.reward, "\n ".join(self.fitted_eq))
 
     def print_all_metrics(self):
         print('-' * 30)
@@ -54,7 +54,6 @@ class grammarProgram(object):
 
     def __init__(self, optimizer="BFGS", metric_name='inv_nrmse', max_opt_iter=100, n_cores=1, max_open_constants=20):
         """
-        opt_num_expr:  # number of experiments done for optimization
         max_open_constants: the maximum number of allowed open constants in the expression.
         """
 
@@ -68,7 +67,7 @@ class grammarProgram(object):
 
     def fitting_new_expressions(self, many_seqs_of_rules, dataX: np.ndarray, y_true, input_var_Xs):
         """
-        here we assume the input will be a valid expression
+        here we assume the input must be a valid expression
         """
         result = []
         print("many_seqs_of_rules:", len(many_seqs_of_rules))
@@ -94,7 +93,6 @@ class grammarProgram(object):
         """
         here we assume the input will be a valid expression
         """
-
         def chunks(lst, n):
             """Yield successive n-sized chunks from lst."""
             chunk_size = len(lst) // n
@@ -226,35 +224,6 @@ def optimize(eq, data_X, y_true, input_var_Xs, evaluate_loss, max_open_constants
     return reward, eq, t_optimized_constants, t_optimized_obj
 
 
-def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
-    """
-    evaluate the output of expression with the given input.
-    consts: list of constants.
-    """
-    expr = parse_expr(expr_str)
-
-    used_vars, used_idx = [], []
-    for idx, xi in enumerate(input_var_Xs):
-        if str(xi) in expr_str:
-            used_idx.append(idx)
-            used_vars.append(xi)
-    try:
-        if len(used_idx) == 0:
-            return float(expr)
-        f = lambdify(used_vars, expr, 'numpy')
-        if len(used_idx) != 0:
-            y_hat = f(*[data_X[i] for i in used_idx])
-        else:
-            y_hat = float(expr)
-        if y_hat is complex:
-            return np.ones(data_X.shape[-1]) * np.infty
-    except TypeError as e:
-        # print(e, expr, input_var_Xs, data_X.shape)
-        y_hat = np.ones(data_X.shape[-1]) * np.infty
-    except KeyError as e:
-        # print(e, expr)
-        y_hat = np.ones(data_X.shape[-1]) * np.infty
-    return y_hat
 
 
 def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
@@ -299,9 +268,40 @@ def compute_time_trajectory(func, init_cond, t_span, t_eval=np.linspace(0, 10, 5
     given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
     https://docs.sympy.org/latest/guides/solving/solve-ode.html
     """
-    solution =  solve_ivp(func, t_span=t_span, y0=init_cond, t_eval=t_eval)
+    solution = solve_ivp(func, t_span=t_span, y0=init_cond, t_eval=t_eval)
     # Extract the y (concentration) values from SciPy solution result
     return solution.y
+
+
+def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
+    """
+    evaluate the output of expression with the given input.
+    consts: list of constants.
+    """
+    expr = parse_expr(expr_str)
+
+    used_vars, used_idx = [], []
+    for idx, xi in enumerate(input_var_Xs):
+        if str(xi) in expr_str:
+            used_idx.append(idx)
+            used_vars.append(xi)
+    try:
+        if len(used_idx) == 0:
+            return float(expr)
+        f = lambdify(used_vars, expr, 'numpy')
+        if len(used_idx) != 0:
+            y_hat = f(*[data_X[i] for i in used_idx])
+        else:
+            y_hat = float(expr)
+        if y_hat is complex:
+            return np.ones(data_X.shape[-1]) * np.infty
+    except TypeError as e:
+        # print(e, expr, input_var_Xs, data_X.shape)
+        y_hat = np.ones(data_X.shape[-1]) * np.infty
+    except KeyError as e:
+        # print(e, expr)
+        y_hat = np.ones(data_X.shape[-1]) * np.infty
+    return y_hat
 
 def simplify_template(eq):
     for i in range(10):

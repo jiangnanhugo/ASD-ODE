@@ -19,9 +19,9 @@ from utils import load_config
 from inputEmbeddingLayer import make_embedding_layer
 import sys
 
-class VSRDeepSymbolicRegression(object):
+class ActDeepSymbolicRegression(object):
     """
-    Control variable for Deep symbolic optimization. Includes model hyperparameters and
+    Active Deep symbolic optimization for ODE. Includes model hyperparameters and
     training configuration.
     """
 
@@ -58,7 +58,7 @@ class VSRDeepSymbolicRegression(object):
                                                           self.input_embedding_layer,
                                                           **self.config_expression_decoder)
 
-    def train(self, reward_threshold,n_epochs):
+    def train(self, reward_threshold, n_epochs):
         """
         return the best predicted expression under the current controlled variable settings.
         """

@@ -2,9 +2,9 @@
 import tensorflow as tf
 import numpy as np
 
-from src.grammar import ContextFreeGrammar
-from src.grammar import Batch
-from src.grammar import parents_siblings
+from grammar.grammar import ContextFreeGrammar
+from grammar.memory import Batch
+from grammar.subroutines import parents_siblings
 
 
 class LinearWrapper:
@@ -273,7 +273,7 @@ class NeuralExpressionDecoder(object):
                 print("  Parameters:", n_parameters)
             print("Total parameters:", total_parameters)
 
-        self.create_summaries(pqt, pqt_use_pg, pg_loss, pqt_loss, entropy_loss, r)
+
 
     def initial_obs(self):
         """
@@ -292,10 +292,6 @@ class NeuralExpressionDecoder(object):
 
     def get_next_obs(self, actions, obs):
         print(f"actions: {actions.shape} obs: {obs.shape}")
-        # print("actions: ", actions)
-        # print("parent: ", obs[:,1])
-        # print("sibling: ", obs[:, 2])
-        # print("dangling: ", obs[:, 3])
         dangling = obs[:, 3]  # Shape of obs: (?, 4)
 
         action = actions[:, -1]  # Current action
@@ -310,31 +306,6 @@ class NeuralExpressionDecoder(object):
         next_obs = next_obs.astype(np.float32)
         # print("next_obs:", next_obs)
         return next_obs
-
-    def create_summaries(self, pqt, pqt_use_pg, pg_loss, pqt_loss, entropy_loss, r):
-        # Create summaries
-        with tf.compat.v1.name_scope("summary"):
-            if self.summary:
-                if not pqt or (pqt and pqt_use_pg):
-                    tf.compat.v1.summary.scalar("pg_loss", pg_loss)
-
-                if pqt:
-                    tf.compat.v1.summary.scalar("pqt_loss", pqt_loss)
-                tf.compat.v1.summary.scalar("entropy_loss", entropy_loss)
-                tf.compat.v1.summary.scalar("total_loss", self.loss)
-                tf.compat.v1.summary.scalar("reward", tf.reduce_mean(r))
-                tf.compat.v1.summary.scalar("baseline", self.baseline)
-                tf.compat.v1.summary.histogram("reward", r)
-                tf.compat.v1.summary.histogram("length", self.sampled_batch_ph.lengths)
-                for g, v in self.grads_and_vars:
-                    tf.compat.v1.summary.histogram(v.name, v)
-                    tf.compat.v1.summary.scalar(v.name + '_norm', tf.norm(v))
-                    tf.compat.v1.summary.histogram(v.name + '_grad', g)
-                    tf.compat.v1.summary.scalar(v.name + '_grad_norm', tf.norm(g))
-                tf.compat.v1.summary.scalar('gradient norm', self.norms)
-                self.summaries = tf.compat.v1.summary.merge_all()
-            else:
-                self.summaries = tf.no_op()
 
     def sample(self, batch_size):
         """Sample a #batch_size of expressions"""
@@ -369,7 +340,7 @@ class NeuralExpressionDecoder(object):
                 self.pqt_batch_ph: pqt_batch
             })
 
-        summaries, _ = self.sess.run([self.summaries, self.train_op], feed_dict=feed_dict)
+        summaries, _ = self.sess.run([self.train_op], feed_dict=feed_dict)
 
         return summaries
 

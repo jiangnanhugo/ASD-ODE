@@ -15,19 +15,15 @@ def make_queue(expression_decoder=None, priority=False, capacity=np.inf, seed=0)
 
     Parameters
     ----------
-    expression_decoder : dso.controller.Controller
-        Reference to the Controller, used to compute probabilities of items in
-        the Queue.
+    expression_decoder:  used to compute probabilities of items in the Queue.
 
     priority : bool
         If True, returns an object inheriting UniquePriorityQueue. Otherwise,
         returns an object inheriting from UniqueQueue.
 
-    capacity : int
-        Maximum queue length.
+    capacity : int. Maximum queue length.
 
-    seed : int
-        RNG seed used for random sampling.
+    seed : int. RNG seed used for random sampling.
 
     Returns
     -------
@@ -68,15 +64,13 @@ def get_samples(batch, key):
         actions=batch.actions[key],
         obs=batch.obs[key],
         lengths=batch.lengths[key],
-        rewards=batch.rewards[key],
-        on_policy=batch.on_policy[key])
+        rewards=batch.rewards[key])
     return batch
 
 
 # Adapted from https://github.com/tensorflow/models/blob/1af55e018eebce03fb61bba9959a04672536107d/research/brain_coder/common/utils.py
 class ItemContainer(object):
     """Class for holding an item with its score.
-
     Defines a comparison function for use in the heap-queue.
     """
 
@@ -333,7 +327,7 @@ class ProgramQueueMixin():
         rewards = np.array([s.rewards for s in samples], dtype=np.float32)
         on_policy = np.array([s.on_policy for s in samples], dtype=bool)
         batch = Batch(actions=actions, obs=obs,
-                      lengths=lengths, rewards=rewards, on_policy=on_policy)
+                      lengths=lengths, rewards=rewards)
         return batch
 
     def to_batch(self):
