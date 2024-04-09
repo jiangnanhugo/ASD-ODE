@@ -10,8 +10,6 @@ class ContextFreeGrammar(object):
     task = None
     # will link to grammarProgram
     program = None
-    # threshold for deciding constants as summary or standalone constant
-    expr_consts_thres = 1e-3
 
     noise_std = 0.0
 
@@ -20,10 +18,10 @@ class ContextFreeGrammar(object):
        the previous action, the parent, the sibling, and/or the number of dangling
        (unselected) nodes.
     """
-
     OBS_DIM = 4  # action, parent, sibling, dangling
 
-    def __init__(self, nvars, production_rules, start_symbols, non_terminal_nodes,
+    def __init__(self, nvars,
+                 production_rules, start_symbols, non_terminal_nodes,
                  max_length,
                  hof_size, reward_threhold):
         # number of input variables
@@ -42,22 +40,22 @@ class ContextFreeGrammar(object):
         # those rules has terminal symbol on the right-hand side
         self.terminal_rules = [g for g in self.production_rules if
                                sum([nt in g[3:] for nt in self.non_terminal_nodes]) == 0]
-        self.print_grammar_vocabulary()
+        self.print_grammar_rules()
         print(f"rules with only terminal symbols: {self.terminal_rules}")
 
         # used for output vocabulary
-        self.n_action_inputs = self.output_vocab_size + 1  # Library tokens + empty token
-        self.n_parent_inputs = self.output_vocab_size + 1  # - len(self.terminal_rules)  # Parent sub-lib tokens + empty token
-        self.n_sibling_inputs = self.output_vocab_size + 1  # Library tokens + empty token
+        self.n_action_inputs = self.output_rules_size + 1  # Library tokens + empty token
+        self.n_parent_inputs = self.output_rules_size + 1  # - len(self.terminal_rules)  # Parent sub-lib tokens + empty token
+        self.n_sibling_inputs = self.output_rules_size + 1  # Library tokens + empty token
         self.EMPTY_ACTION = self.n_action_inputs - 1
         self.EMPTY_PARENT = self.n_parent_inputs - 1
         self.EMPTY_SIBLING = self.n_sibling_inputs - 1
 
     @property
-    def output_vocab_size(self):
+    def output_rules_size(self):
         return len(self.production_rules)
 
-    def print_grammar_vocabulary(self):
+    def print_grammar_rules(self):
         print('============== GRAMMAR ==============')
         print('{0: >8} {1: >20}'.format('ID', 'NAME'))
         for i in range(len(self.production_rules)):
@@ -100,14 +98,19 @@ class ContextFreeGrammar(object):
             filtered_many_rules.append(one_list_of_rules)
             # print("pruned list_of_rules:", one_list_of_rules)
         self.task.rand_draw_init_cond()
-        y_true = self.task.evaluate()
+        true_trajectories = self.task.evaluate()
         if self.program.n_cores == 1:
             many_expressions = self.program.fitting_new_expressions(filtered_many_rules,
-                                                                    self.task.init_cond, y_true,
-                                                                    self.input_var_Xs)
+                                                                    self.task.init_cond,
+                                                                    self.task.time_span, self.task.t_eval,
+                                                                    true_trajectories,
+                                                                    self.input_var_Xs,
+                                                                    )
         elif self.program.n_cores >= 2:
             many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules,
-                                                                                self.task.init_cond, y_true,
+                                                                                self.task.init_cond,
+                                                                                self.task.time_span, self.task.t_eval,
+                                                                                true_trajectories,
                                                                                 self.input_var_Xs)
         # for one_expression in many_expressions:
         #     if one_expression.reward != -np.inf:
@@ -170,8 +173,8 @@ class ContextFreeGrammar(object):
 
     def print_reward_function_all_metrics(self, expr_str, verbose=False):
         """used for print the error for all metrics between the predicted program `p` and true program."""
-        y_hat = execute(expr_str, self.task.init_cond.T, self.input_var_Xs)
-        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.init_cond, y_hat)
+        pred_trajectories = execute(expr_str, self.task.init_cond.T, self.task.time_span, self.task.t_eval, self.input_var_Xs)
+        dict_of_result = self.task.evaluate_all_losses(self.task.init_cond, pred_trajectories)
 
         if verbose:
             print('-' * 30)

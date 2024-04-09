@@ -1,7 +1,7 @@
 """Class for symbolic expression optimization."""
 
 from sympy.parsing.sympy_parser import parse_expr
-from sympy import lambdify
+from sympy import lambdify, symbols
 
 from itertools import chain
 import sys
@@ -13,7 +13,7 @@ from scipy.optimize import basinhopping, shgo, dual_annealing, direct
 from scipy.integrate import solve_ivp
 
 from grammar.grammar_utils import pretty_print_expr
-from grammar.production_rules import concate_production_rules_to_expr
+from grammar.production_rules import concate_production_rules_to_expr, check_non_terminal_nodes
 from grammar.metrics import all_metrics
 
 from pathos.multiprocessing import ProcessPool
@@ -56,7 +56,8 @@ class grammarProgram(object):
     """
     evaluate_loss = None
 
-    def __init__(self, optimizer="BFGS", metric_name='inv_nrmse', max_opt_iter=100, n_cores=1, max_open_constants=20):
+    def __init__(self, non_terminal_nodes, optimizer="BFGS", metric_name='inv_nrmse', max_opt_iter=100, n_cores=1,
+                 max_open_constants=20):
         """
         max_open_constants: the maximum number of allowed open constants in the expression.
         """
@@ -66,14 +67,18 @@ class grammarProgram(object):
         self.max_open_constants = max_open_constants
         self.metric_name = metric_name
         self.n_cores = n_cores
+        self.non_terminal_nodes = non_terminal_nodes
         self.evaluate_loss = all_metrics[metric_name]
         self.pool = ProcessPool(nodes=self.n_cores)
 
-    def fitting_new_expressions(self, many_seqs_of_rules, init_cond: np.ndarray, true_trajectories, input_var_Xs):
+    def fitting_new_expressions(self, many_seqs_of_rules,
+                                init_cond: np.ndarray, true_trajectories,
+                                input_var_Xs,
+                                time_span, t_eval):
         """
         we assume the input must be a valid expression
         init_cond: [batch_size, nvars].
-        y_true: [batch_size, time_steps, nvars]. the correct trajectories.
+        true_trajectories: [batch_size, time_steps, nvars]. the correct trajectories.
         """
         result = []
         print("many_seqs_of_rules:", len(many_seqs_of_rules))
@@ -84,10 +89,12 @@ class grammarProgram(object):
                 init_cond,
                 true_trajectories,
                 input_var_Xs,
+                time_span, t_eval,
                 self.evaluate_loss,
                 self.max_open_constants,
                 self.max_opt_iter,
-                self.optimizer
+                self.optimizer,
+                self.non_terminal_nodes
             )
 
             one_expr.reward = reward
@@ -96,7 +103,7 @@ class grammarProgram(object):
         return result
 
     def fitting_new_expressions_in_parallel(self, many_seqs_of_rules, init_cond: np.ndarray, true_trajectories,
-                                            input_var_Xs):
+                                            input_var_Xs, time_span, t_eval):
         """
         here we assume the input will be a valid expression
         """
@@ -113,13 +120,16 @@ class grammarProgram(object):
         init_cond_ncores = [init_cond for _ in range(self.n_cores)]
         true_trajectories_ncores = [true_trajectories for _ in range(self.n_cores)]
         input_var_Xes = [input_var_Xs for _ in range(self.n_cores)]
+        time_span_ncores = [time_span for _ in range(self.n_cores)]
+        t_eval_ncores = [t_eval for _ in range(self.n_cores)]
         evaluate_losses = [self.evaluate_loss for _ in range(self.n_cores)]
         max_open_constantes = [self.max_open_constants for _ in range(self.n_cores)]
         max_opt_iteres = [self.max_opt_iter for _ in range(self.n_cores)]
         optimizeres = [self.optimizer for _ in range(self.n_cores)]
+        non_terminal_nodes = [self.non_terminal_nodes for _ in range(self.n_cores)]
 
         result = self.pool.map(fit_one_expr, many_expr_tempaltes, init_cond_ncores, true_trajectories_ncores,
-                               input_var_Xes, evaluate_losses,
+                               input_var_Xes, time_span_ncores, t_eval_ncores, evaluate_losses,
                                max_open_constantes, max_opt_iteres, optimizeres)
         result = list(chain.from_iterable(result))
         print("Done with optimization!")
@@ -144,14 +154,16 @@ def fit_one_expr(one_expr_batch, init_cond, true_trajectories, input_var_Xs, eva
     return results
 
 
-def optimize(eq, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_open_constants, max_opt_iter,
+def optimize(eq, init_cond, true_trajectories, input_var_Xs, time_span, t_eval,
+             evaluate_loss, max_open_constants, max_opt_iter,
              optimizer_name,
+             non_terminal_nodes,
              user_scpeficied_iters=-1,
              verbose=False):
     """
     Calculate reward score for a complete parse tree
     If placeholder C is in the equation, also execute estimation for C
-    Reward = 1 / (1 + MSE) * Penalty ** num_term
+    Reward = 1 / (1 + MSE) * Penalty ** num_term_in_expressions
 
     Parameters
     ----------
@@ -160,7 +172,7 @@ def optimize(eq, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_
     true_trajectories: [batch_size, time_steps, nvars]. the true trajectories.
     """
     eq = simplify_template(eq)
-    if 'A' in eq or 'B' in eq:  # not a valid equation
+    if check_non_terminal_nodes(eq, non_terminal_nodes):  # not a valid equation
         return -np.inf, eq, 0, np.inf
 
     # count number of constants in equation
@@ -168,7 +180,7 @@ def optimize(eq, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_
     t_optimized_constants, t_optimized_obj = 0, np.inf
     if num_changing_consts == 0:  # zero constant
         var_ytrue = np.var(true_trajectories)
-        y_pred = execute(eq, init_cond.T, input_var_Xs)
+        pred_trajectories = execute(eq, init_cond.T, input_var_Xs, time_span, t_eval)
     elif num_changing_consts >= max_open_constants:  # discourage over complicated numerical estimations
         return -np.inf, eq, t_optimized_constants, t_optimized_obj
     else:
@@ -178,15 +190,20 @@ def optimize(eq, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_
 
         def f(consts: list):
             eq_est = eq
-            for i in range(len(consts)):
-                eq_est = eq_est.replace('c' + str(i), str(consts[i]), 1)
-            eq_est = eq_est.replace('+ -', '-')
-            eq_est = eq_est.replace('- -', '+')
-            eq_est = eq_est.replace('- +', '-')
-            eq_est = eq_est.replace('+ +', '+')
-            y_pred = execute(eq_est, init_cond.T, input_var_Xs)
+            eq_estimated = []
+
+            for one_eq in eq_est:
+                for i in range(len(consts)):
+                    one_eq = one_eq.replace('c' + str(i), str(consts[i]), 1)
+                one_eq = one_eq.replace('+ -', '-')
+                one_eq = one_eq.replace('- -', '+')
+                one_eq = one_eq.replace('- +', '-')
+                one_eq = one_eq.replace('+ +', '+')
+                eq_estimated.append(one_eq)
+
+            pred_trajectories = execute(eq_est, init_cond.T, time_span, t_eval, input_var_Xs)
             var_ytrue = np.var(true_trajectories)
-            loss_val = -evaluate_loss(y_pred, true_trajectories, var_ytrue)
+            loss_val = -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
             return loss_val
 
         # do more than one experiment,
@@ -203,29 +220,32 @@ def optimize(eq, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_
             if verbose:
                 print(opt_result)
             eq_est = eq
+            eq_estimated = []
+            for one_eq in eq_est:
+                for i in range(len(c_lst)):
+                    est_c = np.mean(c_lst[i])
+                    if abs(est_c) < 1e-5:
+                        est_c = 0
+                    one_eq = one_eq.replace('c' + str(i), str(est_c), 1)
+                one_eq = one_eq.replace('+ -', '-')
+                one_eq = one_eq.replace('- -', '+')
+                one_eq = one_eq.replace('- +', '-')
+                one_eq = one_eq.replace('+ +', '+')
+                eq_estimated.append(one_eq)
 
-            for i in range(len(c_lst)):
-                est_c = np.mean(c_lst[i])
-                if abs(est_c) < 1e-5:
-                    est_c = 0
-                eq_est = eq_est.replace('c' + str(i), str(est_c), 1)
-            eq_est = eq_est.replace('+ -', '-')
-            eq_est = eq_est.replace('- -', '+')
-            eq_est = eq_est.replace('- +', '-')
-            eq_est = eq_est.replace('+ +', '+')
-
-            y_pred = execute(eq_est, init_cond.T, input_var_Xs)
+            pred_trajectories = execute(eq_estimated, init_cond.T, time_span, t_eval, input_var_Xs)
+            # what is this?
             var_ytrue = np.var(true_trajectories)
 
-            eq = pretty_print_expr(parse_expr(eq_est))
+            expr_odes = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_estimated]
 
-            print('\t loss:', -evaluate_loss(y_pred, true_trajectories, var_ytrue), '\t fitted eq:', eq)
+            print('\t loss:', -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue), '\t fitted eq:', expr_odes)
         except Exception as e:
             print(e)
             return -np.inf, eq, 0, np.inf
 
-    # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(y_pred, y_true, var_ytrue)))
-    reward = evaluate_loss(y_pred, true_trajectories, var_ytrue)
+    # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(pred_trajectories, y_true, var_ytrue)))
+    reward = evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
 
     return reward, eq, t_optimized_constants, t_optimized_obj
 
@@ -268,30 +288,29 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
     return opt_result
 
 
-def execute(expr_str: str, init_cond: np.ndarray, input_var_Xs, time_span, t_eval=np.linspace(0, 10, 50)):
+def execute(expr_strs: list, init_cond: np.ndarray, time_span: tuple, t_eval: np.ndarray, input_var_Xs: list):
     """
-
     given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
     https://docs.sympy.org/latest/guides/solving/solve-ode.html
     """
-    expr = parse_expr(expr_str)
+    expr_odes = [parse_expr(one_expr) for one_expr in expr_strs]
     t = symbols('t')  # not used in this case
     try:
-        # if len(used_idx) == 0:
-        #     return float(expr)
-        func = lambdify((t, input_var_Xs), expr, 'numpy')
+        func = lambdify((t, input_var_Xs), expr_odes, 'numpy')
         solution = solve_ivp(func, t_span=time_span, y0=init_cond, t_eval=t_eval)
         # Extract the y (concentration) values from SciPy solution result
-        time_trajectories = solution.y
-        if time_trajectories is complex:
+        pred_trajectories = solution.y
+        if pred_trajectories is complex:
             return np.ones(init_cond.shape[-1]) * np.infty
     except TypeError as e:
         # print(e, expr, input_var_Xs, data_X.shape)
-        time_trajectories = np.ones(init_cond.shape[-1]) * np.infty
+        # pred_trajectories = np.ones(init_cond.shape[-1]) * np.infty
+        return None
     except KeyError as e:
         # print(e, expr)
-        time_trajectories = np.ones(init_cond.shape[-1]) * np.infty
-    return time_trajectories
+        # pred_trajectories = np.ones(init_cond.shape[-1]) * np.infty
+        return None
+    return pred_trajectories
 
 
 def simplify_template(eq):
@@ -311,8 +330,10 @@ def simplify_template(eq):
 
 if __name__ == '__main__':
     expr_temp = 'sqrt(sqrt(C))*(sqrt(X0)+C)'
-
     simplify_template(expr_temp)
+
+
+def sympy_plus_scipy():
     from sympy import symbols, lambdify
     import numpy as np
     import scipy.integrate
@@ -320,9 +341,9 @@ if __name__ == '__main__':
 
     # Create symbols y0, y1, and y2
     y = symbols('y:3')
-    c1,c2 = symbols('c1 c2')
-    rf = c1 * y[0] ** 2 * y[1]
-    rb = c2 * y[2] ** 2
+
+    rf = y[0] ** 2 * y[1]
+    rb = y[2] ** 2
     # Derivative of the function y(t); values for the three chemical species
     # for input values y, kf, and kb
     ydot = [2 * (rb - rf), rb - rf, 2 * (rf - rb)]
@@ -330,18 +351,22 @@ if __name__ == '__main__':
     t = symbols('t')  # not used in this case
     # Convert the SymPy symbolic expression for ydot into a form that
     # SciPy can evaluate numerically, f
-    f = lambdify((t, y, c1, c2), ydot)
+    f = lambdify((t, y), ydot)
     k_vals = np.array([0.42, 0.17])  # arbitrary in this case
-    y0 = [1, 1, 0]  # initial condition (initial values)
+    y0 = [[1, 1, 0], [1, 0, 1]]  # initial condition (initial values)
+    y0 = np.asarray(y0)
+    y0 = y0.T
+    print(y0.shape)
     t_eval = np.linspace(0, 10, 50)  # evaluate integral from t = 0-10 for 50 points
     # Call SciPy's ODE initial value problem solver solve_ivp by passing it
     #   the function f,
     #   the interval of integration,
     #   the initial state, and
     #   the arguments to pass to the function f
-    solution = scipy.integrate.solve_ivp(f, (0, 10), y0, t_eval=t_eval, args=k_vals)
+    solution = scipy.integrate.solve_ivp(f, (0, 10), y0, t_eval=t_eval, vectorized=True)
     # Extract the y (concentration) values from SciPy solution result
     y = solution.y
+    print(y.shape)
     # Plot the result graphically using matplotlib
     plt.plot(t_eval, y.T)
     # Add title, legend, and axis labels to the plot

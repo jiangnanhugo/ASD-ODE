@@ -47,18 +47,16 @@ class ActDeepSymbolicRegression(object):
         np.random.seed(seed)
         seed = int(time.perf_counter() * 10000) % 1000007
         tf.compat.v1.random.set_random_seed(seed)
-
         self.sess = tf.compat.v1.Session()
 
         # Prepare training parameters
         self.input_embedding_layer = make_embedding_layer(self.config_input_embedding)
-
         self.expression_decoder = NeuralExpressionDecoder(self.cfg,
                                                           self.sess,
                                                           self.input_embedding_layer,
                                                           **self.config_expression_decoder)
 
-    def train(self, reward_threshold, n_epochs):
+    def train(self, reward_threshold, n_epochs, time_span, t_eval):
         """
         return the best predicted expression under the current controlled variable settings.
         """

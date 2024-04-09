@@ -4,8 +4,6 @@ import json
 
 class DataX(object):
     def __init__(self, vars_range_and_types):
-        """
-        """
         list_of_samplers = json.loads(vars_range_and_types)
         self.data_X_samplers = []
         for one_sample in list_of_samplers:
@@ -20,7 +18,6 @@ class DataX(object):
 
     def randn(self, sample_size):
         """
-
         :param sample_size: batch size
         :return: return [#input_variables, sample_size, dimension of each variables]
         """

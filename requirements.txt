@@ -1,2 +1,4 @@
 jitcode
 pathos
+numbalsoda
+click

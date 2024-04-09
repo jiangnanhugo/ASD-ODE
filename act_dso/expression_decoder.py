@@ -54,8 +54,8 @@ class NeuralExpressionDecoder(object):
                  input_embedding_layer,
                  # RNN cell hyperparameters
                  cell: str = 'lstm',  # cell : str Recurrent cell to use. Supports 'lstm' and 'gru'.
-                 num_layers: int = 1,  # Number of RNN layers.
-                 num_units: int = 32,  # Number of RNN cell units in each of the RNN's layers.
+                 num_layers: int = 3,  # Number of RNN layers.
+                 num_units: int = 128,  # Number of RNN cell units in each of the RNN's layers.
                  initializer: str = 'zeros',
                  # Optimizer hyperparameters
                  optimizer: str = 'adam',
@@ -82,7 +82,7 @@ class NeuralExpressionDecoder(object):
         self.pqt_k = pqt_k
         self.pqt_batch_size = pqt_batch_size
         self.cfg = cfg
-        decoder_output_vocab_size = cfg.output_vocab_size
+        decoder_output_vocab_size = cfg.output_rules_size
 
         # Placeholders, computed after instantiating expressions
         self.batch_size = tf.compat.v1.placeholder(dtype=tf.int32, shape=(), name="batch_size")

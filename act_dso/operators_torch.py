@@ -1,10 +1,3 @@
-###############################################################################
-# General Information
-###############################################################################
-# Author: Daniel DiPietro | dandipietro.com | https://github.com/dandip
-
-# Original Paper: https://arxiv.org/abs/1912.04871 (Petersen et al)
-
 # operators.py: Operator class, which is used as the building blocks for
 # assembling PyTorch expressions with an RNN.
 

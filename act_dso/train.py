@@ -72,8 +72,6 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
         memory weight exceeds memory_threshold.
 
     save_positional_entropy : bool, optional.  Whether to save evolution of positional entropy for each iteration.
-
-    save_top_samples_per_batch : float, optional. Whether to store X% top-performer samples in every batch.
     
     save_freq : int or None. Statistics are flushed to file every save_freq epochs (default == 1). If < 0, uses save_freq = inf
     save_token_count : bool. Whether to save token counts each batch.
@@ -86,11 +84,11 @@ def learn(grammar_model: ContextFreeGrammar,
           sess, expression_decoder,
           n_epochs=12, dataset_size=None, batch_size=1000,
           reward_threshold=0.999999,
-          alpha=0.5, epsilon=0.05, verbose=True, baseline="R_e",
+          alpha=0.5, epsilon=0.05, verbose=True,
+          baseline="R_e",
           b_jumpstart=False, early_stopping=True,
           debug=0, use_memory=False, memory_capacity=1e3,
-          warm_start=None, memory_threshold=None, save_positional_entropy=False,
-          save_top_samples_per_batch=0):
+          warm_start=None, memory_threshold=None, save_positional_entropy=False):
     """
       Executes the main training loop.
     """
@@ -138,7 +136,6 @@ def learn(grammar_model: ContextFreeGrammar,
     nevals = 0  # Total number of sampled expressions (from RL)
     positional_entropy = np.zeros(shape=(n_epochs, expression_decoder.max_length), dtype=np.float32)
 
-    top_samples_per_batch = list()
     print("-- RUNNING EPOCHS START -------------")
     sys.stdout.flush()
     for epoch in range(n_epochs):
@@ -163,13 +160,6 @@ def learn(grammar_model: ContextFreeGrammar,
 
         if save_positional_entropy:
             positional_entropy[epoch] = np.apply_along_axis(empirical_entropy, 0, actions)
-
-        if save_top_samples_per_batch > 0:
-            # sort in descending order: larger rewards -> better solutions
-            sorted_idx = np.argsort(r)[::-1]
-            one_perc = int(len(grammar_expressions) * float(save_top_samples_per_batch))
-            for idx in sorted_idx[:one_perc]:
-                top_samples_per_batch.append([epoch, r[idx], repr(grammar_expressions[idx])])
 
         # Update HOF
         for p in grammar_expressions:
@@ -220,7 +210,6 @@ def learn(grammar_model: ContextFreeGrammar,
 
             '''
                 Here we get the returned as well as stored programs and properties.
-
             '''
 
             keep = r >= quantile
@@ -304,7 +293,7 @@ def learn(grammar_model: ContextFreeGrammar,
             print("Ending training after epoch {}/{}, current best R: {:.4f}".format(epoch + 1, n_epochs,
                                                                                      prev_r_best))
 
-        grammar_model.print_hofs(mode='global', verbose=True)
+        grammar_model.print_hofs(verbose=True)
 
     # Print the priority queue at the end of training
     if verbose and priority_queue is not None:

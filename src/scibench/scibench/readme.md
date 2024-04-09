@@ -4,7 +4,6 @@
 
 ```bash
 pip install Cython
-pip install cryptography
 ```
 
 
