@@ -56,7 +56,7 @@ class ActDeepSymbolicRegression(object):
                                                           self.input_embedding_layer,
                                                           **self.config_expression_decoder)
 
-    def train(self, reward_threshold, n_epochs, time_span, t_eval):
+    def train(self, reward_threshold, n_epochs):
         """
         return the best predicted expression under the current controlled variable settings.
         """

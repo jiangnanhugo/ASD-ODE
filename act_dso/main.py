@@ -87,8 +87,7 @@ def main(config_template, optimizer, equation_name, metric_name, noise_type, noi
     print("training starting......")
     model.train(
         threshold_values[metric_name]['reward_threshold'],
-        total_iterations,
-        time_span, t_eval
+        total_iterations
     )
     end_time = time.time() - start
 

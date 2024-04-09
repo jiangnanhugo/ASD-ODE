@@ -1,9 +1,3 @@
-###############################################################################
-# General Information
-###############################################################################
-# Author: Daniel DiPietro | dandipietro.com | https://github.com/dandip
-
-# Original Paper: https://arxiv.org/abs/1912.04871 (Petersen et al)
 
 # main.py: From here, launch deep symbolic regression tasks. All
 # hyperparameters are exposed (info on them can be found in train.py). Unless
