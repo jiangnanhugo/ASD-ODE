@@ -24,3 +24,4 @@ class KnownEquation(object):
         self.num_vars = num_vars
         self.dim = []
         self.sympy_eq = None
+        self.x = [Symbol(f'X{i}',real=True) for i in range(num_vars)]

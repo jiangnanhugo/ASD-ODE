@@ -1,7 +1,0 @@
-cython
-numpy
-sympy
-scipy
-click
-cryptography
-zss
