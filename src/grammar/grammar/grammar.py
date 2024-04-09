@@ -75,7 +75,7 @@ class ContextFreeGrammar(object):
         complete all non-terminal symbols in rules.
 
         given one sequence of rules, either cut the sequence for the position where Number_of_Non_Terminal_Symbols=0,
-        or add several rules with non only terminal symbols
+        or add several rules with non-terminal symbols
         """
         ntn_counts = 0
         for one_rule in list_of_rules:

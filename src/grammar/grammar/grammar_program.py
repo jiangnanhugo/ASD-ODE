@@ -61,7 +61,6 @@ class grammarProgram(object):
         """
         max_open_constants: the maximum number of allowed open constants in the expression.
         """
-
         self.optimizer = optimizer
         self.max_opt_iter = max_opt_iter
         self.max_open_constants = max_open_constants
@@ -72,9 +71,9 @@ class grammarProgram(object):
         self.pool = ProcessPool(nodes=self.n_cores)
 
     def fitting_new_expressions(self, many_seqs_of_rules,
-                                init_cond: np.ndarray, true_trajectories,
-                                input_var_Xs,
-                                time_span, t_eval):
+                                init_cond: np.ndarray, time_span, t_eval,
+                                true_trajectories,
+                                input_var_Xs):
         """
         we assume the input must be a valid expression
         init_cond: [batch_size, nvars].
@@ -102,8 +101,9 @@ class grammarProgram(object):
             result.append(one_expr)
         return result
 
-    def fitting_new_expressions_in_parallel(self, many_seqs_of_rules, init_cond: np.ndarray, true_trajectories,
-                                            input_var_Xs, time_span, t_eval):
+    def fitting_new_expressions_in_parallel(self, many_seqs_of_rules, init_cond: np.ndarray, time_span, t_eval,
+                                            true_trajectories,
+                                            input_var_Xs):
         """
         here we assume the input will be a valid expression
         """
@@ -128,8 +128,9 @@ class grammarProgram(object):
         optimizeres = [self.optimizer for _ in range(self.n_cores)]
         non_terminal_nodes = [self.non_terminal_nodes for _ in range(self.n_cores)]
 
-        result = self.pool.map(fit_one_expr, many_expr_tempaltes, init_cond_ncores, true_trajectories_ncores,
-                               input_var_Xes, time_span_ncores, t_eval_ncores, evaluate_losses,
+        result = self.pool.map(fit_one_expr, many_expr_tempaltes, init_cond_ncores, time_span_ncores, t_eval_ncores,
+                               true_trajectories_ncores,
+                               input_var_Xes,  evaluate_losses,
                                max_open_constantes, max_opt_iteres, optimizeres)
         result = list(chain.from_iterable(result))
         print("Done with optimization!")
@@ -137,13 +138,13 @@ class grammarProgram(object):
         return result
 
 
-def fit_one_expr(one_expr_batch, init_cond, true_trajectories, input_var_Xs, evaluate_loss, max_open_constants,
-                 max_opt_iter,
+def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories, input_var_Xs, evaluate_loss,
+                 max_open_constants,  max_opt_iter,
                  optimizer_name):
     results = []
     for one_expr in one_expr_batch:
         reward, fitted_eq, _, _ = optimize(one_expr.expr_template,
-                                           init_cond,
+                                           init_cond, time_span, t_eval,
                                            true_trajectories,
                                            input_var_Xs,
                                            evaluate_loss, max_open_constants, max_opt_iter, optimizer_name)
@@ -154,7 +155,7 @@ def fit_one_expr(one_expr_batch, init_cond, true_trajectories, input_var_Xs, eva
     return results
 
 
-def optimize(eq, init_cond, true_trajectories, input_var_Xs, time_span, t_eval,
+def optimize(eq, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
              evaluate_loss, max_open_constants, max_opt_iter,
              optimizer_name,
              non_terminal_nodes,
@@ -288,20 +289,28 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
     return opt_result
 
 
-def execute(expr_strs: list, init_cond: np.ndarray, time_span: tuple, t_eval: np.ndarray, input_var_Xs: list):
+def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval: np.ndarray, input_var_Xs: list)->list:
     """
     given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
     https://docs.sympy.org/latest/guides/solving/solve-ode.html
+    expr_strs: list of string. each string is one expression.
+    time_span: tuple
+    t_evals: np.linspace, or np.logspace
+    x_init_conds: [batch_size, nvars]
+    pred_trajectories: [batch_size, time_steps, nvars]
     """
+
     expr_odes = [parse_expr(one_expr) for one_expr in expr_strs]
     t = symbols('t')  # not used in this case
     try:
         func = lambdify((t, input_var_Xs), expr_odes, 'numpy')
-        solution = solve_ivp(func, t_span=time_span, y0=init_cond, t_eval=t_eval)
-        # Extract the y (concentration) values from SciPy solution result
-        pred_trajectories = solution.y
+        pred_trajectories = []
+        for one_x_init in x_init_conds:
+            one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval)
+            pred_trajectories.append(one_solution.y)
         if pred_trajectories is complex:
-            return np.ones(init_cond.shape[-1]) * np.infty
+            return None
+            # return np.ones(init_cond.shape[-1]) * np.infty
     except TypeError as e:
         # print(e, expr, input_var_Xs, data_X.shape)
         # pred_trajectories = np.ones(init_cond.shape[-1]) * np.infty
@@ -337,7 +346,6 @@ def sympy_plus_scipy():
     from sympy import symbols, lambdify
     import numpy as np
     import scipy.integrate
-    import matplotlib.pyplot as plt
 
     # Create symbols y0, y1, and y2
     y = symbols('y:3')
@@ -353,7 +361,7 @@ def sympy_plus_scipy():
     # SciPy can evaluate numerically, f
     f = lambdify((t, y), ydot)
     k_vals = np.array([0.42, 0.17])  # arbitrary in this case
-    y0 = [[1, 1, 0], [1, 0, 1]]  # initial condition (initial values)
+    y0 =  [1, 0, 1]  # initial condition (initial values)
     y0 = np.asarray(y0)
     y0 = y0.T
     print(y0.shape)
@@ -368,11 +376,4 @@ def sympy_plus_scipy():
     y = solution.y
     print(y.shape)
     # Plot the result graphically using matplotlib
-    plt.plot(t_eval, y.T)
-    # Add title, legend, and axis labels to the plot
-    plt.title('Chemical Kinetics')
-    plt.legend(['NO', 'Br$_2$', 'NOBr'], shadow=True)
-    plt.xlabel('time')
-    plt.ylabel('concentration')
-    # Finally, display the annotated plot
-    plt.show()
+
