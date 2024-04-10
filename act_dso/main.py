@@ -28,16 +28,17 @@ threshold_values = {
 @click.option('--equation_name', default=None, type=str, help="Name of equation")
 @click.option('--optimizer', default='BFGS', type=str, help="optimizer for the expressions")
 @click.option('--metric_name', default='inv_nrmse', type=str, help="evaluation metrics")
+@click.option('--batch_size', default=10, type=int, help="batch of initial condition of dataset")
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--max_len', default=10, help="max length of the sequence from the decoder")
 @click.option('--total_iterations', default=20, help="Number of iterations per rounds")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
-def main(config_template, optimizer, equation_name, metric_name, noise_type, noise_scale, max_len, total_iterations,
+def main(config_template, optimizer, equation_name, metric_name, batch_size, noise_type, noise_scale, max_len, total_iterations,
          n_cores):
     config = load_config(config_template)
     config['task']['metric'] = metric_name
-    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name=metric_name)
+    data_query_oracle = Equation_evaluator(equation_name, batch_size, noise_type, noise_scale, metric_name=metric_name)
     dataXgen = DataX(data_query_oracle.vars_range_and_types)
     nvar = data_query_oracle.get_nvars()
     function_set = data_query_oracle.get_operators_set()

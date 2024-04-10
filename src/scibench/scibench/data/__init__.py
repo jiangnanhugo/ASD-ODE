@@ -8,6 +8,6 @@ def equation_object_loader(equation_name):
         one_equation = get_eq_obj(eqname)
 
         if equation_name == one_equation._eq_name:
-            return one_equation()
+            return one_equation
     print(f"input equation {equation_name} not found")
     return None

@@ -59,32 +59,3 @@ def load_config(config=None):
     # Return combined configs
     return safe_merge_dicts(base_config, user_config)
 
-
-def create_reward_threshold(highest_threhold, nvar, ratio=0.95):
-    return [highest_threhold * ratio ** i for i in range(nvar)]
-
-
-def create_geometric_generations(n_generations, nvar, ratio=1.2):
-    gens = [0] * nvar
-    round = 0
-    total_ratios = sum([ratio ** it for it in range(nvar)])
-    for it in range(nvar):
-        gens[it] += int(n_generations * ratio ** it / total_ratios)
-
-    # gens[0] = n_generations
-    for it in range(0, nvar):
-        if gens[it] < 10:
-            gens[it] = 10
-    gens = gens
-    print('generation #:', gens, 'sum=', sum(gens))
-    return gens
-
-
-def create_uniform_generations(n_generations, nvar, ratio=0.95):
-    gens = [0] * nvar
-    for it in range(nvar):
-        gens[it] = int(n_generations * ratio ** it)
-        if gens[it] < 5:
-            gens[it] = 5
-    print('generation #:', gens, 'sum=', sum(gens))
-    return gens
