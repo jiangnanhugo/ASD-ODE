@@ -102,14 +102,14 @@ class ContextFreeGrammar(object):
         if self.program.n_cores == 1:
             many_expressions = self.program.fitting_new_expressions(filtered_many_rules,
                                                                     self.task.init_cond,
-                                                                    self.task.time_span, self.task.t_eval,
+                                                                    self.task.time_span, self.task.t_evals,
                                                                     true_trajectories,
                                                                     self.input_var_Xs,
                                                                     )
         elif self.program.n_cores >= 2:
             many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules,
                                                                                 self.task.init_cond,
-                                                                                self.task.time_span, self.task.t_eval,
+                                                                                self.task.time_span, self.task.t_evals,
                                                                                 true_trajectories,
                                                                                 self.input_var_Xs)
         # for one_expression in many_expressions:

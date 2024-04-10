@@ -67,6 +67,7 @@ class Equation_evaluator(object):
         self.nvars = self.true_equation.num_vars
         self.operators_set = self.true_equation._operator_set
         self.vars_range_and_types = self.true_equation.vars_range_and_types
+        self.vars_range_and_types_to_json=self.true_equation.vars_range_and_types_to_json_str()
         self.input_var_Xs = self.true_equation.x
         self.true_ode_equation = lambdify((t, self.input_var_Xs), self.true_equation.sympy_eq)
 

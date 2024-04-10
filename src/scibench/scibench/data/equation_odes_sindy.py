@@ -37,7 +37,7 @@ class Lorenz(KnownEquation):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
                                 LogUniformSampling((1e-2, 10.0), only_positive=True),
                                 LogUniformSampling((1e-2, 10.0), only_positive=True)]
-        super().__init__(num_vars=3)
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
         x = self.x
 
         self.sympy_eq = [
@@ -69,14 +69,14 @@ class Glycolytic_oscillator(KnownEquation):
         self.N = 1
         self.A = 4
 
-        self.vars_range_and_types = [LogUniformSampling((0.15, 1.6), only_positive=True),
+        vars_range_and_types = [LogUniformSampling((0.15, 1.6), only_positive=True),
                                 LogUniformSampling((0.19, 2.16), only_positive=True),
                                 LogUniformSampling((0.04, 0.20), only_positive=True),
                                 LogUniformSampling((0.10, 0.35), only_positive=True),
                                 LogUniformSampling((0.08, 0.30), only_positive=True),
                                 LogUniformSampling((0.14, 2.67), only_positive=True),
                                 LogUniformSampling((0.05, 0.10), only_positive=True)]
-        super().__init__(num_vars=7)
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
         x = self.x
 
         self.sympy_eq = [
@@ -97,13 +97,13 @@ class mhd(KnownEquation):
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
     def __init__(self, nu=0.1, mu=0.2, sigma=0.3):
-        self.vars_range_and_types = [LogUniformSampling((0.001, 10), only_positive=True),
+        vars_range_and_types = [LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True)]
-        super().__init__(num_vars=6)
+        super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
         x = self.x
 
         self.sympy_eq = [
@@ -123,11 +123,11 @@ class Pendulum_on_cart(KnownEquation):
     expr_obj_thres = 1e-6
 
     def __init__(self, m=1, M=1, L=1, F=0, g=9.81):
-        self.vars_range_and_types = [LogUniformSampling((0.001, 10), only_positive=True),
+        vars_range_and_types = [LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True)]
-        super().__init__(num_vars=4)
+        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
         x = self.x
 
         self.sympy_eq = [
@@ -167,7 +167,7 @@ class Double_pendulum(KnownEquation):
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True)]
-        super().__init__(num_vars=4)
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
         x = self.x
 
         self.sympy_eq = [

@@ -31,6 +31,12 @@ class DefaultSampling(object):
         self.range = range
         self.only_positive = only_positive
 
+    def to_dict(self):
+        return {'name': self.name,
+                'range': self.range,
+
+                'only_positive': self.only_positive}
+
 
 class LogUniformSampling(DefaultSampling):
     def __init__(self, ranges, only_positive=False):

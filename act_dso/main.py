@@ -39,8 +39,9 @@ def main(config_template, optimizer, equation_name, metric_name, batch_size, noi
     config = load_config(config_template)
     config['task']['metric'] = metric_name
     data_query_oracle = Equation_evaluator(equation_name, batch_size, noise_type, noise_scale, metric_name=metric_name)
-    dataXgen = DataX(data_query_oracle.vars_range_and_types)
-    nvar = data_query_oracle.get_nvars()
+    print(data_query_oracle.vars_range_and_types_to_json)
+    dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
+    nvars = data_query_oracle.get_nvars()
     function_set = data_query_oracle.get_operators_set()
 
 
@@ -50,22 +51,25 @@ def main(config_template, optimizer, equation_name, metric_name, batch_size, noi
     trajectory_time_steps = 50
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(regress_dataset_size,
-                       nvar,
+                       nvars,
                        dataXgen,
                        data_query_oracle,
                        time_span, t_eval)
 
     # get basic production rules
-    production_rules = get_production_rules(0, function_set)
     reward_thresh = 10
-    nt_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvar)
+    nt_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvars)
+    production_rules=[]
+    for one_nt_node in nt_nodes:
+        production_rules.extend(get_production_rules(nvars, function_set, one_nt_node))
+
 
     print("grammars:", production_rules)
     print("start_symbols:", start_symbols, nt_nodes[0] in start_symbols[0])
     program = grammarProgram(non_terminal_nodes=nt_nodes,
                              optimizer=optimizer, metric_name=metric_name, n_cores=n_cores)
     grammar_model = ContextFreeGrammar(
-        nvars=nvar,
+        nvars=nvars,
         production_rules=production_rules,
         start_symbols=start_symbols[0],
         non_terminal_nodes=nt_nodes,

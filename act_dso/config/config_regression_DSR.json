@@ -16,7 +16,7 @@
    // Only the key training hyperparameters are listed here. See
    // config_common.json for the full list.
    "training" : {
-      "batch_size" : 1024,
+      "batch_size" : 100,
       "epsilon" : 0.2,
       // <R> is the sample average _after_ epsilon sub-sampling and  R_e is the (1-epsilon)-quantile estimate.
       // (1) "ewma_R" : b = EWMA(<R>) (2) "R_e" : b = R_e (3) "ewma_R_e" : b = EWMA(R_e) (4) "combined" : b = R_e + EWMA(<R> - R_e)
@@ -26,6 +26,8 @@
    // Only the key RNN decoder hyperparameters are listed here. See
    // config_common.json for the full list.
    "expression_decoder" : {
+      // Maximum sequence length.
+      "max_length" : 20,
       // Optimizer hyperparameters.
       "initializer" : "var_scale",
       "learning_rate" : 0.009,
@@ -40,8 +42,8 @@
       "pqt_use_pg" : false,
       // RNN architectural hyperparameters.
       "cell" : "lstm",
-      "num_layers" : 3,
-      "num_units" : 512,
+      "num_layers" : 1,
+      "num_units" : 32,
       "debug": 2
    }
 }

@@ -65,9 +65,10 @@ def check_non_terminal_nodes(eq, non_terminal_nodes):
     return False
 
 
-def get_production_rules(nvars, operators_set, non_terminal_node='A'):
+def get_production_rules(nvars,  operators_set, non_terminal_node='A'):
     """
     nvars: number of input variables.
+    nt_nodes:non terminal nodes.
     operators_set: set of mathematical operators.
     Return: for example, A->(A+A), A->(A-A), A->A*A, A->(A)/(A)
     """
