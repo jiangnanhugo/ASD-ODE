@@ -30,7 +30,7 @@ class ContextFreeGrammar(object):
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
         self.production_rules = production_rules
 
-        self.start_symbol = "||".join(["f" for _ in range(self.nvars)])+'->' + "||".join(start_symbols)
+        self.start_symbol = "||".join(["f" for _ in range(self.nvars)]) + '->' + start_symbols
         self.non_terminal_nodes = non_terminal_nodes
         self.max_length = max_length
         self.hof_size = hof_size
@@ -62,37 +62,56 @@ class ContextFreeGrammar(object):
             print('{0: >8} {1: >20}'.format(i + 1, self.production_rules[i]))
         print('========== END OF GRAMMAR ===========')
 
-    def valid_production_rules(self, Node):
+    def compatiable_terminal_rules(self, symbol: str) -> list:
         # Get index of all possible production rules starting with a given node
-        return [self.production_rules.index(x) for x in self.production_rules if x.startswith(Node)]
+        return [x for x in self.terminal_rules if x.startswith(symbol)]
 
-    def get_non_terminal_nodes(self, prod) -> list:
-        # Get all the non-terminal nodes from right-hand side of a production rule grammar
-        return [i for i in prod[3:] if i in self.non_terminal_nodes]
+    def extract_non_terminal_nodes(self, prod: str):
+        """
+        right +1; left -1
+        """
+        cnt = -1
+        for g in prod[3:]:
+            if g in self.non_terminal_nodes:
+                cnt += 1
+        return prod[0], cnt
 
     def complete_rules(self, list_of_rules):
         """
         complete all non-terminal symbols in rules.
-
         given one sequence of rules, either cut the sequence for the position where Number_of_Non_Terminal_Symbols=0,
         or add several rules with non-terminal symbols
         """
-        ntn_counts = 0
+        filtered_rules = [self.start_symbol, ]
+        is_done = set()
+        ntn_counts = {}
+        for nt in self.start_symbol.split('->')[-1]:
+            if nt in self.non_terminal_nodes:
+                ntn_counts[nt] = 1
         for one_rule in list_of_rules:
-            ntn_counts += len(self.get_non_terminal_nodes(one_rule)) - 1
-            if ntn_counts == 0:
-                return list_of_rules
-        # print(f"trying to complete all non-terminal in {list_of_rules} ==>", end="\t")
+            symbol, extracted_cnt = self.extract_non_terminal_nodes(one_rule)
+            if symbol not in is_done:
+                filtered_rules.append(one_rule)
+            ntn_counts[symbol] += extracted_cnt
+
+            if ntn_counts[symbol] == 0:
+                is_done.add(symbol)
+        if len(is_done) == len(ntn_counts.keys()):
+            return filtered_rules
+        print(f"trying to complete all non-terminal  ==>", end="\t")
         #
-        # for _ in range(ntn_counts):
-        #     list_of_rules.append(np.random.choice(self.terminal_rules))
-        # print(list_of_rules)
+        for k in ntn_counts:
+            if ntn_counts[k] <= 0: continue
+            compatiable_rules = self.compatiable_terminal_rules(k)
+            random_rules = np.random.choice(compatiable_rules, size=ntn_counts[k])
+            list_of_rules.extend(random_rules)
+        print(list_of_rules)
         return list_of_rules
 
     def construct_expression(self, many_seq_of_rules):
         filtered_many_rules = []
         for one_seq_of_rules in many_seq_of_rules:
-            one_seq_of_rules = [self.start_symbol] + [self.production_rules[li] for li in one_seq_of_rules]
+            one_seq_of_rules = [self.production_rules[li] for li in one_seq_of_rules]
 
             one_list_of_rules = self.complete_rules(one_seq_of_rules)
             filtered_many_rules.append(one_list_of_rules)
@@ -173,7 +192,8 @@ class ContextFreeGrammar(object):
 
     def print_reward_function_all_metrics(self, expr_str, verbose=False):
         """used for print the error for all metrics between the predicted program `p` and true program."""
-        pred_trajectories = execute(expr_str, self.task.init_cond.T, self.task.time_span, self.task.t_eval, self.input_var_Xs)
+        pred_trajectories = execute(expr_str, self.task.init_cond.T, self.task.time_span, self.task.t_eval,
+                                    self.input_var_Xs)
         dict_of_result = self.task.evaluate_all_losses(self.task.init_cond, pred_trajectories)
 
         if verbose:

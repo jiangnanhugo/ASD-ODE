@@ -1,12 +1,12 @@
 from sympy import Symbol, Float, Integer, Rational
 
 
-def production_rules_to_expr(idx, list_of_production_rules):
+def production_rules_to_expr(list_of_production_rules):
     """
     Convert a list of production rules to the exact symbolic equation.
     For example ['f->A', 'A->(A-A)', 'A->X0', 'A->X1'] => X0*X1
     """
-    seq = ['f{}'.format(idx)]
+    seq = ['f']
     for one_rule in list_of_production_rules:
         for ix, s in enumerate(seq):
             if s == one_rule[0]:
@@ -28,7 +28,7 @@ def concate_production_rules_to_expr(list_of_production_rules) -> list:
         stack[val] = []
     for one_rule in list_of_production_rules[1:]:
         stack[one_rule[0]].append(one_rule)
-    full_expressions = [production_rules_to_expr(idx, one_bin) for idx, one_bin in enumerate(stack.values())]
+    full_expressions = [production_rules_to_expr(['f->' + key] + stack[key]) for key in stack]
     return full_expressions
 
 
@@ -50,7 +50,7 @@ def to_binary_expr_tree(expr):
 
 
 def construct_non_terminal_nodes_and_start_symbols(nvar):
-    listed = 'ABDEFGHIJKLMNOPQRSTUWVXYZ'
+    listed = 'ABDEFGHIJKLMNOPQRSTUWVYZ'
     assert nvar <= len(listed)
     listed = listed[:nvar]
     non_terminal_nodes = [x for x in listed]
@@ -65,7 +65,7 @@ def check_non_terminal_nodes(eq, non_terminal_nodes):
     return False
 
 
-def get_production_rules(nvars,  operators_set, non_terminal_node='A'):
+def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
     nvars: number of input variables.
     nt_nodes:non terminal nodes.
@@ -82,7 +82,7 @@ def get_production_rules(nvars,  operators_set, non_terminal_node='A'):
     sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
     const_rules = [f'{non_terminal_node}->C']
 
-    rules = base_rules + get_vars_rules(nvars)  # + const_rules
+    rules = base_rules + get_vars_rules(nvars, non_terminal_node)  # + const_rules
     if 'const' in operators_set:
         rules += const_rules
     if 'inv' in operators_set:
@@ -90,7 +90,7 @@ def get_production_rules(nvars,  operators_set, non_terminal_node='A'):
     if 'div' in operators_set:
         rules += div_rules
     if 'sin' in operators_set or 'cos' in operators_set:
-        rules += get_sincos_vars_rules(nvars)
+        rules += get_sincos_vars_rules(nvars, non_terminal_node)
     if 'sqrt' in operators_set:
         rules += sqrt_rules
     if 'exp' in operators_set:
@@ -98,13 +98,13 @@ def get_production_rules(nvars,  operators_set, non_terminal_node='A'):
     if 'log' in operators_set:
         rules += log_rules
     if 'n2' in operators_set:
-        rules += get_n2_rules(nvars)
+        rules += get_n2_rules(nvars, non_terminal_node)
     if 'n3' in operators_set:
-        rules += get_n3_rules(nvars)
+        rules += get_n3_rules(nvars, non_terminal_node)
     if 'n4' in operators_set:
-        rules += get_n4_rules(nvars)
+        rules += get_n4_rules(nvars, non_terminal_node)
     if 'n5' in operators_set:
-        rules += get_n5_rules(nvars)
+        rules += get_n5_rules(nvars, non_terminal_node)
     return rules
 
 

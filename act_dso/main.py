@@ -34,7 +34,8 @@ threshold_values = {
 @click.option('--max_len', default=10, help="max length of the sequence from the decoder")
 @click.option('--total_iterations', default=20, help="Number of iterations per rounds")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
-def main(config_template, optimizer, equation_name, metric_name, batch_size, noise_type, noise_scale, max_len, total_iterations,
+def main(config_template, optimizer, equation_name, metric_name, batch_size, noise_type, noise_scale, max_len,
+         total_iterations,
          n_cores):
     config = load_config(config_template)
     config['task']['metric'] = metric_name
@@ -43,8 +44,6 @@ def main(config_template, optimizer, equation_name, metric_name, batch_size, noi
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
     function_set = data_query_oracle.get_operators_set()
-
-
 
     regress_dataset_size = 2048
     time_span = (0, 10)
@@ -59,10 +58,9 @@ def main(config_template, optimizer, equation_name, metric_name, batch_size, noi
     # get basic production rules
     reward_thresh = 10
     nt_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvars)
-    production_rules=[]
+    production_rules = []
     for one_nt_node in nt_nodes:
         production_rules.extend(get_production_rules(nvars, function_set, one_nt_node))
-
 
     print("grammars:", production_rules)
     print("start_symbols:", start_symbols, nt_nodes[0] in start_symbols[0])
@@ -71,7 +69,7 @@ def main(config_template, optimizer, equation_name, metric_name, batch_size, noi
     grammar_model = ContextFreeGrammar(
         nvars=nvars,
         production_rules=production_rules,
-        start_symbols=start_symbols[0],
+        start_symbols=start_symbols,
         non_terminal_nodes=nt_nodes,
         max_length=max_len,
         hof_size=10,
