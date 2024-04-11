@@ -104,9 +104,9 @@ class ContextFreeGrammar(object):
             if ntn_counts[k] <= 0: continue
             compatiable_rules = self.compatiable_terminal_rules(k)
             random_rules = np.random.choice(compatiable_rules, size=ntn_counts[k])
-            list_of_rules.extend(random_rules)
-        print(list_of_rules)
-        return list_of_rules
+            filtered_rules.extend(random_rules)
+        print(filtered_rules)
+        return filtered_rules
 
     def construct_expression(self, many_seq_of_rules):
         filtered_many_rules = []

@@ -155,7 +155,7 @@ def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories
     return results
 
 
-def optimize(eq, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
+def optimize(candidate_ode_equations:list, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
              evaluate_loss, max_open_constants, max_opt_iter,
              optimizer_name,
              non_terminal_nodes,
@@ -168,29 +168,32 @@ def optimize(eq, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
 
     Parameters
     ----------
-    eq : Str. the discovered equation (with placeholders for coefficients).
+    candidate_ode_equations : list of expressions. the discovered equation (with placeholders for coefficients).
     init_cond: [batch_size, nvars]. the initial conditions of each variables.
     true_trajectories: [batch_size, time_steps, nvars]. the true trajectories.
     """
-    eq = simplify_template(eq)
-    if check_non_terminal_nodes(eq, non_terminal_nodes):  # not a valid equation
-        return -np.inf, eq, 0, np.inf
+    candidate_ode_equations = simplify_template(candidate_ode_equations)
+    if check_non_terminal_nodes(candidate_ode_equations, non_terminal_nodes):  # not a valid equation
+        return -np.inf, candidate_ode_equations, 0, np.inf
 
-    # count number of constants in equation
-    num_changing_consts = eq.count('C')
+    # count the total number of constants in equation
+    num_changing_consts = sum([x.count('C') for x in candidate_ode_equations])
     t_optimized_constants, t_optimized_obj = 0, np.inf
     if num_changing_consts == 0:  # zero constant
         var_ytrue = np.var(true_trajectories)
-        pred_trajectories = execute(eq, init_cond.T, input_var_Xs, time_span, t_eval)
+        pred_trajectories = execute(candidate_ode_equations, init_cond.T, input_var_Xs, time_span, t_eval)
     elif num_changing_consts >= max_open_constants:  # discourage over complicated numerical estimations
-        return -np.inf, eq, t_optimized_constants, t_optimized_obj
+        return -np.inf, candidate_ode_equations, t_optimized_constants, t_optimized_obj
     else:
         c_lst = ['c' + str(i) for i in range(num_changing_consts)]
+        temp_equations = "$$".join(candidate_ode_equations)
         for c in c_lst:
-            eq = eq.replace('C', c, 1)
+
+            temp_equations = temp_equations.replace('C', c, 1)
+        candidate_ode_equations=temp_equations.split("$$")
 
         def f(consts: list):
-            eq_est = eq
+            eq_est = candidate_ode_equations
             eq_estimated = []
 
             for one_eq in eq_est:
@@ -220,7 +223,7 @@ def optimize(eq, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
 
             if verbose:
                 print(opt_result)
-            eq_est = eq
+            eq_est = candidate_ode_equations
             eq_estimated = []
             for one_eq in eq_est:
                 for i in range(len(c_lst)):
@@ -243,12 +246,12 @@ def optimize(eq, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
             print('\t loss:', -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue), '\t fitted eq:', expr_odes)
         except Exception as e:
             print(e)
-            return -np.inf, eq, 0, np.inf
+            return -np.inf, candidate_ode_equations, 0, np.inf
 
     # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(pred_trajectories, y_true, var_ytrue)))
     reward = evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
 
-    return reward, eq, t_optimized_constants, t_optimized_obj
+    return reward, candidate_ode_equations, t_optimized_constants, t_optimized_obj
 
 
 def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
@@ -322,19 +325,30 @@ def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval:
     return pred_trajectories
 
 
-def simplify_template(eq):
-    for i in range(10):
-        eq = eq.replace('(C+C)', 'C')
-        eq = eq.replace('(C-C)', 'C')
-        eq = eq.replace('C*C', 'C')
-        eq = eq.replace('(/C', 'C')
-        eq = eq.replace('sqrt(C)', 'C')
-        eq = eq.replace('exp(C)', 'C')
-        eq = eq.replace('log(C)', 'C')
-        eq = eq.replace('sin(C)', 'C')
-        eq = eq.replace('cos(C)', 'C')
-        eq = eq.replace('(1/C)', 'C')
-    return eq
+def simplify_template(equations:list)->list:
+    new_equations=[]
+    for eq in equations:
+        for i in range(10):
+            eq = eq.replace('(C+C)', 'C')
+            eq = eq.replace('(C-C)', 'C')
+            #
+            eq = eq.replace('C*C', 'C')
+            eq = eq.replace('(C)*C', 'C')
+            eq = eq.replace('C*(C)', 'C')
+            eq = eq.replace('(C)*(C)', 'C')
+            #
+            eq = eq.replace('C/C', 'C')
+            eq = eq.replace('(C)/C', 'C')
+            eq = eq.replace('C/(C)', 'C')
+            eq = eq.replace('(C)/(C)', 'C')
+            eq = eq.replace('sqrt(C)', 'C')
+            eq = eq.replace('exp(C)', 'C')
+            eq = eq.replace('log(C)', 'C')
+            eq = eq.replace('sin(C)', 'C')
+            eq = eq.replace('cos(C)', 'C')
+            eq = eq.replace('(1/C)', 'C')
+        new_equations.append(eq)
+    return new_equations
 
 
 if __name__ == '__main__':
