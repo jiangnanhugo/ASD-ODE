@@ -67,7 +67,7 @@ class Equation_evaluator(object):
         self.nvars = self.true_equation.num_vars
         self.operators_set = self.true_equation._operator_set
         self.vars_range_and_types = self.true_equation.vars_range_and_types
-        self.vars_range_and_types_to_json=self.true_equation.vars_range_and_types_to_json_str()
+        self.vars_range_and_types_to_json = self.true_equation.vars_range_and_types_to_json_str()
         self.input_var_Xs = self.true_equation.x
         self.true_ode_equation = lambdify((t, self.input_var_Xs), self.true_equation.sympy_eq)
 
@@ -83,14 +83,16 @@ class Equation_evaluator(object):
     # def draw_init_condition(self):
     #     return self.true_equation.initialize(self.batch_size)
 
-    def evaluate(self, x_init_conds: list, time_span: tuple, t_evals: np.ndarray) -> list:
+    def evaluate(self, x_init_conds: list, time_span: tuple, t_evals: np.ndarray) -> np.ndarray:
         true_trajectories = []
         for one_x_init in x_init_conds:
             one_solution = solve_ivp(self.true_ode_equation, t_span=time_span, y0=one_x_init, t_eval=t_evals)
             true_trajectories.append(one_solution.y)
+        true_trajectories = np.asarray(true_trajectories)
         return true_trajectories
 
-    def _evaluate_loss(self, X_init_cond, time_span: tuple, t_evals: np.ndarray, pred_trajectories:np.ndarray)->float:
+    def _evaluate_loss(self, X_init_cond, time_span: tuple, t_evals: np.ndarray,
+                       pred_trajectories: np.ndarray) -> float:
         """
         1. Compute the true_trajectories based on the init_cond.
         2. evaluate the metric value between true_trajectories and pred_trajectories
@@ -106,16 +108,16 @@ class Equation_evaluator(object):
             raise NotImplementedError(self.metric_name, "is not implemented....")
         return loss_val
 
-    def _evaluate_all_losses(self, X_init_cond,  time_span: tuple, t_evals: np.ndarray, pred_trajectories:np.ndarray):
+    def _evaluate_all_losses(self, X_init_cond, time_span: tuple, t_evals: np.ndarray, pred_trajectories: np.ndarray):
         """
         Compute all the metrics between true_trajectories and pred_trajectories
         """
         pred_trajectories = pred_trajectories
         true_trajectories = self.evaluate(X_init_cond, time_span, t_evals)
         loss_val_dict = {}
-        for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse','neg_mse', 'neg_rmse', 'inv_mse']:
+        for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'inv_mse']:
             metric = all_metrics[metric_name]
-            loss_val = self.metric(true_trajectories, pred_trajectories, np.var(true_trajectories))
+            loss_val = metric(true_trajectories, pred_trajectories, np.var(true_trajectories))
             loss_val_dict[metric_name] = loss_val
         return loss_val_dict
 

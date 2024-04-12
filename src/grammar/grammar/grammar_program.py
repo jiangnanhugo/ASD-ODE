@@ -86,9 +86,10 @@ class grammarProgram(object):
             reward, fitted_eq, _, _ = optimize(
                 one_expr.expr_template,
                 init_cond,
+                time_span, t_eval,
                 true_trajectories,
                 input_var_Xs,
-                time_span, t_eval,
+
                 self.evaluate_loss,
                 self.max_open_constants,
                 self.max_opt_iter,
@@ -130,7 +131,7 @@ class grammarProgram(object):
 
         result = self.pool.map(fit_one_expr, many_expr_tempaltes, init_cond_ncores, time_span_ncores, t_eval_ncores,
                                true_trajectories_ncores,
-                               input_var_Xes,  evaluate_losses,
+                               input_var_Xes, evaluate_losses,
                                max_open_constantes, max_opt_iteres, optimizeres)
         result = list(chain.from_iterable(result))
         print("Done with optimization!")
@@ -139,7 +140,7 @@ class grammarProgram(object):
 
 
 def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories, input_var_Xs, evaluate_loss,
-                 max_open_constants,  max_opt_iter,
+                 max_open_constants, max_opt_iter,
                  optimizer_name):
     results = []
     for one_expr in one_expr_batch:
@@ -155,7 +156,7 @@ def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories
     return results
 
 
-def optimize(candidate_ode_equations:list, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
+def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
              evaluate_loss, max_open_constants, max_opt_iter,
              optimizer_name,
              non_terminal_nodes,
@@ -166,8 +167,6 @@ def optimize(candidate_ode_equations:list, init_cond, time_span, t_eval, true_tr
     If placeholder C is in the equation, also execute estimation for C
     Reward = 1 / (1 + MSE) * Penalty ** num_term_in_expressions
 
-    Parameters
-    ----------
     candidate_ode_equations : list of expressions. the discovered equation (with placeholders for coefficients).
     init_cond: [batch_size, nvars]. the initial conditions of each variables.
     true_trajectories: [batch_size, time_steps, nvars]. the true trajectories.
@@ -181,31 +180,23 @@ def optimize(candidate_ode_equations:list, init_cond, time_span, t_eval, true_tr
     t_optimized_constants, t_optimized_obj = 0, np.inf
     if num_changing_consts == 0:  # zero constant
         var_ytrue = np.var(true_trajectories)
-        pred_trajectories = execute(candidate_ode_equations, init_cond.T, input_var_Xs, time_span, t_eval)
+        pred_trajectories = execute(candidate_ode_equations, init_cond, time_span, t_eval, input_var_Xs)
     elif num_changing_consts >= max_open_constants:  # discourage over complicated numerical estimations
         return -np.inf, candidate_ode_equations, t_optimized_constants, t_optimized_obj
     else:
         c_lst = ['c' + str(i) for i in range(num_changing_consts)]
         temp_equations = "$$".join(candidate_ode_equations)
         for c in c_lst:
-
             temp_equations = temp_equations.replace('C', c, 1)
-        candidate_ode_equations=temp_equations.split("$$")
+        candidate_ode_equations = temp_equations.split("$$")
 
         def f(consts: list):
-            eq_est = candidate_ode_equations
-            eq_estimated = []
+            temp_equations = "$$".join(candidate_ode_equations)
+            for i in range(len(consts)):
+                temp_equations = temp_equations.replace('c' + str(i), str(consts[i]), 1)
+            eq_est = temp_equations.split("$$")
 
-            for one_eq in eq_est:
-                for i in range(len(consts)):
-                    one_eq = one_eq.replace('c' + str(i), str(consts[i]), 1)
-                one_eq = one_eq.replace('+ -', '-')
-                one_eq = one_eq.replace('- -', '+')
-                one_eq = one_eq.replace('- +', '-')
-                one_eq = one_eq.replace('+ +', '+')
-                eq_estimated.append(one_eq)
-
-            pred_trajectories = execute(eq_est, init_cond.T, time_span, t_eval, input_var_Xs)
+            pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
             var_ytrue = np.var(true_trajectories)
             loss_val = -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
             return loss_val
@@ -224,26 +215,25 @@ def optimize(candidate_ode_equations:list, init_cond, time_span, t_eval, true_tr
             if verbose:
                 print(opt_result)
             eq_est = candidate_ode_equations
-            eq_estimated = []
-            for one_eq in eq_est:
-                for i in range(len(c_lst)):
+
+            for i in range(len(c_lst)):
+                temp = []
+                for one_eq in eq_est:
                     est_c = np.mean(c_lst[i])
                     if abs(est_c) < 1e-5:
                         est_c = 0
                     one_eq = one_eq.replace('c' + str(i), str(est_c), 1)
-                one_eq = one_eq.replace('+ -', '-')
-                one_eq = one_eq.replace('- -', '+')
-                one_eq = one_eq.replace('- +', '-')
-                one_eq = one_eq.replace('+ +', '+')
-                eq_estimated.append(one_eq)
+                    temp.append(one_eq)
+                eq_est = temp
 
-            pred_trajectories = execute(eq_estimated, init_cond.T, time_span, t_eval, input_var_Xs)
+            pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
             # what is this?
             var_ytrue = np.var(true_trajectories)
 
-            expr_odes = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_estimated]
+            expr_odes = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
 
-            print('\t loss:', -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue), '\t fitted eq:', expr_odes)
+            print('\t loss:', -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue), '\t fitted eq:',
+                  expr_odes)
         except Exception as e:
             print(e)
             return -np.inf, candidate_ode_equations, 0, np.inf
@@ -292,7 +282,8 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
     return opt_result
 
 
-def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval: np.ndarray, input_var_Xs: list)->list:
+def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval: np.ndarray,
+            input_var_Xs: list) -> np.ndarray:
     """
     given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
     https://docs.sympy.org/latest/guides/solving/solve-ode.html
@@ -311,6 +302,7 @@ def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval:
         for one_x_init in x_init_conds:
             one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval)
             pred_trajectories.append(one_solution.y)
+        pred_trajectories = np.asarray(pred_trajectories)
         if pred_trajectories is complex:
             return None
             # return np.ones(init_cond.shape[-1]) * np.infty
@@ -325,8 +317,8 @@ def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval:
     return pred_trajectories
 
 
-def simplify_template(equations:list)->list:
-    new_equations=[]
+def simplify_template(equations: list) -> list:
+    new_equations = []
     for eq in equations:
         for i in range(10):
             eq = eq.replace('(C+C)', 'C')
@@ -375,7 +367,7 @@ def sympy_plus_scipy():
     # SciPy can evaluate numerically, f
     f = lambdify((t, y), ydot)
     k_vals = np.array([0.42, 0.17])  # arbitrary in this case
-    y0 =  [1, 0, 1]  # initial condition (initial values)
+    y0 = [1, 0, 1]  # initial condition (initial values)
     y0 = np.asarray(y0)
     y0 = y0.T
     print(y0.shape)
@@ -390,4 +382,3 @@ def sympy_plus_scipy():
     y = solution.y
     print(y.shape)
     # Plot the result graphically using matplotlib
-
