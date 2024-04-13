@@ -85,11 +85,9 @@ class grammarProgram(object):
             one_expr = SymbolicDifferentialEquations(one_list_rules)
             reward, fitted_eq, _, _ = optimize(
                 one_expr.expr_template,
-                init_cond,
-                time_span, t_eval,
+                init_cond, time_span, t_eval,
                 true_trajectories,
                 input_var_Xs,
-
                 self.evaluate_loss,
                 self.max_open_constants,
                 self.max_opt_iter,
@@ -132,7 +130,7 @@ class grammarProgram(object):
         result = self.pool.map(fit_one_expr, many_expr_tempaltes, init_cond_ncores, time_span_ncores, t_eval_ncores,
                                true_trajectories_ncores,
                                input_var_Xes, evaluate_losses,
-                               max_open_constantes, max_opt_iteres, optimizeres)
+                               max_open_constantes, max_opt_iteres, optimizeres, non_terminal_nodes)
         result = list(chain.from_iterable(result))
         print("Done with optimization!")
         sys.stdout.flush()
@@ -141,14 +139,15 @@ class grammarProgram(object):
 
 def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories, input_var_Xs, evaluate_loss,
                  max_open_constants, max_opt_iter,
-                 optimizer_name):
+                 optimizer_name,non_terminal_nodes):
     results = []
     for one_expr in one_expr_batch:
         reward, fitted_eq, _, _ = optimize(one_expr.expr_template,
                                            init_cond, time_span, t_eval,
                                            true_trajectories,
                                            input_var_Xs,
-                                           evaluate_loss, max_open_constants, max_opt_iter, optimizer_name)
+                                           evaluate_loss, max_open_constants, max_opt_iter, optimizer_name,
+                                           non_terminal_nodes)
 
         one_expr.reward = reward
         one_expr.fitted_eq = fitted_eq
@@ -171,6 +170,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     init_cond: [batch_size, nvars]. the initial conditions of each variables.
     true_trajectories: [batch_size, time_steps, nvars]. the true trajectories.
     """
+
     candidate_ode_equations = simplify_template(candidate_ode_equations)
     if check_non_terminal_nodes(candidate_ode_equations, non_terminal_nodes):  # not a valid equation
         return -np.inf, candidate_ode_equations, 0, np.inf
@@ -230,15 +230,17 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
             # what is this?
             var_ytrue = np.var(true_trajectories)
 
-            expr_odes = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
+            candidate_ode_equations = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
 
-            print('\t loss:', -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue), '\t fitted eq:',
-                  expr_odes)
         except Exception as e:
             print(e)
             return -np.inf, candidate_ode_equations, 0, np.inf
 
     # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(pred_trajectories, y_true, var_ytrue)))
+    print('\t reward',
+          float(-np.log10(1e-60 - evaluate_loss(pred_trajectories, true_trajectories, var_ytrue))),
+          '\t loss:', evaluate_loss(pred_trajectories, true_trajectories, var_ytrue),
+          'eq:', candidate_ode_equations)
     reward = evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
 
     return reward, candidate_ode_equations, t_optimized_constants, t_optimized_obj
@@ -345,7 +347,7 @@ def simplify_template(equations: list) -> list:
 
 if __name__ == '__main__':
     expr_temp = 'sqrt(sqrt(C))*(sqrt(X0)+C)'
-    simplify_template(expr_temp)
+    simplify_template([expr_temp])
 
 
 def sympy_plus_scipy():

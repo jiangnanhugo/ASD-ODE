@@ -26,13 +26,11 @@ class Lorenz(KnownEquation):
     _eq_name = 'Lorenz'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
-    expr_consts_thres = None
 
     def __init__(self):
-        self.sigma = 10
-        self.beta = 8 / 3
-        self.rho = 28
-        self.dim = [1, 1, 1]
+        sigma = 10
+        beta = 8 / 3
+        rho = 28
 
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
                                 LogUniformSampling((1e-2, 10.0), only_positive=True),
@@ -41,9 +39,9 @@ class Lorenz(KnownEquation):
         x = self.x
 
         self.sympy_eq = [
-            self.sigma * (x[1] - x[0]),
-            x[0] * (x[0] - self.rho - x[2]),
-            x[0] * x[1] - self.beta * x[2]
+            sigma * (x[1] - x[0]),
+            x[0] * (x[0] - rho - x[2]),
+            x[0] * x[1] - beta * x[2]
         ]
 
 
