@@ -81,7 +81,8 @@ class grammarProgram(object):
         """
         result = []
         print("many_seqs_of_rules:", len(many_seqs_of_rules))
-        for one_list_rules in many_seqs_of_rules:
+
+        for i, one_list_rules in enumerate(many_seqs_of_rules):
             one_expr = SymbolicDifferentialEquations(one_list_rules)
             reward, fitted_eq, _, _ = optimize(
                 one_expr.expr_template,
@@ -98,6 +99,8 @@ class grammarProgram(object):
             one_expr.reward = reward
             one_expr.fitted_eq = fitted_eq
             result.append(one_expr)
+            print('idx=',i)
+            sys.stdout.flush()
         return result
 
     def fitting_new_expressions_in_parallel(self, many_seqs_of_rules, init_cond: np.ndarray, time_span, t_eval,
@@ -172,6 +175,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     """
 
     candidate_ode_equations = simplify_template(candidate_ode_equations)
+    print("candidate:",candidate_ode_equations)
     if check_non_terminal_nodes(candidate_ode_equations, non_terminal_nodes):  # not a valid equation
         return -np.inf, candidate_ode_equations, 0, np.inf
 
@@ -231,7 +235,6 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
             var_ytrue = np.var(true_trajectories)
 
             candidate_ode_equations = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
-
         except Exception as e:
             print(e)
             return -np.inf, candidate_ode_equations, 0, np.inf

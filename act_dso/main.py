@@ -65,7 +65,9 @@ def main(config_template, optimizer, equation_name, metric_name, batch_size, noi
     print("grammars:", production_rules)
     print("start_symbols:", start_symbols, nt_nodes[0] in start_symbols[0])
     program = grammarProgram(non_terminal_nodes=nt_nodes,
-                             optimizer=optimizer, metric_name=metric_name, n_cores=n_cores)
+                             optimizer=optimizer,
+                             metric_name=metric_name,
+                             n_cores=n_cores)
     grammar_model = ContextFreeGrammar(
         nvars=nvars,
         production_rules=production_rules,
