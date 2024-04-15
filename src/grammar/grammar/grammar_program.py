@@ -68,7 +68,8 @@ class grammarProgram(object):
         self.n_cores = n_cores
         self.non_terminal_nodes = non_terminal_nodes
         self.evaluate_loss = all_metrics[metric_name]
-        self.pool = ProcessPool(nodes=self.n_cores)
+        if self.n_cores>1:
+            self.pool = ProcessPool(nodes=self.n_cores)
 
     def fitting_new_expressions(self, many_seqs_of_rules,
                                 init_cond: np.ndarray, time_span, t_eval,
@@ -99,7 +100,7 @@ class grammarProgram(object):
             one_expr.reward = reward
             one_expr.fitted_eq = fitted_eq
             result.append(one_expr)
-            print('idx=',i)
+            print('idx=', i)
             sys.stdout.flush()
         return result
 
@@ -142,7 +143,7 @@ class grammarProgram(object):
 
 def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories, input_var_Xs, evaluate_loss,
                  max_open_constants, max_opt_iter,
-                 optimizer_name,non_terminal_nodes):
+                 optimizer_name, non_terminal_nodes):
     results = []
     for one_expr in one_expr_batch:
         reward, fitted_eq, _, _ = optimize(one_expr.expr_template,
@@ -175,7 +176,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     """
 
     candidate_ode_equations = simplify_template(candidate_ode_equations)
-    print("candidate:",candidate_ode_equations)
+    print("candidate:", candidate_ode_equations)
     if check_non_terminal_nodes(candidate_ode_equations, non_terminal_nodes):  # not a valid equation
         return -np.inf, candidate_ode_equations, 0, np.inf
 
@@ -207,42 +208,41 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
 
         # do more than one experiment,
         x0 = np.random.rand(len(c_lst))
-        try:
-            max_iter = max_opt_iter
-            if user_scpeficied_iters > 0:
-                max_iter = user_scpeficied_iters
-            opt_result = scipy_minimize(f, x0, optimizer_name, num_changing_consts, max_iter)
-            t_optimized_constants = opt_result['x']
-            c_lst = t_optimized_constants.tolist()
-            t_optimized_obj = opt_result['fun']
+        # try:
+        max_iter = max_opt_iter
+        if user_scpeficied_iters > 0:
+            max_iter = user_scpeficied_iters
+        opt_result = scipy_minimize(f, x0, optimizer_name, num_changing_consts, max_iter)
+        t_optimized_constants = opt_result['x']
+        c_lst = t_optimized_constants.tolist()
+        t_optimized_obj = opt_result['fun']
 
-            if verbose:
-                print(opt_result)
-            eq_est = candidate_ode_equations
+        if verbose:
+            print(opt_result)
+        eq_est = candidate_ode_equations
 
-            for i in range(len(c_lst)):
-                temp = []
-                for one_eq in eq_est:
-                    est_c = np.mean(c_lst[i])
-                    if abs(est_c) < 1e-5:
-                        est_c = 0
-                    one_eq = one_eq.replace('c' + str(i), str(est_c), 1)
-                    temp.append(one_eq)
-                eq_est = temp
+        for i in range(len(c_lst)):
+            temp = []
+            for one_eq in eq_est:
+                est_c = np.mean(c_lst[i])
+                if abs(est_c) < 1e-5:
+                    est_c = 0
+                one_eq = one_eq.replace('c' + str(i), str(est_c), 1)
+                temp.append(one_eq)
+            eq_est = temp
 
-            pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
-            # what is this?
-            var_ytrue = np.var(true_trajectories)
+        pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
+        # what is this?
+        var_ytrue = np.var(true_trajectories)
 
-            candidate_ode_equations = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
-        except Exception as e:
-            print(e)
-            return -np.inf, candidate_ode_equations, 0, np.inf
+        candidate_ode_equations = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
+        # except Exception as e:
+        #     print(e)
+        #     return -np.inf, candidate_ode_equations, 0, np.inf
+
 
     # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(pred_trajectories, y_true, var_ytrue)))
-    print('\t reward',
-          float(-np.log10(1e-60 - evaluate_loss(pred_trajectories, true_trajectories, var_ytrue))),
-          '\t loss:', evaluate_loss(pred_trajectories, true_trajectories, var_ytrue),
+    print('\t loss:', evaluate_loss(pred_trajectories, true_trajectories, var_ytrue),
           'eq:', candidate_ode_equations)
     reward = evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
 
