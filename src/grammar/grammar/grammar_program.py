@@ -208,37 +208,37 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
 
         # do more than one experiment,
         x0 = np.random.rand(len(c_lst))
-        # try:
-        max_iter = max_opt_iter
-        if user_scpeficied_iters > 0:
-            max_iter = user_scpeficied_iters
-        opt_result = scipy_minimize(f, x0, optimizer_name, num_changing_consts, max_iter)
-        t_optimized_constants = opt_result['x']
-        c_lst = t_optimized_constants.tolist()
-        t_optimized_obj = opt_result['fun']
+        try:
+            max_iter = max_opt_iter
+            if user_scpeficied_iters > 0:
+                max_iter = user_scpeficied_iters
+            opt_result = scipy_minimize(f, x0, optimizer_name, num_changing_consts, max_iter)
+            t_optimized_constants = opt_result['x']
+            c_lst = t_optimized_constants.tolist()
+            t_optimized_obj = opt_result['fun']
 
-        if verbose:
-            print(opt_result)
-        eq_est = candidate_ode_equations
+            if verbose:
+                print(opt_result)
+            eq_est = candidate_ode_equations
 
-        for i in range(len(c_lst)):
-            temp = []
-            for one_eq in eq_est:
-                est_c = np.mean(c_lst[i])
-                if abs(est_c) < 1e-5:
-                    est_c = 0
-                one_eq = one_eq.replace('c' + str(i), str(est_c), 1)
-                temp.append(one_eq)
-            eq_est = temp
+            for i in range(len(c_lst)):
+                temp = []
+                for one_eq in eq_est:
+                    est_c = np.mean(c_lst[i])
+                    if abs(est_c) < 1e-5:
+                        est_c = 0
+                    one_eq = one_eq.replace('c' + str(i), str(est_c), 1)
+                    temp.append(one_eq)
+                eq_est = temp
 
-        pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
-        # what is this?
-        var_ytrue = np.var(true_trajectories)
+            pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
+            # what is this?
+            var_ytrue = np.var(true_trajectories)
 
-        candidate_ode_equations = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
-        # except Exception as e:
-        #     print(e)
-        #     return -np.inf, candidate_ode_equations, 0, np.inf
+            candidate_ode_equations = [pretty_print_expr(parse_expr(one_expr)) for one_expr in eq_est]
+        except Exception as e:
+            print(e)
+            return -np.inf, candidate_ode_equations, 0, np.inf
 
 
     # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(pred_trajectories, y_true, var_ytrue)))
