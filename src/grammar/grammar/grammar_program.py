@@ -1,4 +1,5 @@
 """Class for symbolic expression optimization."""
+from datetime import time
 
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify, symbols
@@ -7,6 +8,7 @@ from itertools import chain
 import sys
 import numpy as np
 import warnings
+import time
 
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, shgo, dual_annealing, direct
@@ -68,7 +70,7 @@ class grammarProgram(object):
         self.n_cores = n_cores
         self.non_terminal_nodes = non_terminal_nodes
         self.evaluate_loss = all_metrics[metric_name]
-        if self.n_cores>1:
+        if self.n_cores > 1:
             self.pool = ProcessPool(nodes=self.n_cores)
 
     def fitting_new_expressions(self, many_seqs_of_rules,
@@ -185,6 +187,8 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     t_optimized_constants, t_optimized_obj = 0, np.inf
     if num_changing_consts == 0:  # zero constant
         var_ytrue = np.var(true_trajectories)
+
+        print(candidate_ode_equations)
         pred_trajectories = execute(candidate_ode_equations, init_cond, time_span, t_eval, input_var_Xs)
     elif num_changing_consts >= max_open_constants:  # discourage over complicated numerical estimations
         return -np.inf, candidate_ode_equations, t_optimized_constants, t_optimized_obj
@@ -196,14 +200,25 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         candidate_ode_equations = temp_equations.split("$$")
 
         def f(consts: list):
+            # sttime = time.time()
             temp_equations = "$$".join(candidate_ode_equations)
             for i in range(len(consts)):
                 temp_equations = temp_equations.replace('c' + str(i), str(consts[i]), 1)
             eq_est = temp_equations.split("$$")
-
+            # usedtime = time.time() - sttime
+            # print('step1', usedtime)
+            # sys.stdout.flush()
+            # sttime = time.time()
             pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
+            # usedtime = time.time() - sttime
+            # print('step2', usedtime)
+            # sys.stdout.flush()
+            # sttime = time.time()
             var_ytrue = np.var(true_trajectories)
             loss_val = -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
+            # usedtime = time.time() - sttime
+            # print('step3', usedtime)
+            # sys.stdout.flush()
             return loss_val
 
         # do more than one experiment,
@@ -239,7 +254,6 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         except Exception as e:
             print(e)
             return -np.inf, candidate_ode_equations, 0, np.inf
-
 
     # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(pred_trajectories, y_true, var_ytrue)))
     print('\t loss:', evaluate_loss(pred_trajectories, true_trajectories, var_ytrue),
@@ -298,15 +312,23 @@ def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval:
     x_init_conds: [batch_size, nvars]
     pred_trajectories: [batch_size, time_steps, nvars]
     """
+    # sttime=time.time()
 
     expr_odes = [parse_expr(one_expr) for one_expr in expr_strs]
     t = symbols('t')  # not used in this case
+    # used_time = time.time() - sttime
+    # print("\t used time1", used_time)
     try:
         func = lambdify((t, input_var_Xs), expr_odes, 'numpy')
         pred_trajectories = []
+
         for one_x_init in x_init_conds:
-            one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval)
+            # sttime = time.time()
+            one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval, rtol=1)
+            # used_time = time.time() - sttime
+            # print("\tused time2", used_time)
             pred_trajectories.append(one_solution.y)
+
         pred_trajectories = np.asarray(pred_trajectories)
         if pred_trajectories is complex:
             return None
@@ -323,6 +345,10 @@ def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval:
         return None
     return pred_trajectories
 
+
+# def solve_ivp(func, t_span: tuple, y0: float, t_eval: np.ndarray) -> np.ndarray:
+#     for ti in range(len(t_eval)):
+#         func()
 
 def simplify_template(equations: list) -> list:
     new_equations = []
