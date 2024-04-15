@@ -183,7 +183,7 @@ def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     # [A-> C*Xi]
-    return [f'{non_terminal_node}->C*X{xi}', ]
+    return [f'{non_terminal_node}->X{xi}', ]
 
 
 def get_ith_n2_rules(xi: int, non_terminal_node='A') -> list:

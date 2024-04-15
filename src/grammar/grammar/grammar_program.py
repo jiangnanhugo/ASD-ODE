@@ -319,6 +319,8 @@ def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval:
         # print(e, expr)
         # pred_trajectories = np.ones(init_cond.shape[-1]) * np.infty
         return None
+    except ValueError as e:
+        return None
     return pred_trajectories
 
 
