@@ -118,25 +118,33 @@ class ContextFreeGrammar(object):
             # print("pruned list_of_rules:", one_list_of_rules)
         self.task.rand_draw_init_cond()
         true_trajectories = self.task.evaluate()
+        many_expressions = []
         if self.program.n_cores == 1:
             many_expressions = self.program.fitting_new_expressions(filtered_many_rules,
                                                                     self.task.init_cond,
                                                                     self.task.time_span, self.task.t_evals,
                                                                     true_trajectories,
-                                                                    self.input_var_Xs,
-                                                                    )
-        elif self.program.n_cores >1:
+                                                                    self.input_var_Xs)
+        elif self.program.n_cores > 1:
             many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules,
                                                                                 self.task.init_cond,
                                                                                 self.task.time_span, self.task.t_evals,
                                                                                 true_trajectories,
                                                                                 self.input_var_Xs)
 
-        # evaluate the fitted expressions on new data;
-
-        # for one_expression in many_expressions:
-        #     if one_expression.reward != -np.inf:
-        #         one_expression.all_metrics = self.print_reward_function_all_metrics(one_expression.fitted_eq)
+        # evaluate the fitted expressions on new validation data;
+        self.task.rand_draw_init_cond()
+        # true_trajectories = self.task.evaluate()
+        for one_expression in many_expressions:
+            if one_expression.train_loss != -np.inf or one_expression.train_loss is not None:
+                one_ode_str =[str(one_eq) for one_eq in one_expression.fitted_eq]
+                pred_trajectories = execute(one_ode_str,
+                                            self.task.init_cond, self.task.time_span, self.task.t_evals,
+                                            self.input_var_Xs)
+                one_expression.valid_loss = self.task.evaluate_loss(pred_trajectories)
+            else:
+                one_expression.valid_loss = -np.inf
+            print(one_expression)
         return many_expressions
 
     def update_hall_of_fame(self, one_fitted_expression: SymbolicDifferentialEquations):
@@ -149,13 +157,13 @@ class ContextFreeGrammar(object):
                     self.hall_of_fame.append(one_fitted_expression)
                     # sorting the list in ascending order
                     self.hall_of_fame = sorted(self.hall_of_fame,
-                                               key=lambda x: x.reward,
+                                               key=lambda x: x.train_loss,
                                                reverse=False)
                 else:
-                    if one_fitted_expression.reward > self.hall_of_fame[-1].reward:
+                    if one_fitted_expression.train_loss > self.hall_of_fame[-1].train_loss:
                         # sorting the list in ascending order
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [one_fitted_expression],
-                                                   key=lambda x: x.reward,
+                                                   key=lambda x: x.train_loss,
                                                    reverse=False)
 
     def print_hofs(self, verbose=False):
@@ -165,43 +173,21 @@ class ContextFreeGrammar(object):
         for pr in self.hall_of_fame[:self.hof_size]:
             if verbose:
                 print('        ', pr, end="\n")
-                if pr.reward != -np.inf:
-                    self.print_reward_function_all_metrics(pr.fitted_eq, verbose=verbose)
+                if pr.train_loss != -np.inf:
+
+                    pred_trajectories = execute(pr.fitted_eq,
+                                                self.task.init_cond, self.task.time_span, self.task.t_eval,
+                                                self.input_var_Xs)
+                    dict_of_result = self.task.evaluate_all_losses(self.task.init_cond, pred_trajectories)
+
+                    if verbose:
+                        print('-' * 30)
+                        for metric_name in dict_of_result:
+                            print(f"{metric_name} {dict_of_result[metric_name]}")
+                        print('-' * 30)
                 else:
                     print("No metrics")
             else:
                 print('        ', pr, end="\n")
         print("=" * 20)
 
-    def print_and_sort_global_Qs(self, Q):
-        """
-        mode: if global, then we rank on no variable controlled.
-        """
-        self.task.rand_draw_init_cond()
-
-        for pr in Q:
-            fitness_scores = self.print_reward_function_all_metrics(pr.fitted_eq, verbose=False)
-            pr.reward = fitness_scores[self.program.metric_name]
-            pr.all_metrics = fitness_scores
-        Q = sorted(Q, key=lambda x: x.reward, reverse=False)
-
-        print("=" * 20)
-        for pr in Q:
-            print('        ', pr, end="\n")
-            pr.print_all_metrics()
-        print("=" * 20)
-
-        return Q
-
-    def print_reward_function_all_metrics(self, expr_str, verbose=False):
-        """used for print the error for all metrics between the predicted program `p` and true program."""
-        pred_trajectories = execute(expr_str, self.task.init_cond.T, self.task.time_span, self.task.t_eval,
-                                    self.input_var_Xs)
-        dict_of_result = self.task.evaluate_all_losses(self.task.init_cond, pred_trajectories)
-
-        if verbose:
-            print('-' * 30)
-            for mertic_name in dict_of_result:
-                print(f"{mertic_name} {dict_of_result[mertic_name]}")
-            print('-' * 30)
-        return dict_of_result

@@ -150,7 +150,7 @@ def learn(grammar_model: ContextFreeGrammar,
         grammar_expressions = grammar_model.construct_expression(actions)
         nevals += batch_size
         # Compute rewards (or retrieve cached rewards)
-        r = np.array([p.reward for p in grammar_expressions])
+        r = np.array([p.train_loss for p in grammar_expressions])
         # if verbose:
         #     print("rewards:", r)
         r_train = r
@@ -163,7 +163,7 @@ def learn(grammar_model: ContextFreeGrammar,
 
         # Update HOF
         for p in grammar_expressions:
-            if not p.reward:
+            if not p.train_loss:
                 continue
             grammar_model.update_hall_of_fame(p)
 
@@ -278,7 +278,7 @@ def learn(grammar_model: ContextFreeGrammar,
 
             print("\t** New best")
 
-        if early_stopping and p_r_best.reward > reward_threshold:
+        if early_stopping and p_r_best.train_loss > reward_threshold:
             print("Early stopping criteria met; breaking early.")
             break
 

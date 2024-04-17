@@ -12,6 +12,8 @@ class RegressTask(object):
             n_vars: number of variables
             dataX: draw the initial conditions
             data_query_oracle: generate the time trajectory sequence
+            time_span: total time of the trajectory.
+            t_evals: the list of discrete time where the trajectory is evaluated.
         """
         self.batch_size = batch_size
         self.time_span = time_span
@@ -27,7 +29,7 @@ class RegressTask(object):
     def evaluate(self):
         return self.data_query_oracle.evaluate(self.init_cond, self.time_span, self.t_evals)
 
-    def reward_function(self, pred_trajectories):
+    def evaluate_loss(self, pred_trajectories):
         return self.data_query_oracle._evaluate_loss(self.init_cond, self.time_span, self.t_evals, pred_trajectories)
 
     def evaluate_all_losses(self, pred_trajectories):

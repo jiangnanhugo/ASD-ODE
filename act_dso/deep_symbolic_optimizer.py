@@ -21,8 +21,8 @@ import sys
 
 class ActDeepSymbolicRegression(object):
     """
-    Active Deep symbolic optimization for ODE. Includes model hyperparameters and
-    training configuration.
+    Active Deep symbolic optimization for ODE.
+    Includes model hyperparameters and training configuration.
     """
 
     def __init__(self, config, cfg):

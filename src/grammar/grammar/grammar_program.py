@@ -33,13 +33,15 @@ class SymbolicDifferentialEquations(object):
     def __init__(self, list_of_rules):
         self.traversal = list_of_rules
         self.expr_template = concate_production_rules_to_expr(list_of_rules)
-        self.reward = None
+        self.valid_loss = None
+        self.train_loss = None
         self.fitted_eq = None
         self.invalid = False
         self.all_metrics = None
 
     def __repr__(self):
-        return " reward={}, equation=\n{}".format(self.reward, "\n ".join(self.fitted_eq))
+        return " train_loss={}, valid_loss={}, equation=\n{}".format(
+            self.train_loss, self.valid_loss, "\n ".join(self.fitted_eq))
 
     def print_all_metrics(self):
         print('-' * 30)
@@ -56,7 +58,6 @@ class grammarProgram(object):
     """
     used for optimizing the constants in the expressions.
     """
-    evaluate_loss = None
 
     def __init__(self, non_terminal_nodes, optimizer="BFGS", metric_name='inv_nrmse', max_opt_iter=100, n_cores=1,
                  max_open_constants=20):
@@ -69,7 +70,7 @@ class grammarProgram(object):
         self.metric_name = metric_name
         self.n_cores = n_cores
         self.non_terminal_nodes = non_terminal_nodes
-        self.evaluate_loss = all_metrics[metric_name]
+        self.loss_func = all_metrics[metric_name]
         if self.n_cores > 1:
             self.pool = ProcessPool(nodes=self.n_cores)
 
@@ -78,7 +79,7 @@ class grammarProgram(object):
                                 true_trajectories,
                                 input_var_Xs):
         """
-        we assume the input must be a valid expression
+
         init_cond: [batch_size, nvars].
         true_trajectories: [batch_size, time_steps, nvars]. the correct trajectories.
         """
@@ -87,19 +88,19 @@ class grammarProgram(object):
 
         for i, one_list_rules in enumerate(many_seqs_of_rules):
             one_expr = SymbolicDifferentialEquations(one_list_rules)
-            reward, fitted_eq, _, _ = optimize(
+            train_loss, fitted_eq, _, _ = optimize(
                 one_expr.expr_template,
                 init_cond, time_span, t_eval,
                 true_trajectories,
                 input_var_Xs,
-                self.evaluate_loss,
+                self.loss_func,
                 self.max_open_constants,
                 self.max_opt_iter,
                 self.optimizer,
                 self.non_terminal_nodes
             )
 
-            one_expr.reward = reward
+            one_expr.train_loss = train_loss
             one_expr.fitted_eq = fitted_eq
             result.append(one_expr)
             print('idx=', i)
@@ -110,7 +111,7 @@ class grammarProgram(object):
                                             true_trajectories,
                                             input_var_Xs):
         """
-        here we assume the input will be a valid expression
+        fit the coefficients in many ODE in parallel
         """
 
         def chunks(lst, n):
@@ -127,7 +128,7 @@ class grammarProgram(object):
         input_var_Xes = [input_var_Xs for _ in range(self.n_cores)]
         time_span_ncores = [time_span for _ in range(self.n_cores)]
         t_eval_ncores = [t_eval for _ in range(self.n_cores)]
-        evaluate_losses = [self.evaluate_loss for _ in range(self.n_cores)]
+        evaluate_losses = [self.loss_func for _ in range(self.n_cores)]
         max_open_constantes = [self.max_open_constants for _ in range(self.n_cores)]
         max_opt_iteres = [self.max_opt_iter for _ in range(self.n_cores)]
         optimizeres = [self.optimizer for _ in range(self.n_cores)]
@@ -143,19 +144,20 @@ class grammarProgram(object):
         return result
 
 
-def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories, input_var_Xs, evaluate_loss,
+def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories, input_var_Xs, loss_func,
                  max_open_constants, max_opt_iter,
                  optimizer_name, non_terminal_nodes):
     results = []
     for one_expr in one_expr_batch:
-        reward, fitted_eq, _, _ = optimize(one_expr.expr_template,
-                                           init_cond, time_span, t_eval,
-                                           true_trajectories,
-                                           input_var_Xs,
-                                           evaluate_loss, max_open_constants, max_opt_iter, optimizer_name,
-                                           non_terminal_nodes)
+        reward, fitted_eq, _, _ = optimize(
+            one_expr.expr_template,
+            init_cond, time_span, t_eval,
+            true_trajectories,
+            input_var_Xs,
+            loss_func, max_open_constants, max_opt_iter, optimizer_name,
+            non_terminal_nodes)
 
-        one_expr.reward = reward
+        one_expr.train_loss = reward
         one_expr.fitted_eq = fitted_eq
         results.append(one_expr)
 
@@ -163,35 +165,49 @@ def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories
 
 
 def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
-             evaluate_loss, max_open_constants, max_opt_iter,
+             loss_func, max_open_constants, max_opt_iter,
              optimizer_name,
              non_terminal_nodes,
              user_scpeficied_iters=-1,
              verbose=False):
     """
-    Calculate reward score for a complete parse tree
-    If placeholder C is in the equation, also execute estimation for C
-    Reward = 1 / (1 + MSE) * Penalty ** num_term_in_expressions
+    optimize the constant coefficients in the candaidate expressions.
 
-    candidate_ode_equations : list of expressions. the discovered equation (with placeholders for coefficients).
+    candidate_ode_equations: list of strings for n ODE expressions. the discovered equation (with placeholders for coefficients).
     init_cond: [batch_size, nvars]. the initial conditions of each variables.
     true_trajectories: [batch_size, time_steps, nvars]. the true trajectories.
+    # other parameters:
+    max_open_constants: the maximum opening constant allowed for each ODE.
+    input_var_Xs: list of sympy.symbol object. It used to construct the scipy.lambda function for the candidate expressions.
+    This optimize function does not solve expressions with too many coefficients, because it is too slow.
+
+    loss_func: the loss function for computing the distance between the true trajectories and predicted trajectories.
+
+    max_opt_iter: maximum number of optimization iterations.
+    user_scpeficied_iters: user specified number of optimization iterations.
+
+    optimizer_name: name of the optimizer. See scipy.optimize.minimize for list of optimizers
+    non_terminal_nodes: list of non terminal nodes. It is used for checking if the expression is valid
+
     """
 
     candidate_ode_equations = simplify_template(candidate_ode_equations)
     print("candidate:", candidate_ode_equations)
-    if check_non_terminal_nodes(candidate_ode_equations, non_terminal_nodes):  # not a valid equation
+    if check_non_terminal_nodes(candidate_ode_equations, non_terminal_nodes):
+        # not a valid equation
         return -np.inf, candidate_ode_equations, 0, np.inf
 
     # count the total number of constants in equation
     num_changing_consts = sum([x.count('C') for x in candidate_ode_equations])
     t_optimized_constants, t_optimized_obj = 0, np.inf
-    if num_changing_consts == 0:  # zero constant
+    if num_changing_consts == 0:
+        # zero constant
         var_ytrue = np.var(true_trajectories)
 
         print(candidate_ode_equations)
         pred_trajectories = execute(candidate_ode_equations, init_cond, time_span, t_eval, input_var_Xs)
-    elif num_changing_consts >= max_open_constants:  # discourage over complicated numerical estimations
+    elif num_changing_consts >= max_open_constants:
+        # discourage over expressions with too many coefficients.
         return -np.inf, candidate_ode_equations, t_optimized_constants, t_optimized_obj
     else:
         c_lst = ['c' + str(i) for i in range(num_changing_consts)]
@@ -216,7 +232,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
             # sys.stdout.flush()
             # sttime = time.time()
             var_ytrue = np.var(true_trajectories)
-            loss_val = -evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
+            loss_val = -loss_func(pred_trajectories, true_trajectories, var_ytrue)
             # usedtime = time.time() - sttime
             # print('step3', usedtime)
             # sys.stdout.flush()
@@ -256,16 +272,19 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
             print(e)
             return -np.inf, candidate_ode_equations, 0, np.inf
 
-    # r = eta ** tree_size * float(-np.log10(1e-60 - self.evaluate_loss(pred_trajectories, y_true, var_ytrue)))
-    print('\t loss:', evaluate_loss(pred_trajectories, true_trajectories, var_ytrue),
+    # r = eta ** tree_size * float(-np.log10(1e-60 - self.loss_func(pred_trajectories, y_true, var_ytrue)))
+    if pred_trajectories is None:
+        return -np.inf, candidate_ode_equations, 0, np.inf
+    print('\t loss:', loss_func(pred_trajectories, true_trajectories, var_ytrue),
           'eq:', candidate_ode_equations)
-    reward = evaluate_loss(pred_trajectories, true_trajectories, var_ytrue)
+    train_loss = loss_func(pred_trajectories, true_trajectories, var_ytrue)
 
-    return reward, candidate_ode_equations, t_optimized_constants, t_optimized_obj
+    return train_loss, candidate_ode_equations, t_optimized_constants, t_optimized_obj
 
 
 def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
     # optimize the open constants in the expression
+    opt_result = None
     if optimizer == 'Nelder-Mead':
         opt_result = minimize(f, x0, method='Nelder-Mead',
                               options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
@@ -302,8 +321,8 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
     return opt_result
 
 
-def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval: np.ndarray,
-            input_var_Xs: list) -> np.ndarray:
+def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_eval: np.ndarray,
+            input_var_Xs: list, use_rtol: float=1) -> np.ndarray:
     """
     given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
     https://docs.sympy.org/latest/guides/solving/solve-ode.html
@@ -317,18 +336,24 @@ def execute(expr_strs: list, x_init_conds: np.ndarray, time_span: tuple, t_eval:
 
     expr_odes = [parse_expr(one_expr) for one_expr in expr_strs]
     t = symbols('t')  # not used in this case
-    # used_time = time.time() - sttime
-    # print("\t used time1", used_time)
     try:
         func = lambdify((t, input_var_Xs), expr_odes, 'numpy')
         pred_trajectories = []
 
         for one_x_init in x_init_conds:
             # sttime = time.time()
-            one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval, rtol=1)
-            # used_time = time.time() - sttime
-            # print("\tused time2", used_time)
-            pred_trajectories.append(one_solution.y)
+            if use_rtol > 0:
+                one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval, rtol=use_rtol, method='RK23')
+            else:
+                one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval, method='RK23')
+            if one_solution.success:
+                # used_time = time.time() - sttime
+                # print("\tused time2", used_time)
+                pred_trajectories.append(one_solution.y)
+            else:
+                temp = one_solution.y
+                temp = temp + np.ones((one_x_init.shape[0], t_eval.shape[0] - temp.shape[1])) * np.inf
+                pred_trajectories.append(temp)
 
         pred_trajectories = np.asarray(pred_trajectories)
         if pred_trajectories is complex:
