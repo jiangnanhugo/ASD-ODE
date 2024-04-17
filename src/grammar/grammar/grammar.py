@@ -125,12 +125,15 @@ class ContextFreeGrammar(object):
                                                                     true_trajectories,
                                                                     self.input_var_Xs,
                                                                     )
-        elif self.program.n_cores >= 2:
+        elif self.program.n_cores >1:
             many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules,
                                                                                 self.task.init_cond,
                                                                                 self.task.time_span, self.task.t_evals,
                                                                                 true_trajectories,
                                                                                 self.input_var_Xs)
+
+        # evaluate the fitted expressions on new data;
+
         # for one_expression in many_expressions:
         #     if one_expression.reward != -np.inf:
         #         one_expression.all_metrics = self.print_reward_function_all_metrics(one_expression.fitted_eq)
