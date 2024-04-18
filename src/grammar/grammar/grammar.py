@@ -137,7 +137,7 @@ class ContextFreeGrammar(object):
         # true_trajectories = self.task.evaluate()
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
-                print('\t', one_expression)
+                # print('\t', one_expression)
                 one_ode_str =[str(one_eq) for one_eq in one_expression.fitted_eq]
                 pred_trajectories = execute(one_ode_str,
                                             self.task.init_cond, self.task.time_span, self.task.t_evals,
