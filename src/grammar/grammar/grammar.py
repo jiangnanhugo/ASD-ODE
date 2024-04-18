@@ -142,7 +142,7 @@ class ContextFreeGrammar(object):
                 pred_trajectories = execute(one_ode_str,
                                             self.task.init_cond, self.task.time_span, self.task.t_evals,
                                             self.input_var_Xs)
-                if len(pred_trajectories)==0:
+                if pred_trajectories is None or len(pred_trajectories)==0:
                     one_expression.valid_loss = -np.inf
                 else:
                     one_expression.valid_loss = self.task.evaluate_loss(pred_trajectories)
