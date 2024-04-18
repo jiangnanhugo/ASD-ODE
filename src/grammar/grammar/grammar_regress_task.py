@@ -33,4 +33,4 @@ class RegressTask(object):
         return self.data_query_oracle._evaluate_loss(self.init_cond, self.time_span, self.t_evals, pred_trajectories)
 
     def evaluate_all_losses(self, pred_trajectories):
-        return self.data_query_oracle._evaluate_all_loss(self.init_cond,self.time_span, self.t_evals, pred_trajectories)
+        return self.data_query_oracle._evaluate_all_losses(self.init_cond,self.time_span, self.t_evals, pred_trajectories)
