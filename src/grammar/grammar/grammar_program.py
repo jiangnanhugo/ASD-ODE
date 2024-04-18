@@ -40,7 +40,7 @@ class SymbolicDifferentialEquations(object):
         self.all_metrics = None
 
     def __repr__(self):
-        return " train_loss={}, valid_loss={}, Eq={}".format(
+        return " train_loss={}\t, valid_loss={}\t, Eq={}".format(
             self.train_loss, self.valid_loss, ",\t ".join(self.fitted_eq))
 
     def print_all_metrics(self):
