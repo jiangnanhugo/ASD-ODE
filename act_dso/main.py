@@ -45,9 +45,9 @@ def main(config_template, optimizer, equation_name, metric_name, batch_size, noi
     nvars = data_query_oracle.get_nvars()
     function_set = data_query_oracle.get_operators_set()
 
-    batch_size_of_trajectories = 5
+    batch_size_of_trajectories = 10
     time_span = (0, 1)
-    trajectory_time_steps = 5
+    trajectory_time_steps = 10
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(batch_size_of_trajectories,
                        nvars,

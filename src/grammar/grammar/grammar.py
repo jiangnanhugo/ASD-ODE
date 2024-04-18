@@ -181,7 +181,7 @@ class ContextFreeGrammar(object):
                 if pr.train_loss != -np.inf:
 
                     pred_trajectories = execute(pr.fitted_eq,
-                                                self.task.init_cond, self.task.time_span, self.task.t_eval,
+                                                self.task.init_cond, self.task.time_span, self.task.t_evals,
                                                 self.input_var_Xs)
                     dict_of_result = self.task.evaluate_all_losses(self.task.init_cond, pred_trajectories)
 
