@@ -276,9 +276,10 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     # r = eta ** tree_size * float(-np.log10(1e-60 - self.loss_func(pred_trajectories, y_true, var_ytrue)))
     if pred_trajectories is None:
         return -np.inf, candidate_ode_equations, 0, np.inf
-    print('\t loss:', loss_func(pred_trajectories, true_trajectories, var_ytrue),
-          'eq:', candidate_ode_equations)
+
     train_loss = loss_func(pred_trajectories, true_trajectories, var_ytrue)
+    print('\t loss:', train_loss,
+          'eq:', candidate_ode_equations)
 
     return train_loss, candidate_ode_equations, t_optimized_constants, t_optimized_obj
 
