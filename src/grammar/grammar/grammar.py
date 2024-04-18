@@ -136,12 +136,17 @@ class ContextFreeGrammar(object):
         self.task.rand_draw_init_cond()
         # true_trajectories = self.task.evaluate()
         for one_expression in many_expressions:
-            if one_expression.train_loss != -np.inf or one_expression.train_loss is not None:
+            if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
+                print('\t', one_expression)
                 one_ode_str =[str(one_eq) for one_eq in one_expression.fitted_eq]
                 pred_trajectories = execute(one_ode_str,
                                             self.task.init_cond, self.task.time_span, self.task.t_evals,
                                             self.input_var_Xs)
-                one_expression.valid_loss = self.task.evaluate_loss(pred_trajectories)
+                if len(pred_trajectories)==0:
+                    one_expression.valid_loss = -np.inf
+                else:
+                    one_expression.valid_loss = self.task.evaluate_loss(pred_trajectories)
+
             else:
                 one_expression.valid_loss = -np.inf
             print(one_expression)

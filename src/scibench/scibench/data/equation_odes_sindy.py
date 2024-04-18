@@ -154,20 +154,20 @@ class Glycolytic_oscillator(KnownEquation):
     expr_obj_thres = 1e-6
 
     def __init__(self):
-        self.J0 = 2.5
-        self.k1 = 100
-        self.k2 = 6
-        self.k3 = 16
-        self.k4 = 100
-        self.k5 = 1.28
-        self.k6 = 12
-        self.K = 1.8
-        self.kappa = 13
-        self.q = 4
-        self.K1 = 0.52
-        self.phi = 0.1
-        self.N = 1
-        self.A = 4
+        J0 = 2.5
+        k1 = 100
+        k2 = 6
+        k3 = 16
+        k4 = 100
+        k5 = 1.28
+        k6 = 12
+        K = 1.8
+        kappa = 13
+        q = 4
+        K1 = 0.52
+        phi = 0.1
+        N = 1
+        A = 4
 
         vars_range_and_types = [LogUniformSampling((0.15, 1.6), only_positive=True),
                                 LogUniformSampling((0.19, 2.16), only_positive=True),
@@ -180,15 +180,13 @@ class Glycolytic_oscillator(KnownEquation):
         x = self.x
 
         self.sympy_eq = [
-            self.J0 - (self.k1 * x[0] * x[5]) / (1 + (x[5] / self.K1) ** self.q),
-            2 * (self.k1 * x[0] * x[5]) / (1 + (x[5] / self.K1) ** self.q) - self.k2 * x[1] * (
-                        self.N - x[4]) - self.k6 * x[1] * x[4],
-            self.k2 * x[1] * (self.N - x[4]) - self.k3 * x[2] * (self.A - x[5]),
-            self.k3 * x[2] * (self.A - x[5]) - self.k4 * x[3] * x[4] - self.kappa * (x[3] - x[6]),
-            self.k2 * x[1] * (self.N - x[4]) - self.k4 * x[3] * x[4] - self.k6 * x[1] * x[4],
-            -2 * self.k1 * x[0] * x[5] / (1 + (x[5] / self.K1) ** self.q) + 2 * self.k3 * x[2] * (
-                        self.A - x[5]) - self.k5 * x[5],
-            self.phi * self.kappa * (x[3] - x[6]) - self.K * x[6]
+            J0 - (k1 * x[0] * x[5]) / (1 + (x[5] / K1) ** q),
+            2 * (k1 * x[0] * x[5]) / (1 + (x[5] / K1) ** q) - k2 * x[1] * (N - x[4]) - k6 * x[1] * x[4],
+            k2 * x[1] * (N - x[4]) - k3 * x[2] * (A - x[5]),
+            k3 * x[2] * (A - x[5]) - k4 * x[3] * x[4] - kappa * (x[3] - x[6]),
+            k2 * x[1] * (N - x[4]) - k4 * x[3] * x[4] - k6 * x[1] * x[4],
+            -2 * k1 * x[0] * x[5] / (1 + (x[5] / K1) ** q) + 2 * k3 * x[2] * (A - x[5]) - k5 * x[5],
+            phi * kappa * (x[3] - x[6]) - K * x[6]
         ]
 
 

@@ -40,8 +40,8 @@ class SymbolicDifferentialEquations(object):
         self.all_metrics = None
 
     def __repr__(self):
-        return " train_loss={}, valid_loss={}, equation=\n{}".format(
-            self.train_loss, self.valid_loss, "\n ".join(self.fitted_eq))
+        return " train_loss={}, valid_loss={}, Eq={}".format(
+            self.train_loss, self.valid_loss, ",\t ".join(self.fitted_eq))
 
     def print_all_metrics(self):
         print('-' * 30)
@@ -104,6 +104,7 @@ class grammarProgram(object):
             one_expr.fitted_eq = fitted_eq
             result.append(one_expr)
             print('idx=', i)
+
             sys.stdout.flush()
         return result
 
