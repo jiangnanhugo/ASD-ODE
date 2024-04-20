@@ -16,11 +16,31 @@
    // Only the key training hyperparameters are listed here. See
    // config_common.json for the full list.
    "training" : {
-      "batch_size" : 100,
+      "batch_size" : 30,
       "epsilon" : 0.2,
       // <R> is the sample average _after_ epsilon sub-sampling and  R_e is the (1-epsilon)-quantile estimate.
       // (1) "ewma_R" : b = EWMA(<R>) (2) "R_e" : b = R_e (3) "ewma_R_e" : b = EWMA(R_e) (4) "combined" : b = R_e + EWMA(<R> - R_e)
-      "baseline" : "R_e"
+      "baseline" : "R_e",
+      // Control variate parameters for vanilla policy gradient. If risk-seeking
+      // is used, these have no effect.
+      "alpha" : 0.5,
+      "b_jumpstart" : false,
+
+      // The constant optimizer used to optimized each "const" token.
+      "verbose" : true,
+
+      // Debug level
+      "debug" : 2,
+      // Whether to stop early if success condition is met
+      "early_stopping" : true,
+
+      // EXPERIMENTAL: Hyperparameters related to utilizing a memory buffer.
+      "use_memory" : false,
+      "memory_capacity" : 1e3,
+      "warm_start" : null,
+      "memory_threshold" : null,
+      // Parameters to control what outputs to save.
+      "save_positional_entropy" : false
    },
 
    // Only the key RNN decoder hyperparameters are listed here. See
@@ -45,5 +65,14 @@
       "num_layers" : 1,
       "num_units" : 32,
       "debug": 2
+   },
+    "input_embedding": {
+         // Observation hyperparameters
+         "observe_action" : false,
+         "observe_parent" : true,
+         "observe_sibling" : true,
+         "observe_dangling" : false,
+         "embedding" : false,
+         "embedding_dim" : 128
    }
 }
