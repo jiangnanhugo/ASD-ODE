@@ -2,3 +2,4 @@ jitcode
 pathos
 numbalsoda
 click
+CyRK
