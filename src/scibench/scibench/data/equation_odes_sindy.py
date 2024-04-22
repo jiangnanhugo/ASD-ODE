@@ -43,110 +43,7 @@ class Lorenz(KnownEquation):
         ]
 
 
-@register_eq_class
-class ThomasAttractor(KnownEquation):
-    # Thomas’ cyclically symmetric attractor
-    # https://arxiv.org/pdf/2309.16816.pdf
-    _eq_name = 'Thomas-attractor'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
-    expr_obj_thres = 1e-6
 
-    def __init__(self):
-        b = 0.17
-
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
-        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
-
-        self.sympy_eq = [
-            np.sin(x[1]) - b * x[0],
-            np.sin(x[2]) - b * x[1],
-            np.sin(x[0]) - b * x[2],
-        ]
-
-
-@register_eq_class
-class AizawaAttractor(KnownEquation):
-    # Aizawa attractor
-    _eq_name = 'Aizawa-attractor'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
-    expr_obj_thres = 1e-6
-
-    def __init__(self):
-        a = 0.95
-        b = 0.7
-        c = 0.6
-        d = 3.5
-        e = 0.25
-        f = 0.1
-
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
-        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
-
-        self.sympy_eq = [
-            (x[2] - b) * x[1] - d * x[1],
-            d * x[0] - (x[2] - b) * x[1],
-            c + a * x[2] - x[2] ** 3 / 3 - x[0] ** 2 + f * x[2] * x[0] ** 3,
-        ]
-
-
-@register_eq_class
-class ChenLeeAttractor(KnownEquation):
-    # Chen-Lee attractor
-    _eq_name = 'Chen-Lee-attractor'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
-    expr_obj_thres = 1e-6
-
-    def __init__(self):
-        a = 5
-        d = -0.38
-
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
-        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
-
-        self.sympy_eq = [
-            a * x[0] - x[1] * x[2],
-            -10 * x[1] + x[0] * x[2],
-            d * x[2] + x[0] * x[1] / 3
-        ]
-
-
-@register_eq_class
-class DadrasAttractor(KnownEquation):
-    # Dadras attractor
-    _eq_name = 'Dadras-attractor'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
-    expr_obj_thres = 1e-6
-
-    def __init__(self):
-        a = 1.25
-        b = 1.15
-        c = 0.75
-        d = 0.8
-        e = 4
-
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
-        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
-
-        self.sympy_eq = [
-            x[1] / 2 - a * x[0] + b * x[1] * x[2],
-            c * x[1] - x[0] * x[2] / 2 + x[2] / 2,
-            d * x[0] * x[1] - e * x[2]
-        ]
-
-# TODO
-# Rossler, Halvorsen, Rabinovich–Fabrikant, Sprott B, Sprott-Linz F, Four-wing chaotic, Duffing
 @register_eq_class
 class Glycolytic_oscillator(KnownEquation):
     _eq_name = 'Glycolytic_oscillator'
@@ -242,7 +139,7 @@ class Pendulum_on_cart(KnownEquation):
                     L * (M + m * sympy.sin(x[0]) ** 2)
             ),
             (m * L * sympy.sin(x[0]) * x[2] ** 2 + F - m * g * sympy.sin(x[0]) * sympy.cos(x[0])) / (
-                        M + m * sympy.sin(x[0]) ** 2),
+                    M + m * sympy.sin(x[0]) ** 2),
         ]
 
 

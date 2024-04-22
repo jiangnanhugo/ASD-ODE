@@ -1,4 +1,4 @@
-from pympler import classtracker
+
 import time
 import argparse
 import os
@@ -47,7 +47,6 @@ def run_mcts(
         print("transplanation step=", i_itr)
         print("aug_grammars:", aug_grammars)
         max_opt_iter = 200
-        tracker = classtracker.ClassTracker()
 
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
@@ -59,15 +58,14 @@ def run_mcts(
                           exploration_rate=exploration_rate,
                           max_opt_iter=max_opt_iter,
                           eta=eta)
-        tracker.track_object(mcts_model)
+
         start = time.time()
         _, good_modules = mcts_model.MCTS_run_orig(num_episodes,
                                                    num_rollouts=num_rollouts,
                                                    verbose=True,
                                                    is_first_round=True,
                                                    print_freq=5)
-        tracker.create_snapshot()
-        tracker.stats.print_summary()
+
         mcts_model.print_hofs(-2, verbose=True)
 
         if not best_modules:
@@ -113,10 +111,10 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
         import memray
         if os.path.isfile(memray_output_bin):
             os.remove(memray_output_bin)
-        with memray.Tracker(memray_output_bin):
-            start = time.time()
-            run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-            end_time = time.time() - start
+
+        start = time.time()
+        run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+        end_time = time.time() - start
     else:
         start = time.time()
         run_mcts(production_rules=production_rules, num_episodes=num_episodes)

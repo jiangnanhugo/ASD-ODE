@@ -60,6 +60,10 @@ def runge_kutta4(func, times, x_init):
 
 
 def compare_with_scipy_solve_ivp():
+    """
+    the following testing case show the inplemented version is highly accurate.
+    solve_ivp sometime will be very slow due to (implicit) adaptive time steps.
+    """
     from scipy.integrate import solve_ivp
     def lotkavolterra(t, z):
         x, y = z
@@ -67,7 +71,7 @@ def compare_with_scipy_solve_ivp():
         return np.array([a * x - b * x * y, -c * y + d * x * y])
 
     t = np.linspace(0, 5, 5000)
-    sol = solve_ivp(lotkavolterra, [0, 5], [10, 5], t_eval=t,
+    sol = solve_ivp(fun=lotkavolterra, t_span=[0, 5], y0=np.array([10, 5]), t_eval=t,
                     method='RK45')
     print(sol)
 
@@ -82,3 +86,6 @@ def compare_with_scipy_solve_ivp():
     plt.legend(['x1', 'y1', 'x2', 'y2'], shadow=True)
     plt.title('Lotka-Volterra System')
     plt.show()
+
+if __name__ == '__main__':
+    compare_with_scipy_solve_ivp()

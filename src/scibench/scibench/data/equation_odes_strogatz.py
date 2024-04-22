@@ -20,7 +20,7 @@ def get_eq_obj(key, **kwargs):
 
 @register_eq_class
 class RCcircuit(KnownEquation):
-    _eq_name = 'vars1_id1'
+    _eq_name = 'vars1_prog1'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
 
@@ -38,7 +38,7 @@ class RCcircuit(KnownEquation):
 
 @register_eq_class
 class PopulationGrowth(KnownEquation):
-    _eq_name = 'vars1_id2'
+    _eq_name = 'vars1_prog2'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
 
@@ -55,7 +55,7 @@ class PopulationGrowth(KnownEquation):
 
 @register_eq_class
 class PopulationGrowthWithCarryingCapacity(KnownEquation):
-    _eq_name = 'vars1_id3'
+    _eq_name = 'vars1_prog3'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
 
