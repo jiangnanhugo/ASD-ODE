@@ -34,7 +34,6 @@ class DefaultSampling(object):
     def to_dict(self):
         return {'name': self.name,
                 'range': self.range,
-
                 'only_positive': self.only_positive}
 
 

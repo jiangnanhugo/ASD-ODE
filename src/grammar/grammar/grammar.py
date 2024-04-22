@@ -35,7 +35,7 @@ class ContextFreeGrammar(object):
         self.max_length = max_length
         self.hof_size = hof_size
         self.reward_threhold = reward_threhold
-        self.hall_of_fame = []
+        self.best_predicted_equations = []
         self.allowed_grammar = np.ones(len(self.production_rules), dtype=bool)
         # those rules has terminal symbol on the right-hand side
         self.terminal_rules = [g for g in self.production_rules if
@@ -138,11 +138,11 @@ class ContextFreeGrammar(object):
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
                 # print('\t', one_expression)
-                one_ode_str =[str(one_eq) for one_eq in one_expression.fitted_eq]
+                one_ode_str = [str(one_eq) for one_eq in one_expression.fitted_eq]
                 pred_trajectories = execute(one_ode_str,
                                             self.task.init_cond, self.task.time_span, self.task.t_evals,
                                             self.input_var_Xs)
-                if pred_trajectories is None or len(pred_trajectories)==0:
+                if pred_trajectories is None or len(pred_trajectories) == 0:
                     one_expression.valid_loss = -np.inf
                 else:
                     one_expression.valid_loss = self.task.evaluate_loss(pred_trajectories)
@@ -153,29 +153,30 @@ class ContextFreeGrammar(object):
         return many_expressions
 
     def update_hall_of_fame(self, one_fitted_expression: SymbolicDifferentialEquations):
+        # the best equations should be placed at the top 1 slot of self.hall_of_fame
 
         if one_fitted_expression.traversal.count(';') <= self.max_length:
-            if not self.hall_of_fame:
-                self.hall_of_fame = [one_fitted_expression]
-            elif one_fitted_expression.traversal not in [x.traversal for x in self.hall_of_fame]:
-                if len(self.hall_of_fame) < self.hof_size:
-                    self.hall_of_fame.append(one_fitted_expression)
-                    # sorting the list in ascending order
-                    self.hall_of_fame = sorted(self.hall_of_fame,
-                                               key=lambda x: x.train_loss,
-                                               reverse=False)
+            if not self.best_predicted_equations:
+                self.best_predicted_equations = [one_fitted_expression]
+            elif one_fitted_expression.traversal not in [x.traversal for x in self.best_predicted_equations]:
+                if len(self.best_predicted_equations) < self.hof_size:
+                    self.best_predicted_equations.append(one_fitted_expression)
+                    # sorting the list in descending order
+                    self.best_predicted_equations = sorted(self.best_predicted_equations,
+                                                           key=lambda x: x.train_loss,
+                                                           reverse=True)
                 else:
-                    if one_fitted_expression.train_loss > self.hall_of_fame[-1].train_loss:
-                        # sorting the list in ascending order
-                        self.hall_of_fame = sorted(self.hall_of_fame[1:] + [one_fitted_expression],
-                                                   key=lambda x: x.train_loss,
-                                                   reverse=False)
+                    if one_fitted_expression.train_loss > self.best_predicted_equations[-1].train_loss:
+                        # sorting the list in descending order
+                        self.best_predicted_equations = sorted(self.best_predicted_equations[1:] + [one_fitted_expression],
+                                                               key=lambda x: x.train_loss,
+                                                               reverse=True)
 
     def print_hofs(self, verbose=False):
         self.task.rand_draw_init_cond()
         print(f"PRINT Best Equations")
         print("=" * 20)
-        for pr in self.hall_of_fame[:self.hof_size]:
+        for pr in self.best_predicted_equations[:self.hof_size]:
             if verbose:
                 print('        ', pr, end="\n")
                 if pr.train_loss != -np.inf:
@@ -195,4 +196,3 @@ class ContextFreeGrammar(object):
             else:
                 print('        ', pr, end="\n")
         print("=" * 20)
-
