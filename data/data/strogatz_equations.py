@@ -1,3 +1,4 @@
+
 """
 A selection of ordinary differential equations primarily from Steven Strogatz's book "Nonlinear Dynamics and Chaos" with manually chosen parameter values and initial conditions.
 Some other famous known systems have been selected from other sources, which are included in the dictionary entries as well.
@@ -619,7 +620,7 @@ equations = [
     'init': [[0.65, 0.59], [3.2, 10.3]],
     'init_constraints': 'x_0 > 0, x_1 > 0',
     'const_constraints': 'c_0 > 0, c_1 > 0',
-    'eq_description': 'Binocular rivalry model (no oscillations)',
+            '`eq_description`': 'Binocular rivalry model (no oscillations)',
     'const_description': 'c_0: strength of mutual antagonism, c_1: strength of input stimulus',
     'var_description': 'x_0: perception of left eye stimulus, x_1: perception of right eye stimulus',
     'source': 'strogatz p.290'
@@ -831,5 +832,4 @@ equations = [
     'const_description': 'c_0: transfer rate rate, c_1: transmission rate, c_2: recovery rate',
     'var_description': 'x_0: susceptible, x_1: exposed, x_2: infected, x_3: recovered',
     'source': 'https://de.wikipedia.org/wiki/SEIR-Modell'
-},
-]
+}]

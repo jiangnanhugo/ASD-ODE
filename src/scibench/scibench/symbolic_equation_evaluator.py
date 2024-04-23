@@ -4,7 +4,7 @@ from scipy.integrate import solve_ivp
 
 from sympy import lambdify, symbols
 from scibench.metrics import all_metrics, construct_noise
-from scibench.data import equation_object_loader
+from data import equation_object_loader
 
 EQUATION_EXTENSION = ".in"
 

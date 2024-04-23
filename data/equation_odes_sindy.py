@@ -1,9 +1,8 @@
 import sympy
-import numpy as np
 
 from collections import OrderedDict
-from scibench.data.base import KnownEquation
-from scibench.symbolic_data_generator import LogUniformSampling, UniformSampling
+from data.base import KnownEquation
+from scibench.symbolic_data_generator import LogUniformSampling
 
 EQUATION_CLASS_DICT = OrderedDict()
 
