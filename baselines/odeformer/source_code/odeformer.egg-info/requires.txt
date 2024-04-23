@@ -1,0 +1,16 @@
+numexpr>=2.8.4
+sympy==1.11.1
+matplotlib
+numpy
+pandas
+requests
+scikit-learn
+scipy
+seaborn
+setproctitle
+torch>=2.0.0
+tqdm
+wandb
+pysindy
+gdown
+regex

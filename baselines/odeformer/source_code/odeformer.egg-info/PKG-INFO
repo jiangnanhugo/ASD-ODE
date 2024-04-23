@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: odeformer
+Version: 0.1.5
+Summary: Transformers for symbolic regression of ODEs
+Author: Stéphane d'Ascoli
+Author-email: stephane.dascoli@gmail.com
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
