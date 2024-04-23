@@ -21,6 +21,6 @@ do
 		echo "create output dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	CUDA_VISIBLE_DEVICES=""  $py3 $basepath/act_dso/main.py $basepath/act_dso/config/config_regression_DSR.json --equation_name $eq_name \
+	CUDA_VISIBLE_DEVICES=""  $py3 $basepath/act_dso/main.py $basepath/act_dso/config/config_regression.json --equation_name $eq_name \
 		--optimizer $opt --metric_name $metric_name --batch_size $batch_size --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  >$dump_dir/Eq_${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out &
 	done
