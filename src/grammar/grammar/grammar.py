@@ -164,13 +164,13 @@ class ContextFreeGrammar(object):
                     # sorting the list in descending order
                     self.best_predicted_equations = sorted(self.best_predicted_equations,
                                                            key=lambda x: x.train_loss,
-                                                           reverse=True)
+                                                           reverse=False)
                 else:
                     if one_fitted_expression.train_loss > self.best_predicted_equations[-1].train_loss:
                         # sorting the list in descending order
                         self.best_predicted_equations = sorted(self.best_predicted_equations[1:] + [one_fitted_expression],
                                                                key=lambda x: x.train_loss,
-                                                               reverse=True)
+                                                               reverse=False)
 
     def print_hofs(self, verbose=False):
         self.task.rand_draw_init_cond()
