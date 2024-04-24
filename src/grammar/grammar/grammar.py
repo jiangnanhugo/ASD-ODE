@@ -1,9 +1,9 @@
 import numpy as np
 from sympy import Symbol
-from sympy.parsing.sympy_parser import parse_expr
 
-from grammar.grammar_program import execute, SymbolicDifferentialEquations
 
+from grammar.grammar_program import SymbolicDifferentialEquations
+from grammar.minimize_coefficients import execute
 
 class ContextFreeGrammar(object):
     # will link to regression_task

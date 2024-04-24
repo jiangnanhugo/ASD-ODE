@@ -28,8 +28,8 @@ class Equation_evaluator(object):
         self.vars_range_and_types = self.true_equation.vars_range_and_types
         self.vars_range_and_types_to_json = self.true_equation.vars_range_and_types_to_json_str()
         self.input_var_Xs = self.true_equation.x
-        self.true_ode_equation = self.true_equation.sympy_eq
-
+        # self.true_ode_equation = lambdify((t,self.input_var_Xs), self.true_equation.np_eq,'numpy')
+        self.true_ode_equation = self.true_equation.np_eq
         # metric
         self.metric_name = metric_name
         self.metric = all_metrics[metric_name]
@@ -40,9 +40,13 @@ class Equation_evaluator(object):
         self.noises = construct_noise(self.noise_type)
 
     def evaluate(self, x_init_conds: list, time_span: tuple, t_evals: np.ndarray) -> np.ndarray:
-        true_trajectories = runge_kutta4(self.true_ode_equation, t_evals, x_init_conds)
-
+        true_trajectories = []
+        for one_x_init in x_init_conds:
+            one_solution = runge_kutta4(self.true_ode_equation, t_evals, one_x_init)
+            true_trajectories.append(one_solution)
+        true_trajectories = np.asarray(true_trajectories)
         return true_trajectories
+
 
     def _evaluate_loss(self, X_init_cond, time_span: tuple, t_evals: np.ndarray,
                        pred_trajectories: np.ndarray) -> float:

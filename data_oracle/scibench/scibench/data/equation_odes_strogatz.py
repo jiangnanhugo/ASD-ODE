@@ -1,7 +1,6 @@
-from collections import OrderedDict
+import numpy as np
 from scibench.data.base import KnownEquation, register_eq_class
 from scibench.symbolic_data_generator import LogUniformSampling
-
 
 
 @register_eq_class
@@ -11,15 +10,15 @@ class RCcircuit(KnownEquation):
     expr_obj_thres = 1e-6
 
     def __init__(self):
-        c = [0.7, 1.2, 2.31]
+        self.c = [0.7, 1.2, 2.31]
 
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
 
-        self.sympy_eq = [
-            (c[0] - x[0] / c[1]) / c[2]
-        ]
+    def np_eq(self, t, x):
+        return np.array([
+            (self.c[0] - x[0] / self.c[1]) / self.c[2]
+        ])
 
 
 @register_eq_class
@@ -29,15 +28,16 @@ class PopulationGrowth(KnownEquation):
     expr_obj_thres = 1e-6
 
     def __init__(self):
-        c = [0.23]
+        self.c = [0.23]
 
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
 
-        self.sympy_eq = [
-            c[0] * x[0]
-        ]
+    def np_eq(self, t, x):
+        return np.array([
+            self.c[0] * x[0]
+        ])
+
 
 @register_eq_class
 class PopulationGrowthWithCarryingCapacity(KnownEquation):
@@ -46,12 +46,12 @@ class PopulationGrowthWithCarryingCapacity(KnownEquation):
     expr_obj_thres = 1e-6
 
     def __init__(self):
-        c = [0.79, 74.3]
+        self.c = [0.79, 74.3]
 
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
 
-        self.sympy_eq = [
-            c[0] * x[0] * (1 - x[0] / c[1])
-        ]
+    def np_eq(self, t, x):
+        return np.array([
+            self.c[0] * x[0] * (1 - x[0] / self.c[1])
+        ])

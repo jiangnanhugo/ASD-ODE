@@ -1,15 +1,12 @@
 """Class for symbolic expression optimization."""
 
-
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify, symbols
-
 
 import numpy as np
 import warnings
 
-
-from scibench.solve_init_value_problem import runge_kutta4
+# from scibench.solve_init_value_problem import runge_kutta4
 
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, shgo, dual_annealing, direct
@@ -18,9 +15,25 @@ from scipy.integrate import solve_ivp
 from grammar.grammar_utils import pretty_print_expr
 from grammar.production_rules import check_non_terminal_nodes
 
-
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.set_printoptions(precision=4, linewidth=np.inf)
+
+
+def runge_kutta4(func, times, x_init):
+    """
+    solve a batch of initial conditions
+    """
+    n = len(times)
+    y = np.zeros((n, len(x_init)))
+    y[0] = x_init
+    for i in range(len(times) - 1):
+        h = times[i + 1] - times[i]
+        k1 = np.array(func(times[i], y[i]))
+        k2 = np.array(func(times[i] + h / 2., y[i] + k1 * h / 2))
+        k3 = np.array(func(times[i] + h / 2, y[i] + k2 * h / 2))
+        k4 = np.array(func(times[i] + h, y[i] + k3 * h))
+        y[i + 1] = y[i] + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+    return y
 
 
 def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
@@ -181,11 +194,11 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
     return opt_result
 
 
-def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_eval: np.ndarray,
-            input_var_Xs: list, use_rtol: float = 1) -> np.ndarray:
+def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_evals: np.ndarray,
+            input_var_Xs: list) -> np.ndarray:
     """
     given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
-    https://docs.sympy.org/latest/guides/solving/solve-ode.html
+
     expr_strs: list of string. each string is one expression.
     time_span: tuple
     t_evals: np.linspace, or np.logspace
@@ -197,25 +210,12 @@ def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_
     expr_odes = [parse_expr(one_expr) for one_expr in expr_strs]
     t = symbols('t')  # not used in this case
     try:
-        func = lambdify((t, input_var_Xs), expr_odes, 'numpy')
+        func = lambdify((t, input_var_Xs), expr_odes, modules='numpy')
         pred_trajectories = []
 
         for one_x_init in x_init_conds:
-            # sttime = time.time()
-            if use_rtol > 0:
-                one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval, rtol=use_rtol,
-                                         method='RK23')
-            else:
-                one_solution = solve_ivp(func, t_span=time_span, y0=one_x_init, t_eval=t_eval, method='RK23')
-            if one_solution.success:
-                # used_time = time.time() - sttime
-                # print("\tused time2", used_time)
-                pred_trajectories.append(one_solution.y)
-            else:
-                temp = one_solution.y
-                temp = temp + np.ones((one_x_init.shape[0], t_eval.shape[0] - temp.shape[1])) * np.inf
-                pred_trajectories.append(temp)
-
+            one_solution = runge_kutta4(func, t_evals, one_x_init)
+            pred_trajectories.append(one_solution)
         pred_trajectories = np.asarray(pred_trajectories)
         if pred_trajectories is complex:
             return None
@@ -231,7 +231,6 @@ def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_
     except ValueError as e:
         return None
     return pred_trajectories
-
 
 
 #         func()
@@ -260,9 +259,6 @@ def simplify_template(equations: list) -> list:
             eq = eq.replace('(1/C)', 'C')
         new_equations.append(eq)
     return new_equations
-
-
-
 
 
 def sympy_plus_scipy():

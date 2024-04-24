@@ -4,8 +4,6 @@ from scibench.data.base import KnownEquation, register_eq_class
 from scibench.symbolic_data_generator import LogUniformSampling
 
 
-
-
 @register_eq_class
 class Lorenz(KnownEquation):
     _eq_name = 'Lorenz'
@@ -13,22 +11,21 @@ class Lorenz(KnownEquation):
     expr_obj_thres = 1e-6
 
     def __init__(self):
-        sigma = 10
-        beta = 8 / 3
-        rho = 28
+        self.sigma = 10
+        self.beta = 8 / 3
+        self.rho = 28
 
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
                                      LogUniformSampling((1e-2, 10.0), only_positive=True),
                                      LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
 
-        self.np_eq = [
-            sigma * (x[1] - x[0]),
-            x[0] * (x[0] - rho - x[2]),
-            x[0] * x[1] - beta * x[2]
-        ]
-
+    def np_eq(self, t, x):
+        return np.array([
+            self.sigma * (x[1] - x[0]),
+            x[0] * (x[0] - self.rho - x[2]),
+            x[0] * x[1] - self.beta * x[2]
+        ])
 
 
 @register_eq_class
@@ -38,20 +35,20 @@ class Glycolytic_oscillator(KnownEquation):
     expr_obj_thres = 1e-6
 
     def __init__(self):
-        J0 = 2.5
-        k1 = 100
-        k2 = 6
-        k3 = 16
-        k4 = 100
-        k5 = 1.28
-        k6 = 12
-        K = 1.8
-        kappa = 13
-        q = 4
-        K1 = 0.52
-        phi = 0.1
-        N = 1
-        A = 4
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.kappa = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
 
         vars_range_and_types = [LogUniformSampling((0.15, 1.6), only_positive=True),
                                 LogUniformSampling((0.19, 2.16), only_positive=True),
@@ -61,17 +58,19 @@ class Glycolytic_oscillator(KnownEquation):
                                 LogUniformSampling((0.14, 2.67), only_positive=True),
                                 LogUniformSampling((0.05, 0.10), only_positive=True)]
         super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
-        x = self.x
 
-        self.np_eq = [
-            J0 - (k1 * x[0] * x[5]) / (1 + (x[5] / K1) ** q),
-            2 * (k1 * x[0] * x[5]) / (1 + (x[5] / K1) ** q) - k2 * x[1] * (N - x[4]) - k6 * x[1] * x[4],
-            k2 * x[1] * (N - x[4]) - k3 * x[2] * (A - x[5]),
-            k3 * x[2] * (A - x[5]) - k4 * x[3] * x[4] - kappa * (x[3] - x[6]),
-            k2 * x[1] * (N - x[4]) - k4 * x[3] * x[4] - k6 * x[1] * x[4],
-            -2 * k1 * x[0] * x[5] / (1 + (x[5] / K1) ** q) + 2 * k3 * x[2] * (A - x[5]) - k5 * x[5],
-            phi * kappa * (x[3] - x[6]) - K * x[6]
-        ]
+    def np_eq(self, t, x):
+        return np.array([
+            self.J0 - (self.k1 * x[0] * x[5]) / (1 + (x[5] / self.K1) ** self.q),
+            2 * (self.k1 * x[0] * x[5]) / (1 + (x[5] / self.K1) ** self.q) - self.k2 * x[1] * (N - x[4]) - self.k6 * x[
+                1] * x[4],
+            self.k2 * x[1] * (self.N - x[4]) - self.k3 * x[2] * (self.A - x[5]),
+            self.k3 * x[2] * (self.A - x[5]) - self.k4 * x[3] * x[4] - self.kappa * (x[3] - x[6]),
+            self.k2 * x[1] * (self.N - x[4]) - self.k4 * x[3] * x[4] - self.k6 * x[1] * x[4],
+            -2 * self.k1 * x[0] * x[5] / (1 + (x[5] / self.K1) ** self.q) + 2 * self.k3 * x[2] * (
+                        self.A - x[5]) - self.k5 * x[5],
+            self.phi * self.kappa * (x[3] - x[6]) - self.K * x[6]
+        ])
 
 
 # Carbone and Veltri triadic MHD model
@@ -81,7 +80,10 @@ class mhd(KnownEquation):
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
 
-    def __init__(self, nu=0.1, mu=0.2, sigma=0.3):
+    def __init__(self):
+        self.nu = 0.1
+        self.mu = 0.2
+        self.sigma = 0.3
         vars_range_and_types = [LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
@@ -89,16 +91,16 @@ class mhd(KnownEquation):
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True)]
         super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
-        x = self.x
 
-        self.np_eq = [
-            -2 * nu * x[0] + 4.0 * (x[1] * x[2] - x[4] * x[5]),
-            -5 * nu * x[1] - 7.0 * (x[0] * x[2] - x[3] * x[5]),
-            -9 * nu * x[2] + 3.0 * (x[0] * x[1] - x[3] * x[4]),
-            -2 * mu * x[4] + 2.0 * (x[5] * x[1] - x[2] * x[4]),
-            -5 * mu * x[4] + sigma * x[5] + 5.0 * (x[2] * x[3] - x[0] * x[5]),
-            -9 * mu * x[5] + sigma * x[4] + 9.0 * (x[4] * x[0] - x[1] * x[3]),
-        ]
+    def np_eq(self, t, x):
+        return np.array([
+            -2 * self.nu * x[0] + 4.0 * (x[1] * x[2] - x[4] * x[5]),
+            -5 * self.nu * x[1] - 7.0 * (x[0] * x[2] - x[3] * x[5]),
+            -9 * self.nu * x[2] + 3.0 * (x[0] * x[1] - x[3] * x[4]),
+            -2 * self.mu * x[4] + 2.0 * (x[5] * x[1] - x[2] * x[4]),
+            -5 * self.mu * x[4] + self.sigma * x[5] + 5.0 * (x[2] * x[3] - x[0] * x[5]),
+            -9 * self.mu * x[5] + self.sigma * x[4] + 9.0 * (x[4] * x[0] - x[1] * x[3]),
+        ])
 
 
 @register_eq_class
@@ -107,27 +109,32 @@ class Pendulum_on_cart(KnownEquation):
     _operator_set = ['add', 'sub', 'mul', 'div', 'n2', 'cos', 'sin', 'const']
     expr_obj_thres = 1e-6
 
-    def __init__(self, m=1, M=1, L=1, F=0, g=9.81):
+    def __init__(self):
+        self.m = 1
+        self.M = 1
+        self.L = 1
+        self.F = 0
+        self.g = 9.81
         vars_range_and_types = [LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True),
                                 LogUniformSampling((0.001, 10), only_positive=True)]
         super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
-        x = self.x
 
-        self.np_eq = [
-            x[2],
-            x[3],
-            (
-                    (M + m) * g * np.sin(x[0])
-                    - F * np.cos(x[0])
-                    - m * L * np.sin(x[0]) * np.cos(x[0]) * x[2] ** 2
-            ) / (
-                    L * (M + m * np.sin(x[0]) ** 2)
-            ),
-            (m * L * np.sin(x[0]) * x[2] ** 2 + F - m * g * np.sin(x[0]) * np.cos(x[0])) / (
-                    M + m * np.sin(x[0]) ** 2),
-        ]
+    def np_eq(self, t, x):
+        return np.array(
+            [x[2],
+             x[3],
+             (
+                     (self.M + self.m) * g * np.sin(x[0])
+                     - self.F * np.cos(x[0])
+                     - self.m * self.L * np.sin(x[0]) * np.cos(x[0]) * x[2] ** 2
+             ) / (
+                     self.L * (self.M + self.m * np.sin(x[0]) ** 2)
+             ),
+             (self.m * self.L * np.sin(x[0]) * x[2] ** 2 + self.F - self.m * g * np.sin(x[0]) * np.cos(x[0])) / (
+                     self.M + self.m * np.sin(x[0]) ** 2),
+             ])
 
 
 @register_eq_class
