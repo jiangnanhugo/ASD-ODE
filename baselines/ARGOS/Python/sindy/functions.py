@@ -56,7 +56,7 @@ def training_data_generate(init_conditions, t_span, f, dt, snr_db, true_matrix_a
     """
     Generate Training Data
     """
-    # generate training data
+    # generate training proc_data
     init_condition_values = init_conditions
     t_span_values = t_span
     states = int(len(init_conditions))
@@ -106,7 +106,7 @@ def training_data_generate(init_conditions, t_span, f, dt, snr_db, true_matrix_a
 def validation_data_generate(
     validation_init_condition_matrix, t_span, f, dt, snr_db, true_matrix_a
 ):
-    """Generate validation data"""
+    """Generate validation proc_data"""
     x_validation_list = []
     x_validation_smoothed_list = []
     x_dot_validation_smoothed_list = []
@@ -186,23 +186,23 @@ def perform_STLS_2D(
     validation_data,
 ):
     """SINDy with AIC for two-dimensional systems"""
-    # generate data
+    # generate proc_data
     training_data = training_data
     validation_data = validation_data
     # poly_order
     polyorder = poly_order
     # time span
     t_total = t_span
-    # load training data
+    # load training proc_data
     x_dot_smoothed, x_smoothed, dt = training_data
-    # load validation data
+    # load validation proc_data
     (
         nterms_sindy_AIC,
         validation_theta_list,
         x_validation_list,
         x_dot_validation_smoothed_list,
     ) = validation_data
-    # perform STLS on original data
+    # perform STLS on original proc_data
     # threshold_sequence = threshold_sequence
     models = []
     models_coeff = []
@@ -303,23 +303,23 @@ def perform_STLS_3D(
     validation_data,
 ):
     """Perform SINDy with AIC for 3D systems"""
-    # generate data
+    # generate proc_data
     training_data = training_data
     validation_data = validation_data
     # poly_order
     polyorder = poly_order
     # time span
     t_total = t_span
-    # load training data
+    # load training proc_data
     x_dot_smoothed, x_smoothed, dt = training_data
-    # load validation data
+    # load validation proc_data
     (
         nterms_sindy_AIC,
         validation_theta_list,
         x_validation_list,
         x_dot_validation_smoothed_list,
     ) = validation_data
-    # perform STLS on original data
+    # perform STLS on original proc_data
     models = []
     models_coeff = []
     for j in np.arange(0, len(threshold_sequence)):
@@ -439,9 +439,9 @@ def perform_ensemble_stls(
     method,
     library_ens,
 ):
-    # load training data
+    # load training proc_data
     x_dot_smoothed, x_smoothed, dt = training_data
-    # perform STLS on original data
+    # perform STLS on original proc_data
     # Create feature library
     if library_type == "fourier":
         polynomial_library = pl(degree=library_degree)
@@ -510,7 +510,7 @@ def perform_ensemble_stls(
         # These are arrays filled with zeros; we will populate them next
         filled_coefficients = np.zeros((n_rows, n_features))
         filled_inclusion_probabilities = np.zeros((n_rows, n_features))
-        # Fill arrays based on the available data
+        # Fill arrays based on the available proc_data
         for row in range(n_rows):
             col_idx = 0  # Initialize column index for coefficients and inclusion_probabilities arrays
             for feature_idx in range(n_features):

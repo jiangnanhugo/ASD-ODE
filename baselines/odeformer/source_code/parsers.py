@@ -226,12 +226,12 @@ def get_parser():
         help="split into chunks of size max_input_points at eval",
     )
 
-    # export data / reload it
+    # export proc_data / reload it
     parser.add_argument(
         "--export_data",
         type=bool_flag,
         default=False,
-        help="Export data and disable training.",
+        help="Export proc_data and disable training.",
     )
     parser.add_argument(
         "--reload_data",
@@ -353,7 +353,7 @@ def get_parser():
         "--eval_from_exp", type=str, default="", help="Path of experiment to use"
     )
     parser.add_argument(
-        "--eval_data", type=str, default="", help="Path of data to eval"
+        "--eval_data", type=str, default="", help="Path of proc_data to eval"
     )
     parser.add_argument(
         "--eval_verbose", type=int, default=0, help="Export evaluation details"

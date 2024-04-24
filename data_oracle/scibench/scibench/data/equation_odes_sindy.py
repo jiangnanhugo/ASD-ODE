@@ -1,21 +1,9 @@
-import sympy
+import numpy as np
 
-from collections import OrderedDict
-from data.base import KnownEquation
+from scibench.data.base import KnownEquation, register_eq_class
 from scibench.symbolic_data_generator import LogUniformSampling
 
-EQUATION_CLASS_DICT = OrderedDict()
 
-
-def register_eq_class(cls):
-    EQUATION_CLASS_DICT[cls.__name__] = cls
-    return cls
-
-
-def get_eq_obj(key, **kwargs):
-    if key in EQUATION_CLASS_DICT:
-        return EQUATION_CLASS_DICT[key](**kwargs)
-    raise KeyError(f'`{key}` is not expected as a equation object key')
 
 
 @register_eq_class
@@ -35,7 +23,7 @@ class Lorenz(KnownEquation):
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
         x = self.x
 
-        self.sympy_eq = [
+        self.np_eq = [
             sigma * (x[1] - x[0]),
             x[0] * (x[0] - rho - x[2]),
             x[0] * x[1] - beta * x[2]
@@ -75,7 +63,7 @@ class Glycolytic_oscillator(KnownEquation):
         super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
         x = self.x
 
-        self.sympy_eq = [
+        self.np_eq = [
             J0 - (k1 * x[0] * x[5]) / (1 + (x[5] / K1) ** q),
             2 * (k1 * x[0] * x[5]) / (1 + (x[5] / K1) ** q) - k2 * x[1] * (N - x[4]) - k6 * x[1] * x[4],
             k2 * x[1] * (N - x[4]) - k3 * x[2] * (A - x[5]),
@@ -103,7 +91,7 @@ class mhd(KnownEquation):
         super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
         x = self.x
 
-        self.sympy_eq = [
+        self.np_eq = [
             -2 * nu * x[0] + 4.0 * (x[1] * x[2] - x[4] * x[5]),
             -5 * nu * x[1] - 7.0 * (x[0] * x[2] - x[3] * x[5]),
             -9 * nu * x[2] + 3.0 * (x[0] * x[1] - x[3] * x[4]),
@@ -127,18 +115,18 @@ class Pendulum_on_cart(KnownEquation):
         super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
         x = self.x
 
-        self.sympy_eq = [
+        self.np_eq = [
             x[2],
             x[3],
             (
-                    (M + m) * g * sympy.sin(x[0])
-                    - F * sympy.cos(x[0])
-                    - m * L * sympy.sin(x[0]) * sympy.cos(x[0]) * x[2] ** 2
+                    (M + m) * g * np.sin(x[0])
+                    - F * np.cos(x[0])
+                    - m * L * np.sin(x[0]) * np.cos(x[0]) * x[2] ** 2
             ) / (
-                    L * (M + m * sympy.sin(x[0]) ** 2)
+                    L * (M + m * np.sin(x[0]) ** 2)
             ),
-            (m * L * sympy.sin(x[0]) * x[2] ** 2 + F - m * g * sympy.sin(x[0]) * sympy.cos(x[0])) / (
-                    M + m * sympy.sin(x[0]) ** 2),
+            (m * L * np.sin(x[0]) * x[2] ** 2 + F - m * g * np.sin(x[0]) * np.cos(x[0])) / (
+                    M + m * np.sin(x[0]) ** 2),
         ]
 
 
@@ -168,37 +156,37 @@ class Double_pendulum(KnownEquation):
         super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
         x = self.x
 
-        self.sympy_eq = [
+        self.np_eq = [
             x[2],
             x[3],
             (
-                    L1 * a2 ** 2 * g * m2 ** 2 * sympy.sin(x[0])
-                    - 2 * L1 * a2 ** 3 * x[3] ** 2 * m2 ** 2 * sympy.sin(x[0] - x[1])
-                    + 2 * I2 * L1 * g * m2 * sympy.sin(x[0])
-                    + L1 * a2 ** 2 * g * m2 ** 2 * sympy.sin(x[0] - 2 * x[1])
-                    + 2 * I2 * a1 * g * m1 * sympy.sin(x[0])
-                    - (L1 * a2 * x[2] * m2) ** 2 * sympy.sin(2 * (x[0] - x[1]))
-                    - 2 * I2 * L1 * a2 * x[3] ** 2 * m2 * sympy.sin(x[0] - x[1])
-                    + 2 * a1 * a2 ** 2 * g * m1 * m2 * sympy.sin(x[0])
+                    L1 * a2 ** 2 * g * m2 ** 2 * np.sin(x[0])
+                    - 2 * L1 * a2 ** 3 * x[3] ** 2 * m2 ** 2 * np.sin(x[0] - x[1])
+                    + 2 * I2 * L1 * g * m2 * np.sin(x[0])
+                    + L1 * a2 ** 2 * g * m2 ** 2 * np.sin(x[0] - 2 * x[1])
+                    + 2 * I2 * a1 * g * m1 * np.sin(x[0])
+                    - (L1 * a2 * x[2] * m2) ** 2 * np.sin(2 * (x[0] - x[1]))
+                    - 2 * I2 * L1 * a2 * x[3] ** 2 * m2 * np.sin(x[0] - x[1])
+                    + 2 * a1 * a2 ** 2 * g * m1 * m2 * np.sin(x[0])
             ) / (
                     2 * I1 * I2
                     + (L1 * a2 * m2) ** 2
                     + 2 * I2 * L1 ** 2 * m2
                     + 2 * I2 * a1 ** 2 * m1
                     + 2 * I1 * a2 ** 2 * m2
-                    - (L1 * a2 * m2) ** 2 * sympy.cos(2 * (x[0] - x[1]))
+                    - (L1 * a2 * m2) ** 2 * np.cos(2 * (x[0] - x[1]))
                     + 2 * (a1 * a2) ** 2 * m1 * m2
             ),
             (a2 * m2 * (
-                    2 * I1 * g * sympy.sin(x[1])
-                    + 2 * L1 ** 3 * x[2] ** 2 * m2 * sympy.sin(x[0] - x[1])
-                    + 2 * L1 ** 2 * g * m2 * sympy.sin(x[1])
-                    + 2 * I1 * L1 * x[2] ** 2 * sympy.sin(x[0] - x[1])
-                    + 2 * a1 ** 2 * g * m1 * sympy.sin(x[1])
-                    + L1 ** 2 * a2 * x[3] ** 2 * m2 * sympy.sin(2 * (x[0] - x[1]))
-                    + 2 * L1 * a1 ** 2 * x[2] ** 2 * m1 * sympy.sin(x[0] - x[1])
-                    - 2 * L1 ** 2 * g * m2 * sympy.cos(x[0] - x[1]) * sympy.sin(x[0])
-                    - 2 * L1 * a1 * g * m1 * sympy.cos(x[0] - x[1]) * sympy.sin(x[0])
+                    2 * I1 * g * np.sin(x[1])
+                    + 2 * L1 ** 3 * x[2] ** 2 * m2 * np.sin(x[0] - x[1])
+                    + 2 * L1 ** 2 * g * m2 * np.sin(x[1])
+                    + 2 * I1 * L1 * x[2] ** 2 * np.sin(x[0] - x[1])
+                    + 2 * a1 ** 2 * g * m1 * np.sin(x[1])
+                    + L1 ** 2 * a2 * x[3] ** 2 * m2 * np.sin(2 * (x[0] - x[1]))
+                    + 2 * L1 * a1 ** 2 * x[2] ** 2 * m1 * np.sin(x[0] - x[1])
+                    - 2 * L1 ** 2 * g * m2 * np.cos(x[0] - x[1]) * np.sin(x[0])
+                    - 2 * L1 * a1 * g * m1 * np.cos(x[0] - x[1]) * np.sin(x[0])
             )) / (
                     2 * (
                     I1 * I2
@@ -206,7 +194,7 @@ class Double_pendulum(KnownEquation):
                     + I2 * L1 ** 2 * m2
                     + I2 * a1 ** 2 * m1
                     + I1 * a2 ** 2 * m2
-                    - (L1 * a2 * m2) ** 2 * sympy.cos(x[0] - x[1]) ** 2
+                    - (L1 * a2 * m2) ** 2 * np.cos(x[0] - x[1]) ** 2
                     + a1 ** 2 * a2 ** 2 * m1 * m2
             )),
         ]
@@ -232,9 +220,9 @@ class Double_pendulum(KnownEquation):
 #         super().__init__(num_vars=7)
 #         x = self.x
 #         # v1 − k1s1x1 + k−1x2,
-#         self.sympy_eqs = [
+#         self.np_eqs = [
 #             v1 - self.k1 * x[0] * x[2] + k_neg1 * x[3],
-#             self.k2*x[1]-gamma*k3*s2**gamma*sympy.e+gmma *k_neg3*x[0] ]
+#             self.k2*x[1]-gamma*k3*s2**gamma*np.e+gmma *k_neg3*x[0] ]
 
 
 # # %Lotka–Volterra equation
@@ -259,7 +247,7 @@ class Double_pendulum(KnownEquation):
 #         super().__init__(num_vars=7)
 #         x = self.x
 #
-#         self.sympy_eqs = [alpha * x[0] - beta * x[0] * x[1],
+#         self.np_eqs = [alpha * x[0] - beta * x[0] * x[1],
 #                           delta * x[0] * x[1] - gamma * x[1]]
 
 
@@ -275,9 +263,9 @@ class Double_pendulum(KnownEquation):
 #     def __init__(self, N):
 #         #  N is the total number of interacting species.
 #         #  For simplicity all self-interacting terms αii are often set to 1.
-#         alpha = sympy.random.rand(N, N)
-#         r = sympy.random.rand(N)
-#         sympy.fill_diagonal(alpha, 1.0)
+#         alpha = np.random.rand(N, N)
+#         r = np.random.rand(N)
+#         np.fill_diagonal(alpha, 1.0)
 #         #
 #         # vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
 #         #                         LogUniformSampling(0.19, 2.16, only_positive=True),
@@ -286,7 +274,7 @@ class Double_pendulum(KnownEquation):
 #         super().__init__(num_vars=N)
 #         x = self.x
 #
-#         self.sympy_eqs = []
+#         self.np_eqs = []
 #         for i in range(N):
 #             summand = [alpha[i, j] * x[j] for j in range(N)]
-#             self.sympy_eqs.append(r[i] * x[i] * (1 - sum(summand)))
+#             self.np_eqs.append(r[i] * x[i] * (1 - sum(summand)))

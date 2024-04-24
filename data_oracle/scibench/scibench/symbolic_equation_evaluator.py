@@ -1,53 +1,12 @@
 import numpy as np
 
-from scipy.integrate import solve_ivp
-
+# from scipy.integrate import solve_ivp
+from scibench.solve_init_value_problem import runge_kutta4
 from sympy import lambdify, symbols
 from scibench.metrics import all_metrics, construct_noise
-from data import equation_object_loader
+from scibench.data import equation_object_loader
 
 EQUATION_EXTENSION = ".in"
-
-
-# def sympy_plus_scipy():
-#     from sympy import symbols, lambdify
-#     import numpy as np
-#     import scipy.integrate
-#     import matplotlib.pyplot as plt
-#
-#     # Create symbols y0, y1, and y2
-#     y = symbols('y:3')
-#
-#     rf = y[0] ** 2 * y[1]
-#     rb = y[2] ** 2
-#     # Derivative of the function y(t); values for the three chemical species
-#     # for input values y, kf, and kb
-#     ydot = [2 * (rb - rf), rb - rf, 2 * (rf - rb)]
-#     print(ydot)
-#     t = symbols('t')  # not used in this case
-#     # Convert the SymPy symbolic expression for ydot into a form that
-#     # SciPy can evaluate numerically, f
-#     f = lambdify((t, y), ydot)
-#     k_vals = np.array([0.42, 0.17])  # arbitrary in this case
-#     y0 = [1, 1, 0]  # initial condition (initial values)
-#     t_eval = np.linspace(0, 10, 50)  # evaluate integral from t = 0-10 for 50 points
-#     # Call SciPy's ODE initial value problem solver solve_ivp by passing it
-#     #   the function f,
-#     #   the interval of integration,
-#     #   the initial state, and
-#     #   the arguments to pass to the function f
-#     solution = scipy.integrate.solve_ivp(f, (0, 10), y0, t_eval=t_eval)
-#     # Extract the y (concentration) values from SciPy solution result
-#     y = solution.y
-#     # Plot the result graphically using matplotlib
-#     plt.plot(t_eval, y.T)
-#     # Add title, legend, and axis labels to the plot
-#     plt.title('Chemical Kinetics')
-#     plt.legend(['NO', 'Br$_2$', 'NOBr'], shadow=True)
-#     plt.xlabel('time')
-#     plt.ylabel('concentration')
-#     # Finally, display the annotated plot
-#     plt.show()
 
 
 class Equation_evaluator(object):
@@ -69,7 +28,7 @@ class Equation_evaluator(object):
         self.vars_range_and_types = self.true_equation.vars_range_and_types
         self.vars_range_and_types_to_json = self.true_equation.vars_range_and_types_to_json_str()
         self.input_var_Xs = self.true_equation.x
-        self.true_ode_equation = lambdify((t, self.input_var_Xs), self.true_equation.sympy_eq)
+        self.true_ode_equation = self.true_equation.sympy_eq
 
         # metric
         self.metric_name = metric_name
@@ -81,11 +40,8 @@ class Equation_evaluator(object):
         self.noises = construct_noise(self.noise_type)
 
     def evaluate(self, x_init_conds: list, time_span: tuple, t_evals: np.ndarray) -> np.ndarray:
-        true_trajectories = []
-        for one_x_init in x_init_conds:
-            one_solution = solve_ivp(self.true_ode_equation, t_span=time_span, y0=one_x_init, t_eval=t_evals, method='RK23')
-            true_trajectories.append(one_solution.y)
-        true_trajectories = np.asarray(true_trajectories)
+        true_trajectories = runge_kutta4(self.true_ode_equation, t_evals, x_init_conds)
+
         return true_trajectories
 
     def _evaluate_loss(self, X_init_cond, time_span: tuple, t_evals: np.ndarray,

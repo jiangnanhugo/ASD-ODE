@@ -110,7 +110,7 @@ if __name__ == "__main__":
     params.cpu = True
     
     params.eval_on_pmlb = True
-    #params.eval_on_file = "experiments/datagen_general/datagen_use_sympy_True/data.prefix.test"
+    #params.eval_on_file = "experiments/datagen_general/datagen_use_sympy_True/proc_data.prefix.test"
     
     odeformer.utils.CUDA = not params.cpu
     if params.batch_size_eval is None:

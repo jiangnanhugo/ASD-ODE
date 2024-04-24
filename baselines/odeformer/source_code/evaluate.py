@@ -251,7 +251,7 @@ class Evaluator(object):
 
             original_times, original_trajectories = deepcopy(times), deepcopy(trajectories)
 
-            # corrupt training data
+            # corrupt training proc_data
             for i, (time, trajectory) in enumerate(zip(times, trajectories)):
                 if self.params.eval_noise_gamma:
                     noise, gamma = self.env._create_noise(
@@ -282,11 +282,11 @@ class Evaluator(object):
             #    all_candidates[_trajectory_i] = self.model.fit(_times, _trajectory)[0]
             #    all_duration_fit[_trajectory_i] = [timer() - start_time_fit]
             
-            # evaluate on train data
+            # evaluate on train proc_data
             best_results, best_candidates = self._evaluate(
                 original_times, original_trajectories, trees, all_candidates, all_duration_fit, self.params.validation_metrics
             )
-            # evaluate on test data
+            # evaluate on test proc_data
             test_results, _ = self._evaluate(
                 times=samples["test"]["times"],
                 trajectories=samples["test"]["trajectories"],

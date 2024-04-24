@@ -132,7 +132,7 @@ class ContextFreeGrammar(object):
                                                                                 true_trajectories,
                                                                                 self.input_var_Xs)
 
-        # evaluate the fitted expressions on new validation data;
+        # evaluate the fitted expressions on new validation proc_data;
         self.task.rand_draw_init_cond()
         # true_trajectories = self.task.evaluate()
         for one_expression in many_expressions:

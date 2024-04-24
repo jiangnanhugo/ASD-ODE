@@ -210,7 +210,7 @@ class UniquePriorityQueue(Queue):
                     kept in the queue.
             item: A hashable item to be stored. Duplicates of this item will not be
                     added to the queue.
-            extra_data: An extra (possible not hashable) data to store with the item.
+            extra_data: An extra (possible not hashable) proc_data to store with the item.
         """
         if item in self.unique_items:
             return
@@ -229,7 +229,7 @@ class UniquePriorityQueue(Queue):
         Returns:
             score: Item's score.
             item: The item that was popped.
-            extra_data: Any extra data stored with the item.
+            extra_data: Any extra proc_data stored with the item.
         """
         if not self.heap:
             return ()
@@ -264,7 +264,7 @@ class UniquePriorityQueue(Queue):
 
         Yields:
             item: Hashable item.
-            extra_data: Extra data stored with the item.
+            extra_data: Extra proc_data stored with the item.
         """
         for _, item, extra_data in heapq.nlargest(len(self.heap), self.heap):
             yield item, extra_data

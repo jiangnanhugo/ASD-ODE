@@ -13,7 +13,7 @@ def f(x, t, a):
 
 def lotka_volterra_ode(n, dt, init_conditions, snr):
     t_span = np.arange(0, float(n)*dt, dt) 
-    x_total = odeint(f, init_conditions, t_span, args=(true_matrix_a,)) # noiseless data
+    x_total = odeint(f, init_conditions, t_span, args=(true_matrix_a,)) # noiseless proc_data
     if snr != 0:
         eps = 10 ** -(snr / 20)
         x_init = x_total.copy()

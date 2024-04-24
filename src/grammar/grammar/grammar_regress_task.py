@@ -3,7 +3,7 @@ import numpy as np
 
 class RegressTask(object):
     """
-    used to handle the initial condition and the time span of the ODE for querying the data oracle.
+    used to handle the initial condition and the time span of the ODE for querying the proc_data oracle.
     """
 
     def __init__(self, batch_size, n_vars, dataX, data_query_oracle,

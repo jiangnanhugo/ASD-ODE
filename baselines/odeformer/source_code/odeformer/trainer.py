@@ -85,7 +85,7 @@ class LoadParameters(object):
             except RuntimeError:  # remove the 'module.'
                 weights = {name.partition(".")[2]: v for name, v in data[k].items()}
                 v.load_state_dict(weights)
-            # weights = data[k]
+            # weights = proc_data[k]
             # weights_names = copy.deepcopy(list(weights.keys()))
             # for w in weights_names:
             #     if w.startswith("module"):
@@ -113,7 +113,7 @@ class Trainer(object):
         self.inner_epoch = self.total_samples = self.n_equations = 0
         self.infos_statistics = defaultdict(list)
 
-        # data iterators
+        # proc_data iterators
         self.iterators = {}
 
         # set parameters
@@ -190,10 +190,10 @@ class Trainer(object):
         # reload potential checkpoints
         self.reload_checkpoint(path=path, root=root)
 
-        # file handler to export data
+        # file handler to export proc_data
         if params.export_data:
             assert params.reload_data == ""
-            params.export_path_prefix = os.path.join(params.dump_path, "data.prefix")
+            params.export_path_prefix = os.path.join(params.dump_path, "proc_data.prefix")
             self.file_handler_prefix = io.open(
                 params.export_path_prefix, mode="a", encoding="utf-8"
             )
@@ -201,9 +201,9 @@ class Trainer(object):
                 f"Data will be stored in prefix in: {params.export_path_prefix} ..."
             )
 
-        # reload exported data
+        # reload exported proc_data
         if params.reload_data != "":
-            logger.info(f"Reloading data from {params.reload_data}")
+            logger.info(f"Reloading proc_data from {params.reload_data}")
             assert params.num_workers in [0, 1] 
             assert params.export_data is False
             s = [x.split(",") for x in params.reload_data.split(";") if len(x) > 0]
@@ -213,8 +213,8 @@ class Trainer(object):
                 # and all(len(x) == 4 for x in s) ##if we want multiple datasets
                 # and len(s) == len(set([x[0] for x in s]))
             )
-            train_path = os.path.join(params.reload_data,'data.prefix')
-            test_path = os.path.join(params.reload_data,'data.prefix.test')
+            train_path = os.path.join(params.reload_data,'proc_data.prefix')
+            test_path = os.path.join(params.reload_data,'proc_data.prefix.test')
             # check number of lines in test_path
             if os.path.isfile(test_path):
                 with open(test_path) as f:
@@ -238,7 +238,7 @@ class Trainer(object):
         else:
             self.data_path = None
 
-        # create data loaders
+        # create proc_data loaders
         if not params.eval_only:
             if params.env_base_seed < 0:
                 params.env_base_seed = np.random.randint(1_000_000_000)
@@ -667,7 +667,7 @@ class Trainer(object):
 
     def export_data(self, task):
         """
-        Export data to the disk.
+        Export proc_data to the disk.
         """
         samples, _ = self.get_batch(task)
         for info in samples["infos"]:

@@ -706,13 +706,13 @@ class FunctionEnvironment(object):
             "--extra_unary_operators",
             type=str,
             default="",
-            help="Extra unary operator to add to data generation",
+            help="Extra unary operator to add to proc_data generation",
         )
         parser.add_argument(
             "--extra_binary_operators",
             type=str,
             default="",
-            help="Extra binary operator to add to data generation",
+            help="Extra binary operator to add to proc_data generation",
         )
         parser.add_argument(
             "--extra_constants",
@@ -990,7 +990,7 @@ class EnvDataset(Dataset):
             if params.batch_load and self.train:
                 self.load_chunk()
             else:
-                logger.info(f"Loading data from {path} ...")
+                logger.info(f"Loading proc_data from {path} ...")
                 with io.open(path, mode="r", encoding="utf-8") as f:
                     # either reload the entire file, or the first N lines
                     # (for the training set)
@@ -1006,8 +1006,8 @@ class EnvDataset(Dataset):
                             if i % params.n_gpu_per_node == params.local_rank:
                                 # lines.append(line.rstrip())
                                 lines.append(json.loads(line.rstrip()))
-                # self.data = [xy.split("=") for xy in lines]
-                # self.data = [xy for xy in self.data if len(xy) == 3]
+                # self.proc_data = [xy.split("=") for xy in lines]
+                # self.proc_data = [xy for xy in self.proc_data if len(xy) == 3]
                 self.data = lines
                 logger.info(f"Loaded {len(self.data)} equations from the disk.")
 
@@ -1031,7 +1031,7 @@ class EnvDataset(Dataset):
     def load_chunk(self):
         self.basepos = self.nextpos
         logger.info(
-            f"Loading data from {self.path} ... seekpos {self.seekpos}, "
+            f"Loading proc_data from {self.path} ... seekpos {self.seekpos}, "
             f"basepos {self.basepos}"
         )
         endfile = False
