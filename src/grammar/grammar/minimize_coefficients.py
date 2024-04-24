@@ -19,6 +19,17 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.set_printoptions(precision=4, linewidth=np.inf)
 
 
+def euler_method(func, times, x_init):
+    """
+    https://perso.crans.org/besson/publis/notebooks/Runge-Kutta_methods_for_ODE_integration_in_Python.html
+    """
+    n = len(times)
+    y = np.zeros((n, len(x_init)))
+    y[0] = x_init
+    for i in range(len(times) - 1):
+        y[i + 1] = y[i] + (times[i + 1] - times[i]) * np.asarray(func(times[i], y[i]))
+    return y
+
 def runge_kutta4(func, times, x_init):
     """
     solve a batch of initial conditions
@@ -28,10 +39,10 @@ def runge_kutta4(func, times, x_init):
     y[0] = x_init
     for i in range(len(times) - 1):
         h = times[i + 1] - times[i]
-        k1 = np.array(func(times[i], y[i]))
-        k2 = np.array(func(times[i] + h / 2., y[i] + k1 * h / 2))
-        k3 = np.array(func(times[i] + h / 2, y[i] + k2 * h / 2))
-        k4 = np.array(func(times[i] + h, y[i] + k3 * h))
+        k1 = np.asarray(func(times[i], y[i]))
+        k2 = np.asarray(func(times[i] + h / 2., y[i] + k1 * h / 2))
+        k3 = np.asarray(func(times[i] + h / 2, y[i] + k2 * h / 2))
+        k4 = np.asarray(func(times[i] + h, y[i] + k3 * h))
         y[i + 1] = y[i] + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
     return y
 
@@ -113,10 +124,10 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         # do more than one experiment,
         x0 = np.random.rand(len(c_lst))
         try:
-            max_iter = max_opt_iter
+
             if user_scpeficied_iters > 0:
-                max_iter = user_scpeficied_iters
-            opt_result = scipy_minimize(f, x0, optimizer_name, num_changing_consts, max_iter)
+                max_opt_iter = user_scpeficied_iters
+            opt_result = scipy_minimize(f, x0, optimizer_name, num_changing_consts, max_opt_iter)
             t_optimized_constants = opt_result['x']
             c_lst = t_optimized_constants.tolist()
             t_optimized_obj = opt_result['fun']
@@ -212,11 +223,11 @@ def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_
     try:
         func = lambdify((t, input_var_Xs), expr_odes, modules='numpy')
         pred_trajectories = []
-
         for one_x_init in x_init_conds:
             one_solution = runge_kutta4(func, t_evals, one_x_init)
             pred_trajectories.append(one_solution)
         pred_trajectories = np.asarray(pred_trajectories)
+
         if pred_trajectories is complex:
             return None
             # return np.ones(init_cond.shape[-1]) * np.infty
@@ -232,8 +243,6 @@ def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_
         return None
     return pred_trajectories
 
-
-#         func()
 
 def simplify_template(equations: list) -> list:
     new_equations = []

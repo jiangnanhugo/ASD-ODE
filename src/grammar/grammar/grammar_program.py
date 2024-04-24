@@ -49,7 +49,7 @@ class grammarProgram(object):
     used for optimizing the constants in the expressions.
     """
 
-    def __init__(self, non_terminal_nodes, optimizer="BFGS", metric_name='inv_nrmse', max_opt_iter=100, n_cores=1,
+    def __init__(self, non_terminal_nodes, optimizer="BFGS", metric_name='neg_mse', max_opt_iter=1000, n_cores=1,
                  max_open_constants=20):
         """
         max_open_constants: the maximum number of allowed open constants in the expression.
@@ -140,7 +140,7 @@ def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories
                  optimizer_name, non_terminal_nodes):
     results = []
     for one_expr in one_expr_batch:
-        reward, fitted_eq, _, _ = optimize(
+        train_loss, fitted_eq, _, _ = optimize(
             one_expr.expr_template,
             init_cond, time_span, t_eval,
             true_trajectories,
@@ -148,7 +148,7 @@ def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories
             loss_func, max_open_constants, max_opt_iter, optimizer_name,
             non_terminal_nodes)
 
-        one_expr.train_loss = reward
+        one_expr.train_loss = train_loss
         one_expr.fitted_eq = fitted_eq
         results.append(one_expr)
 

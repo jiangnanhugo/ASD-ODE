@@ -1,7 +1,7 @@
 import numpy as np
 
-# from scipy.integrate import solve_ivp
-from scibench.solve_init_value_problem import runge_kutta4
+from scipy.integrate import solve_ivp
+from scibench.solve_init_value_problem import runge_kutta4,runge_kutta2, euler_method
 from sympy import lambdify, symbols
 from scibench.metrics import all_metrics, construct_noise
 from scibench.data import equation_object_loader
@@ -20,7 +20,6 @@ class Equation_evaluator(object):
         self.batch_size = batch_size
 
         self.true_equation = equation_object_loader(true_equation_name)
-        t = symbols('t')
 
         assert self.true_equation, "true_equation is not found"
         self.nvars = self.true_equation.num_vars
@@ -28,7 +27,7 @@ class Equation_evaluator(object):
         self.vars_range_and_types = self.true_equation.vars_range_and_types
         self.vars_range_and_types_to_json = self.true_equation.vars_range_and_types_to_json_str()
         self.input_var_Xs = self.true_equation.x
-        # self.true_ode_equation = lambdify((t,self.input_var_Xs), self.true_equation.np_eq,'numpy')
+        #
         self.true_ode_equation = self.true_equation.np_eq
         # metric
         self.metric_name = metric_name
@@ -46,7 +45,6 @@ class Equation_evaluator(object):
             true_trajectories.append(one_solution)
         true_trajectories = np.asarray(true_trajectories)
         return true_trajectories
-
 
     def _evaluate_loss(self, X_init_cond, time_span: tuple, t_evals: np.ndarray,
                        pred_trajectories: np.ndarray) -> float:

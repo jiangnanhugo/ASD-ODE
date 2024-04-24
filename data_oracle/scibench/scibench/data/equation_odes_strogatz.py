@@ -55,3 +55,4 @@ class PopulationGrowthWithCarryingCapacity(KnownEquation):
         return np.array([
             self.c[0] * x[0] * (1 - x[0] / self.c[1])
         ])
+

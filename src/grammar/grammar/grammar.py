@@ -1,9 +1,9 @@
 import numpy as np
 from sympy import Symbol
 
-
 from grammar.grammar_program import SymbolicDifferentialEquations
 from grammar.minimize_coefficients import execute
+
 
 class ContextFreeGrammar(object):
     # will link to regression_task
@@ -120,17 +120,19 @@ class ContextFreeGrammar(object):
         true_trajectories = self.task.evaluate()
         many_expressions = []
         if self.program.n_cores == 1:
-            many_expressions = self.program.fitting_new_expressions(filtered_many_rules,
-                                                                    self.task.init_cond,
-                                                                    self.task.time_span, self.task.t_evals,
-                                                                    true_trajectories,
-                                                                    self.input_var_Xs)
+            many_expressions = self.program.fitting_new_expressions(
+                filtered_many_rules,
+                self.task.init_cond,
+                self.task.time_span, self.task.t_evals,
+                true_trajectories,
+                self.input_var_Xs)
         elif self.program.n_cores > 1:
-            many_expressions = self.program.fitting_new_expressions_in_parallel(filtered_many_rules,
-                                                                                self.task.init_cond,
-                                                                                self.task.time_span, self.task.t_evals,
-                                                                                true_trajectories,
-                                                                                self.input_var_Xs)
+            many_expressions = self.program.fitting_new_expressions_in_parallel(
+                filtered_many_rules,
+                self.task.init_cond,
+                self.task.time_span, self.task.t_evals,
+                true_trajectories,
+                self.input_var_Xs)
 
         # evaluate the fitted expressions on new validation proc_data;
         self.task.rand_draw_init_cond()
@@ -154,7 +156,6 @@ class ContextFreeGrammar(object):
 
     def update_hall_of_fame(self, one_fitted_expression: SymbolicDifferentialEquations):
         # the best equations should be placed at the top 1 slot of self.hall_of_fame
-
         if one_fitted_expression.traversal.count(';') <= self.max_length:
             if not self.best_predicted_equations:
                 self.best_predicted_equations = [one_fitted_expression]
@@ -168,9 +169,10 @@ class ContextFreeGrammar(object):
                 else:
                     if one_fitted_expression.train_loss > self.best_predicted_equations[-1].train_loss:
                         # sorting the list in descending order
-                        self.best_predicted_equations = sorted(self.best_predicted_equations[1:] + [one_fitted_expression],
-                                                               key=lambda x: x.train_loss,
-                                                               reverse=False)
+                        self.best_predicted_equations = sorted(
+                            self.best_predicted_equations[1:] + [one_fitted_expression],
+                            key=lambda x: x.train_loss,
+                            reverse=False)
 
     def print_hofs(self, verbose=False):
         self.task.rand_draw_init_cond()

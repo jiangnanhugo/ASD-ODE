@@ -24,7 +24,9 @@ class RegressTask(object):
         self.n_vars = n_vars
 
     def rand_draw_init_cond(self):
-        self.init_cond = self.dataX.randn(sample_size=self.num_init_conds).T
+        # return [num_of_init_conds, num_input_vars]
+        init_cond = self.dataX.randn(sample_size=self.num_init_conds).T
+        self.init_cond = init_cond.reshape([-1, self.n_vars])
 
     def evaluate(self):
         return self.data_query_oracle.evaluate(self.init_cond, self.time_span, self.t_evals)

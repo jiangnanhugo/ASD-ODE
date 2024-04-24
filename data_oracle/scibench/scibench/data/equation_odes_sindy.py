@@ -19,6 +19,12 @@ class Lorenz(KnownEquation):
                                      LogUniformSampling((1e-2, 10.0), only_positive=True),
                                      LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+        x=self.x
+        self.sympy_eq=[
+            self.sigma * (x[1] - x[0]),
+            x[0] * (x[0] - self.rho - x[2]),
+            x[0] * x[1] - self.beta * x[2]
+        ]
 
     def np_eq(self, t, x):
         return np.array([
