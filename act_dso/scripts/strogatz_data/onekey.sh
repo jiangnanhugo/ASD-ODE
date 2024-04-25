@@ -1,0 +1,1 @@
+./run.strogatz.xuelab.sh vars1 23
