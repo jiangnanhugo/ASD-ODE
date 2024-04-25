@@ -46,6 +46,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
     function_set = data_query_oracle.get_operators_set()
+    print(function_set)
 
 
     time_span = (0.0001, 10)

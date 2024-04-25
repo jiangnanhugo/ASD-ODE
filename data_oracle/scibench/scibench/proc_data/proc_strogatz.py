@@ -10,7 +10,7 @@ from scibench.symbolic_data_generator import LogUniformSampling
 template = """@register_eq_class
 class {}(KnownEquation):
     _eq_name = '{}'
-    _function_set = {}
+    _operator_set = {}
     # description: {}
     def __init__(self):
         
