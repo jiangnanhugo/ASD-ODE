@@ -2,16 +2,16 @@
 basepath=/home/$USER/data/act_ode
 py3=/home/$USER/miniconda3/envs/py310/bin/python3.10
 #
-type=Lorenz
+type=Strogatz
 #datapath=$basepath/data/differential_equations/
 opt=Nelder-Mead
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
-n_cores=1
+n_cores=10
 num_init_conds=5
 set -x
-for eq_name in Lorenz;
+for eq_name in vars1_prog3;
 do
 	echo "submit $eq_name"
 
