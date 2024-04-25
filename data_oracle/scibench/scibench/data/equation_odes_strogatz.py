@@ -6,7 +6,7 @@ from scibench.symbolic_data_generator import LogUniformSampling
 @register_eq_class
 class STROGATZ_P_20(KnownEquation):
     _eq_name = 'vars1_prog1'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: RC-circuit (charging capacitor)
     def __init__(self):
@@ -20,7 +20,7 @@ class STROGATZ_P_20(KnownEquation):
 @register_eq_class
 class STROGATZ_P_22(KnownEquation):
     _eq_name = 'vars1_prog2'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Population growth (naive)
     def __init__(self):
@@ -34,7 +34,7 @@ class STROGATZ_P_22(KnownEquation):
 @register_eq_class
 class STROGATZ_P_22(KnownEquation):
     _eq_name = 'vars1_prog3'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Population growth with carrying capacity
     def __init__(self):
@@ -48,7 +48,7 @@ class STROGATZ_P_22(KnownEquation):
 @register_eq_class
 class STROGATZ_P_38(KnownEquation):
     _eq_name = 'vars1_prog4'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'exp']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'exp']
 
     # description: RC-circuit with non-linear resistor (charging capacitor)
     def __init__(self):
@@ -63,7 +63,7 @@ class STROGATZ_P_38(KnownEquation):
 @register_eq_class
 class STROGATZ_P_38(KnownEquation):
     _eq_name = 'vars1_prog5'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Velocity of a falling object with air resistance
     def __init__(self):
@@ -77,7 +77,7 @@ class STROGATZ_P_38(KnownEquation):
 @register_eq_class
 class STROGATZ_P_39(KnownEquation):
     _eq_name = 'vars1_prog6'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Autocatalysis with one fixed abundant chemical
     def __init__(self):
@@ -91,7 +91,7 @@ class STROGATZ_P_39(KnownEquation):
 @register_eq_class
 class STROGATZ_P_39(KnownEquation):
     _eq_name = 'vars1_prog7'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'log']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'log']
 
     # description: Gompertz law for tumor growth
     def __init__(self):
@@ -105,7 +105,7 @@ class STROGATZ_P_39(KnownEquation):
 @register_eq_class
 class STROGATZ_P_39(KnownEquation):
     _eq_name = 'vars1_prog8'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Logistic equation with Allee effect
     def __init__(self):
@@ -119,7 +119,7 @@ class STROGATZ_P_39(KnownEquation):
 @register_eq_class
 class STROGATZ_P_40(KnownEquation):
     _eq_name = 'vars1_prog9'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Language death model for two languages
     def __init__(self):
@@ -133,7 +133,7 @@ class STROGATZ_P_40(KnownEquation):
 @register_eq_class
 class STROGATZ_P_40(KnownEquation):
     _eq_name = 'vars1_prog10'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Refined language death model for two languages
     def __init__(self):
@@ -147,7 +147,7 @@ class STROGATZ_P_40(KnownEquation):
 @register_eq_class
 class STROGATZ_P_41(KnownEquation):
     _eq_name = 'vars1_prog11'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Naive critical slowing down (statistical mechanics)
     def __init__(self):
@@ -161,7 +161,7 @@ class STROGATZ_P_41(KnownEquation):
 @register_eq_class
 class STROGATZ_P_55(KnownEquation):
     _eq_name = 'vars1_prog12'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Photons in a laser (simple)
     def __init__(self):
@@ -175,7 +175,7 @@ class STROGATZ_P_55(KnownEquation):
 @register_eq_class
 class STROGATZ_P_63(KnownEquation):
     _eq_name = 'vars1_prog13'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
 
     # description: Overdamped bead on a rotating hoop
     def __init__(self):
@@ -189,7 +189,7 @@ class STROGATZ_P_63(KnownEquation):
 @register_eq_class
 class STROGATZ_P_75(KnownEquation):
     _eq_name = 'vars1_prog14'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Budworm outbreak model with predation
     def __init__(self):
@@ -204,7 +204,7 @@ class STROGATZ_P_75(KnownEquation):
 @register_eq_class
 class STROGATZ_P_76(KnownEquation):
     _eq_name = 'vars1_prog15'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Budworm outbreak with predation (dimensionless)
     def __init__(self):
@@ -218,7 +218,7 @@ class STROGATZ_P_76(KnownEquation):
 @register_eq_class
 class STROGATZ_P_87(KnownEquation):
     _eq_name = 'vars1_prog16'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Landau equation (typical time scale tau = 1)
     def __init__(self):
@@ -232,7 +232,7 @@ class STROGATZ_P_87(KnownEquation):
 @register_eq_class
 class STROGATZ_P_89(KnownEquation):
     _eq_name = 'vars1_prog17'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Logistic equation with harvesting/fishing
     def __init__(self):
@@ -246,7 +246,7 @@ class STROGATZ_P_89(KnownEquation):
 @register_eq_class
 class STROGATZ_P_90(KnownEquation):
     _eq_name = 'vars1_prog18'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Improved logistic equation with harvesting/fishing
     def __init__(self):
@@ -260,7 +260,7 @@ class STROGATZ_P_90(KnownEquation):
 @register_eq_class
 class STROGATZ_P_90(KnownEquation):
     _eq_name = 'vars1_prog19'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Improved logistic equation with harvesting/fishing (dimensionless)
     def __init__(self):
@@ -274,7 +274,7 @@ class STROGATZ_P_90(KnownEquation):
 @register_eq_class
 class STROGATZ_P_91(KnownEquation):
     _eq_name = 'vars1_prog20'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Autocatalytic gene switching (dimensionless)
     def __init__(self):
@@ -288,7 +288,7 @@ class STROGATZ_P_91(KnownEquation):
 @register_eq_class
 class STROGATZ_P_92(KnownEquation):
     _eq_name = 'vars1_prog21'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'exp']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'exp']
 
     # description: Dimensionally reduced SIR infection model for dead people (dimensionless)
     def __init__(self):
@@ -302,7 +302,7 @@ class STROGATZ_P_92(KnownEquation):
 @register_eq_class
 class STROGATZ_P_93(KnownEquation):
     _eq_name = 'vars1_prog22'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Hysteretic activation of a protein expression (positive feedback, basal promoter expression)
     def __init__(self):
@@ -316,7 +316,7 @@ class STROGATZ_P_93(KnownEquation):
 @register_eq_class
 class STROGATZ_P_104(KnownEquation):
     _eq_name = 'vars1_prog23'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
 
     # description: Overdamped pendulum with constant driving torque/fireflies/Josephson junction (dimensionless)
     def __init__(self):
@@ -330,7 +330,7 @@ class STROGATZ_P_104(KnownEquation):
 @register_eq_class
 class STROGATZ_P_126(KnownEquation):
     _eq_name = 'vars2_prog1'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Harmonic oscillator without damping
     def __init__(self):
@@ -345,7 +345,7 @@ class STROGATZ_P_126(KnownEquation):
 @register_eq_class
 class STROGATZ_P_144(KnownEquation):
     _eq_name = 'vars2_prog2'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Harmonic oscillator with damping
     def __init__(self):
@@ -360,7 +360,7 @@ class STROGATZ_P_144(KnownEquation):
 @register_eq_class
 class STROGATZ_P_157(KnownEquation):
     _eq_name = 'vars2_prog3'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Lotka-Volterra competition model (Strogatz version with sheeps and rabbits)
     def __init__(self):
@@ -375,7 +375,7 @@ class STROGATZ_P_157(KnownEquation):
 @register_eq_class
 class LOTKA_VOLTERRA(KnownEquation):
     _eq_name = 'vars2_prog4'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Lotka-Volterra simple (as on Wikipedia)
     def __init__(self):
@@ -390,7 +390,7 @@ class LOTKA_VOLTERRA(KnownEquation):
 @register_eq_class
 class STROGATZ_P_169(KnownEquation):
     _eq_name = 'vars2_prog5'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
 
     # description: Pendulum without friction
     def __init__(self):
@@ -405,7 +405,7 @@ class STROGATZ_P_169(KnownEquation):
 @register_eq_class
 class STROGATZ_P_181(KnownEquation):
     _eq_name = 'vars2_prog6'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Dipole fixed point
     def __init__(self):
@@ -420,7 +420,7 @@ class STROGATZ_P_181(KnownEquation):
 @register_eq_class
 class STROGATZ_P_187(KnownEquation):
     _eq_name = 'vars2_prog7'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: RNA molecules catalyzing each others replication
     def __init__(self):
@@ -435,7 +435,7 @@ class STROGATZ_P_187(KnownEquation):
 @register_eq_class
 class STROGATZ_P_188(KnownEquation):
     _eq_name = 'vars2_prog8'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: SIR infection model only for healthy and sick
     def __init__(self):
@@ -450,7 +450,7 @@ class STROGATZ_P_188(KnownEquation):
 @register_eq_class
 class STROGATZ_P_190(KnownEquation):
     _eq_name = 'vars2_prog9'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Damped double well oscillator
     def __init__(self):
@@ -465,7 +465,7 @@ class STROGATZ_P_190(KnownEquation):
 @register_eq_class
 class STROGATZ_P_190(KnownEquation):
     _eq_name = 'vars2_prog10'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
 
     # description: Glider (dimensionless)
     def __init__(self):
@@ -480,7 +480,7 @@ class STROGATZ_P_190(KnownEquation):
 @register_eq_class
 class STROGATZ_P_191(KnownEquation):
     _eq_name = 'vars2_prog11'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
 
     # description: Frictionless bead on a rotating hoop (dimensionless)
     def __init__(self):
@@ -495,7 +495,7 @@ class STROGATZ_P_191(KnownEquation):
 @register_eq_class
 class STROGATZ_P_194(KnownEquation):
     _eq_name = 'vars2_prog12'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'cot']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos', 'cot']
 
     # description: Rotational dynamics of an object in a shear flow
     def __init__(self):
@@ -510,7 +510,7 @@ class STROGATZ_P_194(KnownEquation):
 @register_eq_class
 class STROGATZ_P_195(KnownEquation):
     _eq_name = 'vars2_prog13'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
 
     # description: Pendulum with non-linear damping, no driving (dimensionless)
     def __init__(self):
@@ -525,7 +525,7 @@ class STROGATZ_P_195(KnownEquation):
 @register_eq_class
 class STROGATZ_P_200(KnownEquation):
     _eq_name = 'vars2_prog14'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Van der Pol oscillator (standard form)
     def __init__(self):
@@ -540,7 +540,7 @@ class STROGATZ_P_200(KnownEquation):
 @register_eq_class
 class STROGATZ_P_214(KnownEquation):
     _eq_name = 'vars2_prog15'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Van der Pol oscillator (simplified form from Strogatz)
     def __init__(self):
@@ -555,7 +555,7 @@ class STROGATZ_P_214(KnownEquation):
 @register_eq_class
 class STROGATZ_P_207(KnownEquation):
     _eq_name = 'vars2_prog16'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Glycolytic oscillator, e.g., ADP and F6P in yeast (dimensionless)
     def __init__(self):
@@ -570,7 +570,7 @@ class STROGATZ_P_207(KnownEquation):
 @register_eq_class
 class STROGATZ_P_217(KnownEquation):
     _eq_name = 'vars2_prog17'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Duffing equation (weakly non-linear oscillation)
     def __init__(self):
@@ -585,7 +585,7 @@ class STROGATZ_P_217(KnownEquation):
 @register_eq_class
 class STROGATZ_P_238(KnownEquation):
     _eq_name = 'vars2_prog18'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Cell cycle model by Tyson for interaction between protein cdc2 and cyclin (dimensionless)
     def __init__(self):
@@ -600,7 +600,7 @@ class STROGATZ_P_238(KnownEquation):
 @register_eq_class
 class STROGATZ_P_260(KnownEquation):
     _eq_name = 'vars2_prog19'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Reduced model for chlorine dioxide-iodine-malonic acid rection (dimensionless)
     def __init__(self):
@@ -616,7 +616,7 @@ class STROGATZ_P_260(KnownEquation):
 @register_eq_class
 class STROGATZ_P_269(KnownEquation):
     _eq_name = 'vars2_prog20'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
 
     # description: Driven pendulum with linear damping / Josephson junction (dimensionless)
     def __init__(self):
@@ -631,7 +631,7 @@ class STROGATZ_P_269(KnownEquation):
 @register_eq_class
 class STROGATZ_P_300(KnownEquation):
     _eq_name = 'vars2_prog21'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin', 'abs']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'abs']
 
     # description: Driven pendulum with quadratic damping (dimensionless)
     def __init__(self):
@@ -646,7 +646,7 @@ class STROGATZ_P_300(KnownEquation):
 @register_eq_class
 class STROGATZ_P_288(KnownEquation):
     _eq_name = 'vars2_prog22'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Isothermal autocatalytic reaction model by Gray and Scott 1985 (dimensionless)
     def __init__(self):
@@ -661,7 +661,7 @@ class STROGATZ_P_288(KnownEquation):
 @register_eq_class
 class STROGATZ_P_289(KnownEquation):
     _eq_name = 'vars2_prog23'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
 
     # description: Interacting bar magnets
     def __init__(self):
@@ -676,7 +676,7 @@ class STROGATZ_P_289(KnownEquation):
 @register_eq_class
 class STROGATZ_P_290(KnownEquation):
     _eq_name = 'vars2_prog24'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'exp']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'exp']
 
     # description: Binocular rivalry model (no oscillations)
     def __init__(self):
@@ -692,7 +692,7 @@ class STROGATZ_P_290(KnownEquation):
 @register_eq_class
 class STROGATZ_P_293(KnownEquation):
     _eq_name = 'vars2_prog25'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Bacterial respiration model for nutrients and oxygen levels
     def __init__(self):
@@ -708,7 +708,7 @@ class STROGATZ_P_293(KnownEquation):
 @register_eq_class
 class STROGATZ_P_296(KnownEquation):
     _eq_name = 'vars2_prog26'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Brusselator: hypothetical chemical oscillation model (dimensionless)
     def __init__(self):
@@ -723,7 +723,7 @@ class STROGATZ_P_296(KnownEquation):
 @register_eq_class
 class STROGATZ_P_296(KnownEquation):
     _eq_name = 'vars2_prog27'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Chemical oscillator model by Schnackenberg 1979 (dimensionless)
     def __init__(self):
@@ -738,7 +738,7 @@ class STROGATZ_P_296(KnownEquation):
 @register_eq_class
 class STROGATZ_P_301(KnownEquation):
     _eq_name = 'vars2_prog28'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
 
     # description: Oscillator death model by Ermentrout and Kopell 1990
     def __init__(self):
@@ -753,7 +753,7 @@ class STROGATZ_P_301(KnownEquation):
 @register_eq_class
 class STROGATZ_P_82(KnownEquation):
     _eq_name = 'vars3_prog1'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Maxwell-Bloch equations (laser dynamics)
     def __init__(self):
@@ -770,7 +770,7 @@ class STROGATZ_P_82(KnownEquation):
 @register_eq_class
 class MODEL_FOR_APOPTOSIS(KnownEquation):
     _eq_name = 'vars3_prog2'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Model for apoptosis (cell death)
     def __init__(self):
@@ -791,7 +791,7 @@ class MODEL_FOR_APOPTOSIS(KnownEquation):
 @register_eq_class
 class STROGATZ_P_319(KnownEquation):
     _eq_name = 'vars3_prog3'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Lorenz equations in well-behaved periodic regime
     def __init__(self):
@@ -807,7 +807,7 @@ class STROGATZ_P_319(KnownEquation):
 @register_eq_class
 class STROGATZ_P_319(KnownEquation):
     _eq_name = 'vars3_prog4'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Lorenz equations in complex periodic regime
     def __init__(self):
@@ -824,7 +824,7 @@ class STROGATZ_P_319(KnownEquation):
 @register_eq_class
 class STROGATZ_P_319(KnownEquation):
     _eq_name = 'vars3_prog5'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Lorenz equations standard parameters (chaotic)
     def __init__(self):
@@ -841,7 +841,7 @@ class STROGATZ_P_319(KnownEquation):
 @register_eq_class
 class ROSSLER_ATTRACTOR(KnownEquation):
     _eq_name = 'vars3_prog6'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Rössler attractor (stable fixed point)
     def __init__(self):
@@ -857,7 +857,7 @@ class ROSSLER_ATTRACTOR(KnownEquation):
 @register_eq_class
 class ROSSLER_ATTRACTOR_PERIODIC(KnownEquation):
     _eq_name = 'vars3_prog7'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Rössler attractor (periodic)
     def __init__(self):
@@ -873,7 +873,7 @@ class ROSSLER_ATTRACTOR_PERIODIC(KnownEquation):
 @register_eq_class
 class ROSSLER_ATTRACTOR_CHAOTIC(KnownEquation):
     _eq_name = 'vars3_prog8'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Rössler attractor (chaotic)
     def __init__(self):
@@ -889,7 +889,7 @@ class ROSSLER_ATTRACTOR_CHAOTIC(KnownEquation):
 @register_eq_class
 class AIZAWA_ATTRACTOR_CHAOTIC(KnownEquation):
     _eq_name = 'vars3_prog9'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Aizawa attractor (chaotic)
     def __init__(self):
@@ -907,7 +907,7 @@ class AIZAWA_ATTRACTOR_CHAOTIC(KnownEquation):
 @register_eq_class
 class CHEN_LEE_ATTRACTOR(KnownEquation):
     _eq_name = 'vars3_prog10'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: Chen-Lee attractor; system for gyro motion with feedback control of rigid body (chaotic)
     def __init__(self):
@@ -924,7 +924,7 @@ class CHEN_LEE_ATTRACTOR(KnownEquation):
 @register_eq_class
 class STROGATZ_P_295(KnownEquation):
     _eq_name = 'vars4_prog1'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'exp']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'exp']
 
     # description: Binocular rivalry model with adaptation (oscillations)
     def __init__(self):
@@ -945,7 +945,7 @@ class STROGATZ_P_295(KnownEquation):
 @register_eq_class
 class SEIR_INFECTION_MODEL_PROPORTIONS(KnownEquation):
     _eq_name = 'vars4_prog2'
-    _operator_set = ['add', 'sub', 'mul', 'div']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
 
     # description: SEIR infection model (proportions)
     def __init__(self):

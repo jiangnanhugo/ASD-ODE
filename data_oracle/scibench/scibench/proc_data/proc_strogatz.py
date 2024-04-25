@@ -30,7 +30,7 @@ def fill_template(expressions, class_name, name, nvars, description, function_se
 
 
 def detect_function_set(one_ode):
-    function_set_base = ['add', 'sub', 'mul', 'div']
+    function_set_base = ['add', 'sub', 'mul', 'div', 'const']
     if 'sin' in one_ode:
         function_set_base.append('sin')
     if 'cos' in one_ode:
