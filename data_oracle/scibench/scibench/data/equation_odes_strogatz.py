@@ -32,7 +32,7 @@ class STROGATZ_P_22(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_22(KnownEquation):
+class STROGATZ_P_23(KnownEquation):
     _eq_name = 'vars1_prog3'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Population growth with carrying capacity"
