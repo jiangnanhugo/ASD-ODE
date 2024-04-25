@@ -32,7 +32,7 @@ threshold_values = {
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--max_len', default=10, help="max length of the sequence from the decoder")
-@click.option('--total_iterations', default=20, help="Number of iterations per rounds")
+@click.option('--total_iterations', default=50, help="Number of iterations per rounds")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, noise_type, noise_scale, max_len,
          total_iterations,
@@ -49,8 +49,9 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     print(function_set)
 
     time_span = (0.0001, 2)
-    trajectory_time_steps = 100
+    trajectory_time_steps = 20
     max_opt_iter = 500
+    RNN_sample_size=128
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
                        nvars,
@@ -96,7 +97,8 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     print("training starting......")
     model.train(
         threshold_values[metric_name]['reward_threshold'],
-        total_iterations
+        total_iterations,
+        RNN_sample_size
     )
     end_time = time.time() - start
 
