@@ -43,6 +43,4 @@ $py3 $basepath/act_dso/main.py $basepath/act_dso/config/config_regression.json -
 		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  >$dump_dir/Eq_${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out &
 
 EOT
-	done
 done
-	done
