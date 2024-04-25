@@ -48,9 +48,9 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     function_set = data_query_oracle.get_operators_set()
     print(function_set)
 
-
-    time_span = (0.0001, 10)
-    trajectory_time_steps = 500
+    time_span = (0.0001, 2)
+    trajectory_time_steps = 100
+    max_opt_iter = 500
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
                        nvars,
@@ -70,7 +70,8 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     program = grammarProgram(non_terminal_nodes=nt_nodes,
                              optimizer=optimizer,
                              metric_name=metric_name,
-                             n_cores=n_cores)
+                             n_cores=n_cores,
+                             max_opt_iter=max_opt_iter)
     grammar_model = ContextFreeGrammar(
         nvars=nvars,
         production_rules=production_rules,

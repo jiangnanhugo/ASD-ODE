@@ -11,7 +11,7 @@ template = """@register_eq_class
 class {}(KnownEquation):
     _eq_name = '{}'
     _operator_set = {}
-    # description: {}
+    _description = "{}"
     def __init__(self):
         
         self.vars_range_and_types = [{}]
@@ -50,20 +50,34 @@ def main():
     from strogatz_equations import equations
     fw = open(os.path.join("strogatz.py"), 'w')
     fw.write(prefix)
+
     idx_dicts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
     for one_eq in equations:
-        print(one_eq)
+
         expressions = one_eq['eq']
 
         consts = one_eq['consts'][0]
         x = [Symbol(f'x_{i}') for i in range(one_eq['dim'])]
 
-        expressions = expressions.replace('^', '**')
+
         for i in range(len(consts)):
             expressions = expressions.replace(f'c_{i}', str(consts[i]))
+        if one_eq['dim']==1:
+            print(idx_dicts[one_eq['dim']] + 1, " & ", one_eq['eq_description'] + " \\\\")
+        else:
+            temp=" & \multicolumn{}".format(one_eq['dim'])
+            print(idx_dicts[one_eq['dim']] + 1, temp,"{l}{", one_eq['eq_description'] + "} \\\\")
+        for i, ei in enumerate(expressions.split(' | ')):
+            print(" & $\dot{x}_",end="")
+            ei=ei.replace('sin','\sin').replace('cos','\cos').replace('exp','\exp').replace('log','\log').replace('cot','\cot')
+            print("{} = {}$ ".format(i,ei), end=" ")
+        print(" \\\\ \hline")
+        expressions = expressions.replace('^', '**')
         expressions = expressions.split(' | ')
-        expressions = [str(simplify(parse_expr(eq).expand())) for eq in expressions]
-        expressions = " | ".join(expressions)
+        expressions = [simplify(parse_expr(eq).expand()) for eq in expressions]
+
+        expressions = " | ".join([str(ei) for ei in expressions])
+
         expressions = expressions.replace('exp', 'np.exp')
         expressions = expressions.replace('log', 'np.log')
         expressions = expressions.replace('sin', 'np.sin')
