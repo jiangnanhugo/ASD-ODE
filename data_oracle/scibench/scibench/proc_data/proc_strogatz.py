@@ -1,80 +1,96 @@
 import pandas as pd
 import os
-import click
+from sympy import Symbol, parse_expr, simplify
 
-prefix = """from collections import OrderedDict
-import sympy
-from base import KnownEquation
-
-EQUATION_CLASS_DICT = OrderedDict()
-
-
-def register_eq_class(cls):
-    EQUATION_CLASS_DICT[cls.__name__] = cls
-    return cls
-
-
-def get_eq_obj(key, **kwargs):
-    if key in EQUATION_CLASS_DICT:
-        return EQUATION_CLASS_DICT[key](**kwargs)
-    raise KeyError(f'`{key}` is not expected as a equation object key')
-
+prefix = """import numpy as np
+from scibench.data.base import KnownEquation, register_eq_class
+from scibench.symbolic_data_generator import LogUniformSampling
 """
 
 template = """@register_eq_class
 class {}(KnownEquation):
     _eq_name = '{}'
     _function_set = {}
-
+    # description: {}
     def __init__(self):
-        super().__init__(num_vars={})
-        x = self.x
-        self.sympy_eq = {}
+        
+        self.vars_range_and_types = [{}]
+        super().__init__(num_vars={}, vars_range_and_types=self.vars_range_and_types)
+        
+    
+    def np_eq(self, t, x):
+        return np.array([{}])
 """
 
 
-def detect_function_set(one_ode):
-    function_set_base=['add','sub','mul','div']
-    if sum(['sin' in one_eq for one_eq in one_ode])>0:
-        function_set_base.append('sin')
+def fill_template(expressions, class_name, name, nvars, description, function_set):
+    element = 'LogUniformSampling((1e-2, 10.0), only_positive=True)'
+    elements = ", ".join([element for _ in range(int(nvars))])
+    return template.format(class_name, name, function_set, description, elements, nvars, ", ".join(expressions))
 
-    if sum(['cos' in one_eq for one_eq in one_ode])>0:
+
+def detect_function_set(one_ode):
+    function_set_base = ['add', 'sub', 'mul', 'div']
+    if 'sin' in one_ode:
+        function_set_base.append('sin')
+    if 'cos' in one_ode:
+        function_set_base.append('cos')
+    if 'exp' in one_ode:
         function_set_base.append('exp')
-    if sum(['exp' in one_eq for one_eq in one_ode])>0:
-        function_set_base.append('exp')
+    if 'log' in one_ode:
+        function_set_base.append('log')
+    if 'cot' in one_ode:
+        function_set_base.append('cot')
+    if 'abs' in one_ode or 'Abs' in one_ode > 0:
+        function_set_base.append('abs')
     return function_set_base
 
 
-@click.command()
-@click.option('--function_set_file', default="dso_function_sets.csv")
-@click.option('--output_file', default="./equations_others.py")
-def main(function_set_file, output_file):
+def main():
     from strogatz_equations import equations
+    fw = open(os.path.join("strogatz.py"), 'w')
+    fw.write(prefix)
+    idx_dicts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
     for one_eq in equations:
+        print(one_eq)
         expressions = one_eq['eq']
-        for i in one_eq['dim']:
-            if f'x_{i}' in expressions:
-                expressions = expressions.replace(f'x_{i}', 'x[{i}]')
-        expressions=expressions.split(' | ')
 
-        description= one_eq['eq_description']
-        name= "vars{}_prog{}".format(one_eq['dim'],one_eq['id'])
-        coefficients = one_eq['consts'][0]
-        # all_bench_equations = pd.read_csv(benchmark_file)
-        # function_sets = pd.read_csv(function_set_file)
-        # function_set_dict = {'None': ['sqrt', 'add', 'sub', "mul", "div", "inv", 'sin', 'pow', "const"]}
-        # for index, row in function_sets.iterrows():
-        #     function_set_dict[row['name']] = row['function_set'].split(',')
-        #
-        # # all_equations = all_bench_equations.apply(lambda row: extract(row, function_set_dict), axis=1)
-        # all_equations = []
-        # for index, row in all_bench_equations.iterrows():
-        #     print(row['name'])
-        #     all_equations.append(extract(row, function_set_dict))
-        # fw = open(os.path.join(output_file), 'w')
-        # fw.write(prefix)
-        # for line in all_equations:
-        #     fw.write(line + '\n')
+        consts = one_eq['consts'][0]
+        x = [Symbol(f'x_{i}') for i in range(one_eq['dim'])]
+
+        expressions = expressions.replace('^', '**')
+        for i in range(len(consts)):
+            expressions = expressions.replace(f'c_{i}', str(consts[i]))
+        expressions = expressions.split(' | ')
+        expressions = [str(simplify(parse_expr(eq).expand())) for eq in expressions]
+        expressions = " | ".join(expressions)
+        expressions = expressions.replace('exp', 'np.exp')
+        expressions = expressions.replace('log', 'np.log')
+        expressions = expressions.replace('sin', 'np.sin')
+        expressions = expressions.replace('cos', 'np.cos')
+        expressions = expressions.replace('cot', 'np.cot')
+        expressions = expressions.replace('abs', 'np.abs')
+        expressions = expressions.replace('Abs', 'np.abs')
+        function_set = detect_function_set(expressions)
+        for i in range(one_eq['dim']):
+            if f'x_{i}' in expressions:
+                expressions = expressions.replace(f'x_{i}', f'x[{i}]')
+        expressions = expressions.split(' | ')
+        description = one_eq['eq_description']
+        idx_dicts[one_eq['dim']] += 1
+        name = "vars{}_prog{}".format(one_eq['dim'], idx_dicts[one_eq['dim']])
+
+        class_name = one_eq['source']
+        class_name = class_name.replace('.', "_")
+        class_name = class_name.replace(' ', '_')
+        class_name = class_name.replace('-', '_')
+        class_name = class_name.upper()
+
+        line = fill_template(expressions, class_name, name, one_eq['dim'], description, function_set)
+
+        fw.write(line + '\n')
+    fw.close()
+    print(idx_dicts)
 
 
 if __name__ == '__main__':

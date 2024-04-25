@@ -39,7 +39,9 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
          n_cores):
     config = load_config(config_template)
     config['task']['metric'] = metric_name
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds, noise_type, noise_scale, metric_name=metric_name)
+    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
+                                           noise_type, noise_scale,
+                                           metric_name=metric_name)
     print(data_query_oracle.vars_range_and_types_to_json)
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
@@ -56,7 +58,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
                        time_span, t_eval)
 
     # get basic production rules
-    reward_thresh = 10
+    reward_thresh = threshold_values[metric_name]
     nt_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvars)
     production_rules = []
     for one_nt_node in nt_nodes:

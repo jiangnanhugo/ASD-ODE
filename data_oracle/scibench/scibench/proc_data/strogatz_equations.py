@@ -363,7 +363,7 @@ equations = [
     'eq_description': 'Lotka-Volterra simple (as on Wikipedia)',
     'const_description': 'c_0: growth rate of prey without predators, c_1: killing rate of prey due to predators, c_2: death rate of predators without prey, c_3: growth rate of predators per prey',
     'var_description': 'x_0: prey, x_1: predators',
-    'source': 'https://en.wikipedia.org/wiki/Lotka-Volterra_equations'
+    'source': 'Lotka-Volterra'
 },
 {
     'id': 28,
@@ -620,7 +620,7 @@ equations = [
     'init': [[0.65, 0.59], [3.2, 10.3]],
     'init_constraints': 'x_0 > 0, x_1 > 0',
     'const_constraints': 'c_0 > 0, c_1 > 0',
-            '`eq_description`': 'Binocular rivalry model (no oscillations)',
+    'eq_description': 'Binocular rivalry model (no oscillations)',
     'const_description': 'c_0: strength of mutual antagonism, c_1: strength of input stimulus',
     'var_description': 'x_0: perception of left eye stimulus, x_1: perception of right eye stimulus',
     'source': 'strogatz p.290'
@@ -701,7 +701,7 @@ equations = [
     'eq_description': 'Model for apoptosis (cell death)',
     'const_description': 'c_0: parameter, c_1: parameter, c_2: parameter, c_3: parameter, c_4: parameter, c_5: parameter, c_6: parameter, c_7: parameter, c_8: parameter, c_9: parameter',
     'var_description': 'x_0: x, x_1: y, x_2: z',
-    'source': 'https://epubs.siam.org/doi/10.1137/20M1318043',
+    'source': 'Model for apoptosis',
 },
 {
     'id': 54,
@@ -753,7 +753,7 @@ equations = [
     'eq_description': 'Rössler attractor (stable fixed point)',
     'const_description': 'c_0: parameter, c_1: parameter, c_2: parameter, c_3: just for time scaling',
     'var_description': 'x_0: x, x_1: y, x_2: z',
-    'source': 'https://en.wikipedia.org/wiki/Rössler_attractor',
+    'source': 'Rossler_attractor',
 },
 {
     'id': 58,
@@ -766,7 +766,7 @@ equations = [
     'eq_description': 'Rössler attractor (periodic)',
     'const_description': 'c_0: parameter, c_1: parameter, c_2: parameter, c_3: just for time scaling',
     'var_description': 'x_0: x, x_1: y, x_2: z',
-    'source': 'https://en.wikipedia.org/wiki/Rössler_attractor',
+    'source': 'Rossler_attractor_periodic',
 },
 {
     'id': 59,
@@ -779,7 +779,7 @@ equations = [
     'eq_description': 'Rössler attractor (chaotic)',
     'const_description': 'c_0: parameter, c_1: parameter, c_2: parameter, c_3: just for time scaling',
     'var_description': 'x_0: x, x_1: y, x_2: z',
-    'source': 'https://en.wikipedia.org/wiki/Rössler_attractor',
+    'source': 'Rossler_attractor_chaotic',
 },
 {
     'id': 60,
@@ -792,7 +792,7 @@ equations = [
     'eq_description': 'Aizawa attractor (chaotic)',
     'const_description': 'c_0: parameter, c_1: parameter, c_2: parameter, c_3: parameter, c_4: parameter',
     'var_description': 'x_0: x, x_1: y, x_2: z',
-    'source': 'https://analogparadigm.com/downloads/alpaca_17.pdf',
+    'source': 'Aizawa attractor chaotic',
 },
 {
     'id': 61,
@@ -805,7 +805,7 @@ equations = [
     'eq_description': 'Chen-Lee attractor; system for gyro motion with feedback control of rigid body (chaotic)',
     'const_description': 'c_0: parameter, c_1: parameter, c_2: parameter, c_3: fixed constant; parameters relate to principal moments of inertia',
     'var_description': 'x_0: omega_x, x_1: omega_y, x_2: omega_z; variables are essentially angular velocities',
-    'source': 'https://doi.org/10.1016/j.chaos.2003.12.034'
+    'source': 'Chen-Lee attractor'
 },
 {
     'id': 62,
@@ -831,5 +831,5 @@ equations = [
     'eq_description': 'SEIR infection model (proportions)',
     'const_description': 'c_0: transfer rate rate, c_1: transmission rate, c_2: recovery rate',
     'var_description': 'x_0: susceptible, x_1: exposed, x_2: infected, x_3: recovered',
-    'source': 'https://de.wikipedia.org/wiki/SEIR-Modell'
+    'source': 'SEIR infection model proportions'
 }]
