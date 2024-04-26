@@ -1,0 +1,11 @@
+setup.py
+scibench/__init__.py
+scibench/metrics.py
+scibench/solve_init_value_problem.py
+scibench/symbolic_data_generator.py
+scibench/symbolic_equation_evaluator.py
+scibench.egg-info/PKG-INFO
+scibench.egg-info/SOURCES.txt
+scibench.egg-info/dependency_links.txt
+scibench.egg-info/requires.txt
+scibench.egg-info/top_level.txt

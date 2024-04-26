@@ -86,7 +86,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     grammar_model.task = task
     grammar_model.program = program
 
-    """Trains DSO and returns dict of reward, expressions"""
+    """Trains and returns dict of reward, expressions"""
     model = ActDeepSymbolicRegression(config, grammar_model)
     start = time.time()
     print("deep model setup.....")

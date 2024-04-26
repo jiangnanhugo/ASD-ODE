@@ -1,17 +1,18 @@
 #!/usr/bin/zsh
-basepath=/home/$USER/data/act_ode
-py3=/home/$USER/miniconda3/envs/py310/bin/python3.10
-#
+basepath=/home/$USER/PycharmProjects/act_ode
+py3=/home/$USER/miniconda3/bin/python
+# Glycolytic_oscillator_d0
 type=Strogatz
 #datapath=$basepath/data/differential_equations/
 opt=Nelder-Mead
 noise_type=normal
 noise_scale=0.0
-metric_name=inv_mse
+metric_name=neg_mse
 n_cores=10
 num_init_conds=5
 nvars=$1
 total_progs=$2
+set -x
 for ei in 1..$total_progs; do
 	eq_name=${nvars}_prog${ei}
 	echo "submit $eq_name"

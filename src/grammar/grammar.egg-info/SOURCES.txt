@@ -1,11 +1,13 @@
 setup.py
 grammar/__init__.py
+grammar/act_sampling.py
 grammar/grammar.py
 grammar/grammar_program.py
 grammar/grammar_regress_task.py
 grammar/grammar_utils.py
 grammar/memory.py
 grammar/metrics.py
+grammar/minimize_coefficients.py
 grammar/production_rules.py
 grammar/subroutines.py
 grammar/utils.py

@@ -116,7 +116,7 @@ def learn(grammar_model: ContextFreeGrammar,
         # construct program based on the input token indices
 
         grammar_expressions = grammar_model.construct_expression(actions)
-        rewards = np.array([p.r for p in grammar_expressions])
+        rewards = np.array([p.valid_loss for p in grammar_expressions])
         expr_lengths = np.array([len(p.traversal.split(";")) for p in grammar_expressions])
         sampled_batch = Batch(actions=actions, obs=obs,
                               lengths=expr_lengths, rewards=rewards)
@@ -184,7 +184,7 @@ def learn(grammar_model: ContextFreeGrammar,
 
                 # Get rewards
                 memory_r = memory_queue.get_rewards()
-                sample_r = [p.r for p in unique_programs]
+                sample_r = [p.valid_loss for p in unique_programs]
                 combined_r = np.concatenate([memory_r, sample_r])
 
                 # Compute quantile weights
