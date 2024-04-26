@@ -1,6 +1,6 @@
 #!/usr/bin/zsh
 basepath=/home/$USER/data/act_ode
-py3=/home/$USER/miniconda3/envs/py310/bin/python3.10
+py3=/home/jiangnan/miniconda3/envs/py310/bin/python
 #
 type=Strogatz
 #datapath=$basepath/data/differential_equations/

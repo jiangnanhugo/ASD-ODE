@@ -49,7 +49,7 @@ class grammarProgram(object):
     used for optimizing the constants in the expressions.
     """
 
-    def __init__(self, non_terminal_nodes, optimizer="BFGS", metric_name='neg_mse', max_opt_iter=1000, n_cores=1,
+    def __init__(self, non_terminal_nodes, optimizer="BFGS", metric_name='neg_mse', max_opt_iter=100, n_cores=1,
                  max_open_constants=20):
         """
         max_open_constants: the maximum number of allowed open constants in the expression.

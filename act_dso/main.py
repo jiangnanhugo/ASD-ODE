@@ -49,7 +49,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     print(function_set)
 
     time_span = (0.0001, 2)
-    trajectory_time_steps = 100
+    trajectory_time_steps = 20
     max_opt_iter = 500
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,

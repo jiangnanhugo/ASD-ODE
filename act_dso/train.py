@@ -151,19 +151,16 @@ def learn(grammar_model: ContextFreeGrammar,
         nevals += batch_size
         # Compute rewards (or retrieve cached rewards)
         r = np.array([p.valid_loss for p in grammar_expressions])
-        # if verbose:
-        #     print("rewards:", r)
+        if verbose:
+            print("rewards:", r)
         r_train = r
 
         # Need for Vanilla Policy Gradient (epsilon = null)
         p_train = grammar_expressions
 
-        if save_positional_entropy:
-            positional_entropy[epoch] = np.apply_along_axis(empirical_entropy, 0, actions)
-
         # Update HOF
         for p in grammar_expressions:
-            if not p.train_loss:
+            if not p.valid_loss:
                 continue
             grammar_model.update_hall_of_fame(p)
 

@@ -61,7 +61,7 @@ class STROGATZ_P_38(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_38(KnownEquation):
+class STROGATZ_P_381(KnownEquation):
     _eq_name = 'vars1_prog5'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Velocity of a falling object with air resistance"
@@ -89,7 +89,7 @@ class STROGATZ_P_39(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_39(KnownEquation):
+class STROGATZ_P_391(KnownEquation):
     _eq_name = 'vars1_prog7'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'log']
     _description = "Gompertz law for tumor growth"
@@ -103,7 +103,7 @@ class STROGATZ_P_39(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_39(KnownEquation):
+class STROGATZ_P_392(KnownEquation):
     _eq_name = 'vars1_prog8'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Logistic equation with Allee effect"
@@ -131,7 +131,7 @@ class STROGATZ_P_40(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_40(KnownEquation):
+class STROGATZ_P_401(KnownEquation):
     _eq_name = 'vars1_prog10'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Refined language death model for two languages"
@@ -258,7 +258,7 @@ class STROGATZ_P_90(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_90(KnownEquation):
+class STROGATZ_P_901(KnownEquation):
     _eq_name = 'vars1_prog19'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Improved logistic equation with harvesting/fishing (dimensionless)"
