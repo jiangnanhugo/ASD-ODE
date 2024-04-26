@@ -1,4 +1,4 @@
-"""Class for symbolic expression optimization."""
+"""optimize the coefficients in the candidate ODEs"""
 
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify, symbols
@@ -30,6 +30,7 @@ def euler_method(func, times, x_init):
         y[i + 1] = y[i] + (times[i + 1] - times[i]) * np.asarray(func(times[i], y[i]))
     return y
 
+
 def runge_kutta4(func, times, x_init):
     """
     solve a batch of initial conditions
@@ -54,9 +55,10 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
              user_scpeficied_iters=-1,
              verbose=False):
     """
-    optimize the constant coefficients in the candaidate expressions.
+    optimize the constant coefficients in the candidate expressions.
 
-    candidate_ode_equations: list of strings for n ODE expressions. the discovered equation (with placeholders for coefficients).
+    candidate_ode_equations: list of strings for n ODE expressions. the discovered equation
+                             (with placeholders for coefficients).
     init_cond: [batch_size, nvars]. the initial conditions of each variables.
     true_trajectories: [batch_size, time_steps, nvars]. the true trajectories.
     # other parameters:
@@ -70,7 +72,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     user_scpeficied_iters: user specified number of optimization iterations.
 
     optimizer_name: name of the optimizer. See scipy.optimize.minimize for list of optimizers
-    non_terminal_nodes: list of non terminal nodes. It is used for checking if the expression is valid
+    non_terminal_nodes: list of non-terminal nodes. It is used for checking if the expression is valid
 
     """
 
@@ -105,20 +107,9 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
             for i in range(len(consts)):
                 temp_equations = temp_equations.replace('c' + str(i), str(consts[i]), 1)
             eq_est = temp_equations.split("$$")
-            # usedtime = time.time() - sttime
-            # print('step1', usedtime)
-            # sys.stdout.flush()
-            # sttime = time.time()
             pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
-            # usedtime = time.time() - sttime
-            # print('step2', usedtime)
-            # sys.stdout.flush()
-            # sttime = time.time()
             var_ytrue = np.var(true_trajectories)
             loss_val = -loss_func(pred_trajectories, true_trajectories, var_ytrue)
-            # usedtime = time.time() - sttime
-            # print('step3', usedtime)
-            # sys.stdout.flush()
             return loss_val
 
         # do more than one experiment,
@@ -160,8 +151,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         return -np.inf, candidate_ode_equations, 0, np.inf
 
     train_loss = loss_func(pred_trajectories, true_trajectories, var_ytrue)
-    print('\t loss:', train_loss,
-          'eq:', candidate_ode_equations)
+    print('\t loss:', train_loss, 'eq:', candidate_ode_equations)
 
     return train_loss, candidate_ode_equations, t_optimized_constants, t_optimized_obj
 
@@ -270,5 +260,3 @@ def simplify_template(equations: list) -> list:
             eq = eq.replace('(1/C)', 'C')
         new_equations.append(eq)
     return new_equations
-
-

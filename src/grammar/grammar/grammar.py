@@ -136,7 +136,7 @@ class ContextFreeGrammar(object):
 
         # evaluate the fitted expressions on new validation proc_data;
         self.task.rand_draw_init_cond()
-        filtered_expressions=[]
+        filtered_expressions = []
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
                 # print('\t', one_expression)
@@ -152,8 +152,7 @@ class ContextFreeGrammar(object):
             else:
                 one_expression.valid_loss = -np.inf
             print(one_expression)
-            if  not np.isnan(one_expression.valid_loss) and not np.isnan(one_expression.train_loss) and \
-                not math.isnan(one_expression.train_loss) and math.isnan(one_expression.valid_loss):
+            if not np.isnan(one_expression.valid_loss) and not np.isnan(one_expression.train_loss):
                 filtered_expressions.append(one_expression)
         return many_expressions
 
@@ -184,7 +183,8 @@ class ContextFreeGrammar(object):
         for pr in self.best_predicted_equations[:self.hof_size]:
             if verbose:
                 print('        ', pr, end="\n")
-                if pr.train_loss != -np.inf:
+                # do not print expressions with NaN or Infty value.
+                if pr.train_loss != -np.inf and not np.isnan(pr.train_loss) and not np.isnan(pr.valid_loss):
 
                     pred_trajectories = execute(pr.fitted_eq,
                                                 self.task.init_cond, self.task.time_span, self.task.t_evals,
