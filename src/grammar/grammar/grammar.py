@@ -1,6 +1,6 @@
 import numpy as np
 from sympy import Symbol
-
+import math
 from grammar.grammar_program import SymbolicDifferentialEquations
 from grammar.minimize_coefficients import execute
 
@@ -136,7 +136,7 @@ class ContextFreeGrammar(object):
 
         # evaluate the fitted expressions on new validation proc_data;
         self.task.rand_draw_init_cond()
-        # true_trajectories = self.task.evaluate()
+        filtered_expressions=[]
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
                 # print('\t', one_expression)
@@ -152,6 +152,9 @@ class ContextFreeGrammar(object):
             else:
                 one_expression.valid_loss = -np.inf
             print(one_expression)
+            if  not np.isnan(one_expression.valid_loss) and not np.isnan(one_expression.train_loss) and \
+                not math.isnan(one_expression.train_loss) and math.isnan(one_expression.valid_loss):
+                filtered_expressions.append(one_expression)
         return many_expressions
 
     def update_hall_of_fame(self, one_fitted_expression: SymbolicDifferentialEquations):

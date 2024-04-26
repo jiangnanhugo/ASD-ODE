@@ -9,6 +9,7 @@ import numpy as np
 
 from grammar.grammar import ContextFreeGrammar
 from grammar.utils import empirical_entropy, weighted_quantile
+import math
 from grammar.memory import Batch, make_queue
 from grammar.variance import quantile_variance
 import sys
@@ -203,14 +204,14 @@ def learn(grammar_model: ContextFreeGrammar,
                 quantile = weighted_quantile(values=combined_r, weights=combined_w, q=1 - epsilon)
 
             else:  # Empirical quantile
-                quantile = np.quantile(r, 1 - epsilon, interpolation="higher")
+                quantile = np.nanquantile(r, 1 - epsilon, interpolation="higher")
 
             '''
                 Here we get the returned as well as stored programs and properties.
             '''
 
             keep = r >= quantile
-
+            print('keep:',np.sum(keep), len(keep))
             r_train = r = r[keep]
             p_train = grammar_expressions = list(compress(grammar_expressions, keep))
 
