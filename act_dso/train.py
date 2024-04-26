@@ -150,7 +150,7 @@ def learn(grammar_model: ContextFreeGrammar,
         grammar_expressions = grammar_model.construct_expression(actions)
         nevals += batch_size
         # Compute rewards (or retrieve cached rewards)
-        r = np.array([p.train_loss for p in grammar_expressions])
+        r = np.array([p.valid_loss for p in grammar_expressions])
         # if verbose:
         #     print("rewards:", r)
         r_train = r
