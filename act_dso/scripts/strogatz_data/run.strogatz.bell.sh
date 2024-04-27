@@ -12,7 +12,7 @@ n_cores=8
 num_init_conds=5
 nvars=$1
 total_progs=$2
-for ei in {2..${total_progs}};
+for ei in {1..${total_progs}};
 do
   eq_name=${nvars}_prog${ei}
 	echo "submit $eq_name"
@@ -29,6 +29,7 @@ do
 		mkdir -p $dump_dir
 	fi
 	total_cores=$((n_cores+1))
+    echo "output dir: $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out"
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=${total_cores} <<EOT
 #!/bin/bash -l
 
@@ -41,7 +42,7 @@ do
 hostname
 
 $py3 $basepath/act_dso/main.py $basepath/act_dso/config/config_regression.json --equation_name $eq_name \
-		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  #>$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out &
+		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out
 
 EOT
 done
