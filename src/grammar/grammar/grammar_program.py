@@ -120,10 +120,14 @@ class grammarProgram(object):
         max_opt_iteres = [self.max_opt_iter for _ in range(self.n_cores)]
         optimizeres = [self.optimizer for _ in range(self.n_cores)]
         non_terminal_nodes = [self.non_terminal_nodes for _ in range(self.n_cores)]
+        print("NCORES:", self.n_cores)
+        print("many_expr_templates {}".format(len(many_expr_templates)))
+        for i, ti in enumerate(many_expr_templates):
+            print(" {}-th: {}".format(i, len(ti)))
         print(
-            "many_expr_templates {}, many_expr_templates[0] {}, init_cond_ncores {}, time_span_ncores {}, t_eval_ncores {}, true_trajectories_ncores {}".format(
-                len(many_seqs_of_rules), len(many_seqs_of_rules[0]), len(init_cond), len(time_span), len(t_eval),
-                len(true_trajectories)))
+            " init_cond_ncores {}, time_span_ncores {}, t_eval_ncores {}, true_trajectories_ncores {}".format(
+                len(init_cond_ncores), len(time_span_ncores), len(t_eval_ncores),
+                len(true_trajectories_ncores)))
 
         result = self.pool.map(fit_one_expr, many_expr_templates, init_cond_ncores, time_span_ncores, t_eval_ncores,
                                true_trajectories_ncores,
@@ -132,6 +136,7 @@ class grammarProgram(object):
         result = list(chain.from_iterable(result))
         print("Done with optimization!")
         sys.stdout.flush()
+
         return result
 
 

@@ -83,7 +83,7 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 def learn(grammar_model: ContextFreeGrammar,
           sess, expression_decoder,
-          n_epochs=12, dataset_size=None, batch_size=1000,
+          n_epochs=12, batch_size=1000,
           reward_threshold=0.999999,
           alpha=0.5, epsilon=0.05, verbose=True,
           baseline="R_e",
@@ -93,7 +93,7 @@ def learn(grammar_model: ContextFreeGrammar,
     """
       Executes the main training loop.
     """
-    print(dataset_size, n_epochs)
+
     # Initialize compute graph
     sess.run(tf.compat.v1.global_variables_initializer())
 
