@@ -32,6 +32,7 @@ class SymbolicTransformerRegressor(BaseEstimator, PredictionIntegrationMixin):
     def __init__(self,
                 model=None,
                 from_pretrained=False,
+                pretrain_basepath="",
                 max_input_points=10000,
                 rescale=True,
                 params=None,
@@ -43,7 +44,7 @@ class SymbolicTransformerRegressor(BaseEstimator, PredictionIntegrationMixin):
         self.rescale = rescale
         self.params = params
         if from_pretrained:
-            self.load_pretrained()
+            self.load_pretrained(pretrain_basepath)
         for kwarg, val in model_kwargs.items():
             setattr(self.model, kwarg, val)
 
@@ -55,9 +56,9 @@ class SymbolicTransformerRegressor(BaseEstimator, PredictionIntegrationMixin):
             time_range = self.params.time_range
         self.scaler = utils_wrapper.Scaler(time_range=[1, time_range], feature_scale=feature_scale) if self.rescale else None 
 
-    def load_pretrained(self):
+    def load_pretrained(self, basepath):
         import gdown
-        model_path = "odeformer.pt" 
+        model_path = os.path.join(basepath, "model.pt")
         if not os.path.exists(model_path):
             print(f"Downloading pretrained model and saving to {model_path}")
             #id = "18CwlutaFF_tAOObsIukrKVZMPmsjwNwF"
