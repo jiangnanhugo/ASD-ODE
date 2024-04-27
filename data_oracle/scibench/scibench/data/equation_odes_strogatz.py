@@ -295,7 +295,7 @@ class STROGATZ_P_90(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_90(KnownEquation):
+class STROGATZ_P_901(KnownEquation):
     _eq_name = 'vars1_prog19'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Improved logistic equation with harvesting/fishing (dimensionless)"

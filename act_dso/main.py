@@ -35,8 +35,7 @@ threshold_values = {
 @click.option('--total_iterations', default=20, help="Number of iterations per rounds")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, noise_type, noise_scale, max_len,
-         total_iterations,
-         n_cores):
+         total_iterations, n_cores):
     config = load_config(config_template)
     config['task']['metric'] = metric_name
     data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
@@ -66,7 +65,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
         production_rules.extend(get_production_rules(nvars, function_set, one_nt_node))
 
     print("grammars:", production_rules)
-    print("start_symbols:", start_symbols, nt_nodes[0] in start_symbols[0])
+    print("start_symbols:", start_symbols)
     program = grammarProgram(non_terminal_nodes=nt_nodes,
                              optimizer=optimizer,
                              metric_name=metric_name,

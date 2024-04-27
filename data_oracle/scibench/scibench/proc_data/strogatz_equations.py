@@ -259,7 +259,7 @@ equations = [
     'eq_description': 'Improved logistic equation with harvesting/fishing (dimensionless)',
     'const_description': 'c_0: harvesting rate, c_1: harvesting onset',
     'var_description': 'x_0: population',
-    'source': 'strogatz p.90'
+    'source': 'strogatz p.901'
 },
 {
     'id': 20,

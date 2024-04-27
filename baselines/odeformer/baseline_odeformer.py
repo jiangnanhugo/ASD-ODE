@@ -25,8 +25,6 @@ def get_data(func, nvars):
 
 
 
-def predict():
-
 
 
 @click.command()
@@ -56,7 +54,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
                   'beam_temperature': 0.1}
     dstr.set_model_args(model_args)
 
-    t_train, x_train = get_data(data_query_oracle.true_equation,nvars)
+    t_train, x_train = get_data(data_query_oracle.true_equation.np_eq, nvars)
 
     print(x_train.shape)
     print(t_train.shape)
