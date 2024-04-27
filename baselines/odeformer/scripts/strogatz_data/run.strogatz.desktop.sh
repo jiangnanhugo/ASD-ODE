@@ -22,5 +22,5 @@ for ei in {1..${total_progs}}; do
                 mkdir -p $dump_dir
         fi
         $py3 $basepath/baselines/odeformer/baseline_odeformer.py --pretrain_basepath $pretrain_basepath --equation_name $eq_name \
-                --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  >$dump_dir/Eq_${eq_name}.noise_${noise_type}${noise_scale}.odeformer.out
+                --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  >$dump_dir/ ${eq_name}.noise_${noise_type}${noise_scale}.odeformer.out
 done
