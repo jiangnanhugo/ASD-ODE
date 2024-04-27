@@ -93,7 +93,7 @@ class grammarProgram(object):
             one_expr.train_loss = train_loss
             one_expr.fitted_eq = fitted_eq
             result.append(one_expr)
-            print('idx=', i,f"/{len(many_seqs_of_rules)}")
+            print('idx=', i, f"/{len(many_seqs_of_rules)}")
 
             sys.stdout.flush()
         return result
@@ -105,15 +105,11 @@ class grammarProgram(object):
         fit the coefficients in many ODE in parallel
         """
 
-        def chunks(lst, n):
-            """Yield successive n-sized chunks from lst."""
-            chunk_size = len(lst) // n
-            for i in range(0, len(lst), chunk_size):
-                yield lst[i:i + chunk_size]
-
-        many_expr_tempaltes = chunks(
-            [SymbolicDifferentialEquations(one_rules) for one_rules in many_seqs_of_rules],
-            self.n_cores)
+        all_candiate_odes = [SymbolicDifferentialEquations(one_rules) for one_rules in many_seqs_of_rules]
+        many_expr_templates = [all_candiate_odes[i::self.n_cores] for i in range(self.n_cores)]
+        # chunk_size = len(all_candiate_odes) // self.n_cores
+        # for i in range(chunk_size):
+        #      many_expr_templates.append()
         init_cond_ncores = [init_cond for _ in range(self.n_cores)]
         true_trajectories_ncores = [true_trajectories for _ in range(self.n_cores)]
         input_var_Xes = [input_var_Xs for _ in range(self.n_cores)]
@@ -124,8 +120,12 @@ class grammarProgram(object):
         max_opt_iteres = [self.max_opt_iter for _ in range(self.n_cores)]
         optimizeres = [self.optimizer for _ in range(self.n_cores)]
         non_terminal_nodes = [self.non_terminal_nodes for _ in range(self.n_cores)]
+        print(
+            "many_expr_templates {}, many_expr_templates[0] {}, init_cond_ncores {}, time_span_ncores {}, t_eval_ncores {}, true_trajectories_ncores {}".format(
+                len(many_seqs_of_rules), len(many_seqs_of_rules[0]), len(init_cond), len(time_span), len(t_eval),
+                len(true_trajectories)))
 
-        result = self.pool.map(fit_one_expr, many_expr_tempaltes, init_cond_ncores, time_span_ncores, t_eval_ncores,
+        result = self.pool.map(fit_one_expr, many_expr_templates, init_cond_ncores, time_span_ncores, t_eval_ncores,
                                true_trajectories_ncores,
                                input_var_Xes, evaluate_losses,
                                max_open_constantes, max_opt_iteres, optimizeres, non_terminal_nodes)
@@ -153,4 +153,3 @@ def fit_one_expr(one_expr_batch, init_cond, time_span, t_eval, true_trajectories
         results.append(one_expr)
 
     return results
-

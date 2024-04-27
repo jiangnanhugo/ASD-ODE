@@ -10,7 +10,8 @@ class STROGATZ_P_20(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['0.303030303030303 - 0.360750360750361*x[0]']
     
     def np_eq(self, t, x):
         return np.array([0.303030303030303 - 0.360750360750361*x[0]])
@@ -24,13 +25,14 @@ class STROGATZ_P_22(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['0.23*x[0]']
     
     def np_eq(self, t, x):
         return np.array([0.23*x[0]])
 
 @register_eq_class
-class STROGATZ_P_22(KnownEquation):
+class STROGATZ_P_221(KnownEquation):
     _eq_name = 'vars1_prog3'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Population growth with carrying capacity"
@@ -38,7 +40,8 @@ class STROGATZ_P_22(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(0.79 - 0.0106325706594886*x[0])']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(0.79 - 0.0106325706594886*x[0])])
@@ -52,13 +55,14 @@ class STROGATZ_P_38(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(0.5*np.exp(1.04166666666667*x[0]) - 0.824360635350064)/(np.exp(1.04166666666667*x[0]) + 1.64872127070013)']
     
     def np_eq(self, t, x):
         return np.array([(0.5*np.exp(1.04166666666667*x[0]) - 0.824360635350064)/(np.exp(1.04166666666667*x[0]) + 1.64872127070013)])
 
 @register_eq_class
-class STROGATZ_P_38(KnownEquation):
+class STROGATZ_P_381(KnownEquation):
     _eq_name = 'vars1_prog5'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Velocity of a falling object with air resistance"
@@ -66,7 +70,8 @@ class STROGATZ_P_38(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['9.81 - 0.0021175*x[0]**2']
     
     def np_eq(self, t, x):
         return np.array([9.81 - 0.0021175*x[0]**2])
@@ -80,13 +85,14 @@ class STROGATZ_P_39(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(2.1 - 0.5*x[0])']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(2.1 - 0.5*x[0])])
 
 @register_eq_class
-class STROGATZ_P_39(KnownEquation):
+class STROGATZ_P_391(KnownEquation):
     _eq_name = 'vars1_prog7'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'log']
     _description = "Gompertz law for tumor growth"
@@ -94,13 +100,14 @@ class STROGATZ_P_39(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(0.032*np.log(x[0]) + 0.0265136581621167)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(0.032*np.log(x[0]) + 0.0265136581621167)])
 
 @register_eq_class
-class STROGATZ_P_39(KnownEquation):
+class STROGATZ_P_392(KnownEquation):
     _eq_name = 'vars1_prog8'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Logistic equation with Allee effect"
@@ -108,7 +115,8 @@ class STROGATZ_P_39(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(-0.000244755244755245*x[0]**2 + 0.0328951048951049*x[0] - 0.14)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(-0.000244755244755245*x[0]**2 + 0.0328951048951049*x[0] - 0.14)])
@@ -122,13 +130,14 @@ class STROGATZ_P_40(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['0.32 - 0.6*x[0]']
     
     def np_eq(self, t, x):
         return np.array([0.32 - 0.6*x[0]])
 
 @register_eq_class
-class STROGATZ_P_40(KnownEquation):
+class STROGATZ_P_401(KnownEquation):
     _eq_name = 'vars1_prog10'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Refined language death model for two languages"
@@ -136,7 +145,8 @@ class STROGATZ_P_40(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-0.8*x[0]*(1 - x[0])**1.2 + 0.2*x[0]**1.2 - 0.2*x[0]**2.2']
     
     def np_eq(self, t, x):
         return np.array([-0.8*x[0]*(1 - x[0])**1.2 + 0.2*x[0]**1.2 - 0.2*x[0]**2.2])
@@ -150,7 +160,8 @@ class STROGATZ_P_41(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-x[0]**3']
     
     def np_eq(self, t, x):
         return np.array([-x[0]**3])
@@ -164,7 +175,8 @@ class STROGATZ_P_55(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(1.8 - 0.1107*x[0])']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(1.8 - 0.1107*x[0])])
@@ -178,7 +190,8 @@ class STROGATZ_P_63(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(0.95157*np.cos(x[0]) - 0.0981)*np.sin(x[0])']
     
     def np_eq(self, t, x):
         return np.array([(0.95157*np.cos(x[0]) - 0.0981)*np.sin(x[0])])
@@ -192,7 +205,8 @@ class STROGATZ_P_75(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(-0.9*x[0] + (0.78 - 0.00962962962962963*x[0])*(x[0]**2 + 449.44))/(x[0]**2 + 449.44)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(-0.9*x[0] + (0.78 - 0.00962962962962963*x[0])*(x[0]**2 + 449.44))/(x[0]**2 + 449.44)])
@@ -206,7 +220,8 @@ class STROGATZ_P_76(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(-x[0] + (0.4 - 0.00421052631578947*x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(-x[0] + (0.4 - 0.00421052631578947*x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)])
@@ -220,7 +235,8 @@ class STROGATZ_P_87(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(-0.001*x[0]**4 + 0.04*x[0]**2 + 0.1)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(-0.001*x[0]**4 + 0.04*x[0]**2 + 0.1)])
@@ -234,7 +250,8 @@ class STROGATZ_P_89(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-0.004*x[0]**2 + 0.4*x[0] - 0.3']
     
     def np_eq(self, t, x):
         return np.array([-0.004*x[0]**2 + 0.4*x[0] - 0.3])
@@ -248,7 +265,8 @@ class STROGATZ_P_90(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*((0.4 - 0.004*x[0])*(x[0] + 50.0) - 0.24)/(x[0] + 50.0)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*((0.4 - 0.004*x[0])*(x[0] + 50.0) - 0.24)/(x[0] + 50.0)])
@@ -262,7 +280,8 @@ class STROGATZ_P_90(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*((1 - x[0])*(x[0] + 0.8) - 0.08)/(x[0] + 0.8)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*((1 - x[0])*(x[0] + 0.8) - 0.08)/(x[0] + 0.8)])
@@ -276,7 +295,8 @@ class STROGATZ_P_91(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(x[0]**2 + (0.1 - 0.55*x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)']
     
     def np_eq(self, t, x):
         return np.array([(x[0]**2 + (0.1 - 0.55*x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)])
@@ -290,7 +310,8 @@ class STROGATZ_P_92(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-0.2*x[0] + 1.2 - np.exp(-x[0])']
     
     def np_eq(self, t, x):
         return np.array([-0.2*x[0] + 1.2 - np.exp(-x[0])])
@@ -304,7 +325,8 @@ class STROGATZ_P_93(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(0.4*x[0]**5 + (1.4 - 0.89*x[0])*(x[0]**5 + 123.0))/(x[0]**5 + 123.0)']
     
     def np_eq(self, t, x):
         return np.array([(0.4*x[0]**5 + (1.4 - 0.89*x[0])*(x[0]**5 + 123.0))/(x[0]**5 + 123.0)])
@@ -318,7 +340,8 @@ class STROGATZ_P_104(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['0.21 - np.sin(x[0])']
     
     def np_eq(self, t, x):
         return np.array([0.21 - np.sin(x[0])])
@@ -332,7 +355,8 @@ class STROGATZ_P_126(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-2.1*x[0]']
     
     def np_eq(self, t, x):
         return np.array([x[1], -2.1*x[0]])
@@ -346,7 +370,8 @@ class STROGATZ_P_144(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-4.5*x[0] - 0.43*x[1]']
     
     def np_eq(self, t, x):
         return np.array([x[1], -4.5*x[0] - 0.43*x[1]])
@@ -360,7 +385,8 @@ class STROGATZ_P_157(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(-x[0] - 2.0*x[1] + 3.0)', 'x[1]*(-x[0] - x[1] + 2.0)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(-x[0] - 2.0*x[1] + 3.0), x[1]*(-x[0] - x[1] + 2.0)])
@@ -374,7 +400,8 @@ class LOTKA_VOLTERRA(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*(1.84 - 1.45*x[1])', 'x[1]*(1.62*x[0] - 3.0)']
     
     def np_eq(self, t, x):
         return np.array([x[0]*(1.84 - 1.45*x[1]), x[1]*(1.62*x[0] - 3.0)])
@@ -388,7 +415,8 @@ class STROGATZ_P_169(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-0.9*np.sin(x[0])']
     
     def np_eq(self, t, x):
         return np.array([x[1], -0.9*np.sin(x[0])])
@@ -402,7 +430,8 @@ class STROGATZ_P_181(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['0.65*x[0]*x[1]', '-x[0]**2 + x[1]**2']
     
     def np_eq(self, t, x):
         return np.array([0.65*x[0]*x[1], -x[0]**2 + x[1]**2])
@@ -416,7 +445,8 @@ class STROGATZ_P_187(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*x[1]*(1 - 1.61*x[0])', 'x[0]*x[1]*(1 - 1.61*x[1])']
     
     def np_eq(self, t, x):
         return np.array([x[0]*x[1]*(1 - 1.61*x[0]), x[0]*x[1]*(1 - 1.61*x[1])])
@@ -430,7 +460,8 @@ class STROGATZ_P_188(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-0.4*x[0]*x[1]', 'x[1]*(0.4*x[0] - 0.314)']
     
     def np_eq(self, t, x):
         return np.array([-0.4*x[0]*x[1], x[1]*(0.4*x[0] - 0.314)])
@@ -444,7 +475,8 @@ class STROGATZ_P_190(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-x[0]**3 + x[0] - 0.18*x[1]']
     
     def np_eq(self, t, x):
         return np.array([x[1], -x[0]**3 + x[0] - 0.18*x[1]])
@@ -458,7 +490,8 @@ class STROGATZ_P_190(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-0.08*x[0]**2 - np.sin(x[1])', 'x[0] - np.cos(x[1])/x[0]']
     
     def np_eq(self, t, x):
         return np.array([-0.08*x[0]**2 - np.sin(x[1]), x[0] - np.cos(x[1])/x[0]])
@@ -472,7 +505,8 @@ class STROGATZ_P_191(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '(np.cos(x[0]) - 0.93)*np.sin(x[0])']
     
     def np_eq(self, t, x):
         return np.array([x[1], (np.cos(x[0]) - 0.93)*np.sin(x[0])])
@@ -486,7 +520,8 @@ class STROGATZ_P_194(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['np.cos(x[0])*np.cot(x[1])', '(3.2*np.sin(x[1])**2 + 1.0)*np.sin(x[0])']
     
     def np_eq(self, t, x):
         return np.array([np.cos(x[0])*np.cot(x[1]), (3.2*np.sin(x[1])**2 + 1.0)*np.sin(x[0])])
@@ -500,7 +535,8 @@ class STROGATZ_P_195(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-0.07*x[1]*np.cos(x[0]) - x[1] - np.sin(x[0])']
     
     def np_eq(self, t, x):
         return np.array([x[1], -0.07*x[1]*np.cos(x[0]) - x[1] - np.sin(x[0])])
@@ -514,7 +550,8 @@ class STROGATZ_P_200(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-0.43*x[0]**2*x[1] - x[0] + 0.43*x[1]']
     
     def np_eq(self, t, x):
         return np.array([x[1], -0.43*x[0]**2*x[1] - x[0] + 0.43*x[1]])
@@ -528,7 +565,8 @@ class STROGATZ_P_214(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-1.12333333333333*x[0]**3 + 3.37*x[0] + 3.37*x[1]', '-0.29673590504451*x[0]']
     
     def np_eq(self, t, x):
         return np.array([-1.12333333333333*x[0]**3 + 3.37*x[0] + 3.37*x[1], -0.29673590504451*x[0]])
@@ -542,7 +580,8 @@ class STROGATZ_P_207(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]**2*x[1] - x[0] + 2.4*x[1]', '-x[0]**2*x[1] - 2.4*x[0] + 0.07']
     
     def np_eq(self, t, x):
         return np.array([x[0]**2*x[1] - x[0] + 2.4*x[1], -x[0]**2*x[1] - 2.4*x[0] + 0.07])
@@ -556,7 +595,8 @@ class STROGATZ_P_217(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-0.886*x[0]**2*x[1] - x[0] + 0.886*x[1]']
     
     def np_eq(self, t, x):
         return np.array([x[1], -0.886*x[0]**2*x[1] - x[0] + 0.886*x[1]])
@@ -570,7 +610,8 @@ class STROGATZ_P_238(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-15.3*x[0]**3 + 15.3*x[0]**2*x[1] - 1.0153*x[0] + 0.0153*x[1]', '0.3 - x[0]']
     
     def np_eq(self, t, x):
         return np.array([-15.3*x[0]**3 + 15.3*x[0]**2*x[1] - 1.0153*x[0] + 0.0153*x[1], 0.3 - x[0]])
@@ -584,7 +625,8 @@ class STROGATZ_P_260(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(-4.0*x[0]*x[1] + (8.9 - x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)', '1.4*x[0]*(x[0]**2 - x[1] + 1)/(x[0]**2 + 1)']
     
     def np_eq(self, t, x):
         return np.array([(-4.0*x[0]*x[1] + (8.9 - x[0])*(x[0]**2 + 1))/(x[0]**2 + 1), 1.4*x[0]*(x[0]**2 - x[1] + 1)/(x[0]**2 + 1)])
@@ -598,7 +640,8 @@ class STROGATZ_P_269(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-0.64*x[1] - np.sin(x[0]) + 1.67']
     
     def np_eq(self, t, x):
         return np.array([x[1], -0.64*x[1] - np.sin(x[0]) + 1.67])
@@ -612,7 +655,8 @@ class STROGATZ_P_300(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[1]', '-0.64*x[1]*np.abs(x[1]) - np.sin(x[0]) + 1.67']
     
     def np_eq(self, t, x):
         return np.array([x[1], -0.64*x[1]*np.abs(x[1]) - np.sin(x[0]) + 1.67])
@@ -626,7 +670,8 @@ class STROGATZ_P_288(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-x[0]*x[1]**2 - 0.5*x[0] + 0.5', 'x[1]*(x[0]*x[1] - 0.02)']
     
     def np_eq(self, t, x):
         return np.array([-x[0]*x[1]**2 - 0.5*x[0] + 0.5, x[1]*(x[0]*x[1] - 0.02)])
@@ -640,7 +685,8 @@ class STROGATZ_P_289(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-np.sin(x[0]) + 0.33*np.sin(x[0] - x[1])', '-np.sin(x[1]) - 0.33*np.sin(x[0] - x[1])']
     
     def np_eq(self, t, x):
         return np.array([-np.sin(x[0]) + 0.33*np.sin(x[0] - x[1]), -np.sin(x[1]) - 0.33*np.sin(x[0] - x[1])])
@@ -654,7 +700,8 @@ class STROGATZ_P_290(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-x[0] + 1/(0.246596963941606*np.exp(4.89*x[1]) + 1)', '-x[1] + 1/(0.246596963941606*np.exp(4.89*x[0]) + 1)']
     
     def np_eq(self, t, x):
         return np.array([-x[0] + 1/(0.246596963941606*np.exp(4.89*x[1]) + 1), -x[1] + 1/(0.246596963941606*np.exp(4.89*x[0]) + 1)])
@@ -668,7 +715,8 @@ class STROGATZ_P_293(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(-x[0]*x[1] + (18.3 - x[0])*(0.48*x[0]**2 + 1))/(0.48*x[0]**2 + 1)', '(5.3904*x[0]**2 - x[0]*x[1] + 11.23)/(0.48*x[0]**2 + 1)']
     
     def np_eq(self, t, x):
         return np.array([(-x[0]*x[1] + (18.3 - x[0])*(0.48*x[0]**2 + 1))/(0.48*x[0]**2 + 1), (5.3904*x[0]**2 - x[0]*x[1] + 11.23)/(0.48*x[0]**2 + 1)])
@@ -682,13 +730,14 @@ class STROGATZ_P_296(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['3.1*x[0]**2*x[1] - 4.03*x[0] + 1', 'x[0]*(-3.1*x[0]*x[1] + 3.03)']
     
     def np_eq(self, t, x):
         return np.array([3.1*x[0]**2*x[1] - 4.03*x[0] + 1, x[0]*(-3.1*x[0]*x[1] + 3.03)])
 
 @register_eq_class
-class STROGATZ_P_296(KnownEquation):
+class STROGATZ_P_2961(KnownEquation):
     _eq_name = 'vars2_prog27'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Chemical oscillator model by Schnackenberg 1979 (dimensionless)"
@@ -696,7 +745,8 @@ class STROGATZ_P_296(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]**2*x[1] - x[0] + 0.24', '-x[0]**2*x[1] + 1.43']
     
     def np_eq(self, t, x):
         return np.array([x[0]**2*x[1] - x[0] + 0.24, -x[0]**2*x[1] + 1.43])
@@ -710,7 +760,8 @@ class STROGATZ_P_301(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['np.sin(x[1])*np.cos(x[0]) + 1.432', 'np.sin(x[1])*np.cos(x[0]) + 0.972']
     
     def np_eq(self, t, x):
         return np.array([np.sin(x[1])*np.cos(x[0]) + 1.432, np.sin(x[1])*np.cos(x[0]) + 0.972])
@@ -724,7 +775,8 @@ class STROGATZ_P_82(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-0.1*x[0] + 0.1*x[1]', '0.21*x[0]*x[2] - 0.21*x[1]', '-1.054*x[0]*x[1] - 0.34*x[2] + 1.394']
     
     def np_eq(self, t, x):
         return np.array([-0.1*x[0] + 0.1*x[1], 0.21*x[0]*x[2] - 0.21*x[1], -1.054*x[0]*x[1] - 0.34*x[2] + 1.394])
@@ -738,7 +790,8 @@ class MODEL_FOR_APOPTOSIS(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(-0.4*x[0]*x[1] + (0.1 - 0.05*x[0])*(x[0] + 0.1))/(x[0] + 0.1)', '(-7.95*x[0]*x[1]*(x[1] + 0.1) - 0.2*x[1]*(x[1] + 2.0) + x[2]*(0.6*x[1] + 0.06)*(x[1] + 0.1)*(x[1] + 2.0))/((x[1] + 0.1)*(x[1] + 2.0))', '(7.95*x[0]*x[1]*(x[1] + 0.1) + 0.2*x[1]*(x[1] + 2.0) - x[2]*(0.6*x[1] + 0.06)*(x[1] + 0.1)*(x[1] + 2.0))/((x[1] + 0.1)*(x[1] + 2.0))']
     
     def np_eq(self, t, x):
         return np.array([(-0.4*x[0]*x[1] + (0.1 - 0.05*x[0])*(x[0] + 0.1))/(x[0] + 0.1), (-7.95*x[0]*x[1]*(x[1] + 0.1) - 0.2*x[1]*(x[1] + 2.0) + x[2]*(0.6*x[1] + 0.06)*(x[1] + 0.1)*(x[1] + 2.0))/((x[1] + 0.1)*(x[1] + 2.0)), (7.95*x[0]*x[1]*(x[1] + 0.1) + 0.2*x[1]*(x[1] + 2.0) - x[2]*(0.6*x[1] + 0.06)*(x[1] + 0.1)*(x[1] + 2.0))/((x[1] + 0.1)*(x[1] + 2.0))])
@@ -752,7 +805,8 @@ class STROGATZ_P_319(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-5.1*x[0] + 5.1*x[1]', '-x[0]*x[2] + 12.0*x[0] - x[1]', 'x[0]*x[1] - 1.67*x[2]']
     
     def np_eq(self, t, x):
         return np.array([-5.1*x[0] + 5.1*x[1], -x[0]*x[2] + 12.0*x[0] - x[1], x[0]*x[1] - 1.67*x[2]])
@@ -766,13 +820,14 @@ class STROGATZ_P_319(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-10.0*x[0] + 10.0*x[1]', '-x[0]*x[2] + 99.96*x[0] - x[1]', 'x[0]*x[1] - 2.6666666666666665*x[2]']
     
     def np_eq(self, t, x):
         return np.array([-10.0*x[0] + 10.0*x[1], -x[0]*x[2] + 99.96*x[0] - x[1], x[0]*x[1] - 2.6666666666666665*x[2]])
 
 @register_eq_class
-class STROGATZ_P_319(KnownEquation):
+class STROGATZ_P_3191(KnownEquation):
     _eq_name = 'vars3_prog5'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Lorenz equations standard parameters (chaotic)"
@@ -780,7 +835,8 @@ class STROGATZ_P_319(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-10.0*x[0] + 10.0*x[1]', '-x[0]*x[2] + 28.0*x[0] - x[1]', 'x[0]*x[1] - 2.6666666666666665*x[2]']
     
     def np_eq(self, t, x):
         return np.array([-10.0*x[0] + 10.0*x[1], -x[0]*x[2] + 28.0*x[0] - x[1], x[0]*x[1] - 2.6666666666666665*x[2]])
@@ -794,7 +850,8 @@ class ROSSLER_ATTRACTOR(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-5.0*x[1] - 5.0*x[2]', '5.0*x[0] - 1.0*x[1]', '5.0*x[0]*x[2] - 28.5*x[2] + 1.0']
     
     def np_eq(self, t, x):
         return np.array([-5.0*x[1] - 5.0*x[2], 5.0*x[0] - 1.0*x[1], 5.0*x[0]*x[2] - 28.5*x[2] + 1.0])
@@ -808,7 +865,8 @@ class ROSSLER_ATTRACTOR_PERIODIC(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-5.0*x[1] - 5.0*x[2]', '5.0*x[0] + 0.5*x[1]', '5.0*x[0]*x[2] - 28.5*x[2] + 1.0']
     
     def np_eq(self, t, x):
         return np.array([-5.0*x[1] - 5.0*x[2], 5.0*x[0] + 0.5*x[1], 5.0*x[0]*x[2] - 28.5*x[2] + 1.0])
@@ -822,7 +880,8 @@ class ROSSLER_ATTRACTOR_CHAOTIC(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-5.0*x[1] - 5.0*x[2]', '5.0*x[0] + 1.0*x[1]', '5.0*x[0]*x[2] - 28.5*x[2] + 1.0']
     
     def np_eq(self, t, x):
         return np.array([-5.0*x[1] - 5.0*x[2], 5.0*x[0] + 1.0*x[1], 5.0*x[0]*x[2] - 28.5*x[2] + 1.0])
@@ -836,7 +895,8 @@ class AIZAWA_ATTRACTOR_CHAOTIC(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['x[0]*x[2] - 0.7*x[0] - 3.5*x[1]', '3.5*x[0] + x[1]*x[2] - 0.7*x[1]', '0.1*x[0]**3*x[2] - 0.25*x[0]**2*x[2] - x[0]**2 - 0.25*x[1]**2*x[2] - x[1]**2 - 0.333333333333333*x[2]**3 + 0.95*x[2] + 0.65']
     
     def np_eq(self, t, x):
         return np.array([x[0]*x[2] - 0.7*x[0] - 3.5*x[1], 3.5*x[0] + x[1]*x[2] - 0.7*x[1], 0.1*x[0]**3*x[2] - 0.25*x[0]**2*x[2] - x[0]**2 - 0.25*x[1]**2*x[2] - x[1]**2 - 0.333333333333333*x[2]**3 + 0.95*x[2] + 0.65])
@@ -850,7 +910,8 @@ class CHEN_LEE_ATTRACTOR(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['5.0*x[0] - x[1]*x[2]', 'x[0]*x[2] - 10.0*x[1]', '0.333333333333333*x[0]*x[1] - 3.8*x[2]']
     
     def np_eq(self, t, x):
         return np.array([5.0*x[0] - x[1]*x[2], x[0]*x[2] - 10.0*x[1], 0.333333333333333*x[0]*x[1] - 3.8*x[2]])
@@ -864,7 +925,8 @@ class STROGATZ_P_295(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['(-x[0]*(0.246596963941606*np.exp(0.4*x[1] + 0.89*x[2]) + 1) + 1)/(0.246596963941606*np.exp(0.4*x[1] + 0.89*x[2]) + 1)', '1.0*x[0] - 1.0*x[1]', '(-x[2]*(0.246596963941606*np.exp(0.89*x[0] + 0.4*x[3]) + 1) + 1)/(0.246596963941606*np.exp(0.89*x[0] + 0.4*x[3]) + 1)', '1.0*x[2] - 1.0*x[3]']
     
     def np_eq(self, t, x):
         return np.array([(-x[0]*(0.246596963941606*np.exp(0.4*x[1] + 0.89*x[2]) + 1) + 1)/(0.246596963941606*np.exp(0.4*x[1] + 0.89*x[2]) + 1), 1.0*x[0] - 1.0*x[1], (-x[2]*(0.246596963941606*np.exp(0.89*x[0] + 0.4*x[3]) + 1) + 1)/(0.246596963941606*np.exp(0.89*x[0] + 0.4*x[3]) + 1), 1.0*x[2] - 1.0*x[3]])
@@ -878,7 +940,8 @@ class SEIR_INFECTION_MODEL_PROPORTIONS(KnownEquation):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = ['-0.28*x[0]*x[2]', '0.28*x[0]*x[2] - 0.47*x[1]', '0.47*x[1] - 0.3*x[2]', '0.3*x[2]']
     
     def np_eq(self, t, x):
         return np.array([-0.28*x[0]*x[2], 0.28*x[0]*x[2] - 0.47*x[1], 0.47*x[1] - 0.3*x[2], 0.3*x[2]])

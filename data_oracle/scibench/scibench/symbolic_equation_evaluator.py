@@ -20,7 +20,10 @@ class Equation_evaluator(object):
         self.batch_size = batch_size
 
         self.true_equation = equation_object_loader(true_equation_name)
-
+        print("name:", self.true_equation._eq_name)
+        print("description:", self.true_equation._description)
+        print("operator_set:", self.true_equation._operator_set)
+        print("expressions:", self.true_equation.sympy_eq)
         assert self.true_equation, "true_equation is not found"
         self.nvars = self.true_equation.num_vars
         self.operators_set = self.true_equation._operator_set

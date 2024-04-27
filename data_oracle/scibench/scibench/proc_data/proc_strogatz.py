@@ -16,7 +16,8 @@ class {}(KnownEquation):
         
         self.vars_range_and_types = [{}]
         super().__init__(num_vars={}, vars_range_and_types=self.vars_range_and_types)
-        
+        x= self.x
+        self.sympy_eq = {}
     
     def np_eq(self, t, x):
         return np.array([{}])
@@ -26,7 +27,9 @@ class {}(KnownEquation):
 def fill_template(expressions, class_name, name, nvars, description, function_set):
     element = 'LogUniformSampling((1e-2, 10.0), only_positive=True)'
     elements = ", ".join([element for _ in range(int(nvars))])
-    return template.format(class_name, name, function_set, description, elements, nvars, ", ".join(expressions))
+    return template.format(class_name, name, function_set, description, elements, nvars,
+                           expressions,
+                           ", ".join(expressions))
 
 
 def detect_function_set(one_ode):

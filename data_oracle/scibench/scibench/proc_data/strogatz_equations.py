@@ -51,7 +51,7 @@ equations = [
     'eq_description': 'Population growth with carrying capacity',
     'const_description': 'c_0: growth rate, c_1: carrying capacity',
     'var_description': 'x_0: population',
-    'source': 'strogatz p.22'
+    'source': 'strogatz p.221'
 },
 {
     'id': 4,
@@ -77,7 +77,7 @@ equations = [
     'eq_description': 'Velocity of a falling object with air resistance',
     'const_description': 'c_0: gravitational acceleration, c_1: overall drag for human: 0.5 * C * rho * A / m, with drag coeff C=0.7, air density rho=1.21, cross-sectional area A=0.25, mass m=50',
     'var_description': 'x_0: velocity',
-    'source': 'strogatz p.38'
+    'source': 'strogatz p.381'
 },
 {
     'id': 6,
@@ -103,7 +103,7 @@ equations = [
     'eq_description': 'Gompertz law for tumor growth',
     'const_description': 'c_0: growth rate, c_1: tumor carrying capacity',
     'var_description': 'x_0: proportional to number of cells (tumor size)',
-    'source': 'strogatz p.39'
+    'source': 'strogatz p.391'
 },
 {
     'id': 8,
@@ -116,7 +116,7 @@ equations = [
     'eq_description': 'Logistic equation with Allee effect',
     'const_description': 'c_0: growth rate, c_1: carrying capacity, c_2: Allee effect parameter',
     'var_description': 'x_0: population',
-    'source': 'strogatz p.39'
+    'source': 'strogatz p.392'
 },
 {
     'id': 9,
@@ -142,7 +142,7 @@ equations = [
     'eq_description': 'Refined language death model for two languages',
     'const_description': 'c_0: perceived status of language 1, c_1: adjustable exponent',
     'var_description': 'x_0: proportion of population speaking language 1',
-    'source': 'strogatz p.40'
+    'source': 'strogatz p.401'
 },
 {
     'id': 11,
@@ -363,7 +363,7 @@ equations = [
     'eq_description': 'Lotka-Volterra simple (as on Wikipedia)',
     'const_description': 'c_0: growth rate of prey without predators, c_1: killing rate of prey due to predators, c_2: death rate of predators without prey, c_3: growth rate of predators per prey',
     'var_description': 'x_0: prey, x_1: predators',
-    'source': 'Lotka-Volterra'
+    'source': 'Lotka_Volterra'
 },
 {
     'id': 28,
@@ -662,7 +662,7 @@ equations = [
     'eq_description': 'Chemical oscillator model by Schnackenberg 1979 (dimensionless)',
     'const_description': 'c_0: parameter, c_1: parameter',
     'var_description': 'x_0: concentration of X, x_1: concentration of Y',
-    'source': 'strogatz p.296'
+    'source': 'strogatz p.2961'
 },
 {
     'id': 51,
@@ -740,7 +740,7 @@ equations = [
     'eq_description': 'Lorenz equations standard parameters (chaotic)',
     'const_description': 'c_0: Prandtl number (sigma), c_1: Rayleigh number (r), c_2: unnamed parameter (b)',
     'var_description': 'x_0: x, x_1: y, x_2: z',
-    'source': 'strogatz p.319'
+    'source': 'strogatz p.3191'
 },
 {
     'id': 57,

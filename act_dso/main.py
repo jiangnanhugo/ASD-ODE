@@ -42,11 +42,11 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
-    print(data_query_oracle.vars_range_and_types_to_json)
+    # print(data_query_oracle.vars_range_and_types_to_json)
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
     function_set = data_query_oracle.get_operators_set()
-    print(function_set)
+
 
     time_span = (0.0001, 2)
     trajectory_time_steps = 20
