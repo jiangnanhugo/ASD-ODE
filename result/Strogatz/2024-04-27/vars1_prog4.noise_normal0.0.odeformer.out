@@ -1,0 +1,11 @@
+name: vars1_prog4
+description: RC-circuit with non-linear resistor (charging capacitor)
+operator_set: ['add', 'sub', 'mul', 'div', 'const', 'exp']
+expressions: ['(0.5*np.exp(1.04166666666667*x[0]) - 0.824360635350064)/(np.exp(1.04166666666667*x[0]) + 1.64872127070013)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.1409 * x_0 + -0.0424 * sin(0.0548 + 2.7693 * x_0)
+R2 score: -1.6598915467905466
+NMSE: 2.6598915467905466

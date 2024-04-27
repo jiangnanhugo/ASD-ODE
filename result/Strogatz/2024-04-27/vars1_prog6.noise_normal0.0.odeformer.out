@@ -1,0 +1,11 @@
+name: vars1_prog6
+description: Autocatalysis with one fixed abundant chemical
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['x[0]*(2.1 - 0.5*x[0])']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 2.1042 * x_0 + -0.5010 * (x_0)**2
+R2 score: 0.9999953857219475
+NMSE: 4.6142780525393334e-06

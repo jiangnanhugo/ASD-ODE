@@ -1,0 +1,11 @@
+name: vars1_prog9
+description: Language death model for two languages
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['0.32 - 0.6*x[0]']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.4860 * x_0 + -0.9190 * (x_0)**2
+R2 score: -0.31255305252585575
+NMSE: 1.3125530525258557

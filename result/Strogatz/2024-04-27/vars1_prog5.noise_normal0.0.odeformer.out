@@ -1,0 +1,11 @@
+name: vars1_prog5
+description: Velocity of a falling object with air resistance
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['9.81 - 0.0021175*x[0]**2']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 11.5824 + -0.1412 * x_0
+R2 score: 0.9986040215243858
+NMSE: 0.0013959784756142346

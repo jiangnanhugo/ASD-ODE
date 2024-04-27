@@ -1,0 +1,11 @@
+name: vars1_prog16
+description: Landau equation (typical time scale tau = 1)
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['x[0]*(-0.001*x[0]**4 + 0.04*x[0]**2 + 0.1)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.9000 * x_0 * (8.3950 + -2.3103 * x_0)**-1
+R2 score: 0.9019849539488762
+NMSE: 0.09801504605112377

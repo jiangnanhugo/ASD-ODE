@@ -1,0 +1,11 @@
+name: vars1_prog21
+description: Dimensionally reduced SIR infection model for dead people (dimensionless)
+operator_set: ['add', 'sub', 'mul', 'div', 'const', 'exp']
+expressions: ['-0.2*x[0] + 1.2 - np.exp(-x[0])']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.8124 * sin(13.7600 + 0.2066 * x_0) + -0.0898 * x_0
+R2 score: 0.9614384012763469
+NMSE: 0.03856159872365306

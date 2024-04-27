@@ -1,0 +1,11 @@
+name: vars1_prog3
+description: Population growth with carrying capacity
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['x[0]*(0.79 - 0.0106325706594886*x[0])']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.9000 * x_0 + -0.0139 * (x_0)**2
+R2 score: 0.8981640747771544
+NMSE: 0.10183592522284557

@@ -1,0 +1,11 @@
+name: vars1_prog19
+description: Improved logistic equation with harvesting/fishing (dimensionless)
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['x[0]*((1 - x[0])*(x[0] + 0.8) - 0.08)/(x[0] + 0.8)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.9162 * x_0 + -0.9719 * (x_0)**2
+R2 score: 0.9988432831472271
+NMSE: 0.0011567168527728544

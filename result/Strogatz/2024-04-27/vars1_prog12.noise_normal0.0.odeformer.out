@@ -1,0 +1,11 @@
+name: vars1_prog12
+description: Photons in a laser (simple)
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['x[0]*(1.8 - 0.1107*x[0])']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 1.9071 * x_0 + -0.1177 * (x_0)**2
+R2 score: 0.9949599096238394
+NMSE: 0.0050400903761606

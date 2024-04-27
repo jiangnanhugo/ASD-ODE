@@ -1,0 +1,11 @@
+name: vars1_prog7
+description: Gompertz law for tumor growth
+operator_set: ['add', 'sub', 'mul', 'div', 'const', 'log']
+expressions: ['x[0]*(0.032*np.log(x[0]) + 0.0265136581621167)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.0150 * x_0
+R2 score: -7.057234096284761
+NMSE: 8.05723409628476

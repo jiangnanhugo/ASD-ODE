@@ -1,0 +1,11 @@
+name: vars1_prog20
+description: Autocatalytic gene switching (dimensionless)
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['(x[0]**2 + (0.1 - 0.55*x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.9000 * x_0 * (1.4700 + 16.8913 * x_0)**-1
+R2 score: -0.3640972275169325
+NMSE: 1.3640972275169325

@@ -1,0 +1,11 @@
+name: vars1_prog11
+description: Naive critical slowing down (statistical mechanics)
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['-x[0]**3']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = -1.0024 * (x_0)**3
+R2 score: 0.9999806587946611
+NMSE: 1.9341205338863077e-05

@@ -1,0 +1,11 @@
+name: vars1_prog13
+description: Overdamped bead on a rotating hoop
+operator_set: ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
+expressions: ['(0.95157*np.cos(x[0]) - 0.0981)*np.sin(x[0])']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 1.1160 * x_0 + -0.7620 * (x_0)**2
+R2 score: 0.9915556475375071
+NMSE: 0.008444352462492866

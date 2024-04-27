@@ -1,0 +1,11 @@
+name: vars1_prog22
+description: Hysteretic activation of a protein expression (positive feedback, basal promoter expression)
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['(0.4*x[0]**5 + (1.4 - 0.89*x[0])*(x[0]**5 + 123.0))/(x[0]**5 + 123.0)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 1.3382 + -0.8296 * x_0
+R2 score: 0.9995810638975798
+NMSE: 0.0004189361024201643

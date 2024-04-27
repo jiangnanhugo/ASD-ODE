@@ -1,0 +1,11 @@
+name: vars1_prog17
+description: Logistic equation with harvesting/fishing
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['-0.004*x[0]**2 + 0.4*x[0] - 0.3']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.0588 * (-0.2155 + -0.0889 * x_0)**-1 + 0.2634 * x_0
+R2 score: -0.12175167266415277
+NMSE: 1.1217516726641528

@@ -1,0 +1,11 @@
+name: vars1_prog8
+description: Logistic equation with Allee effect
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['x[0]*(-0.000244755244755245*x[0]**2 + 0.0328951048951049*x[0] - 0.14)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = -0.1280 * x_0
+R2 score: 0.989632552809789
+NMSE: 0.010367447190210988

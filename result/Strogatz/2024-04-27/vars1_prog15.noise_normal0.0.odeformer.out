@@ -1,0 +1,11 @@
+name: vars1_prog15
+description: Budworm outbreak with predation (dimensionless)
+operator_set: ['add', 'sub', 'mul', 'div', 'const']
+expressions: ['x[0]*(-x[0] + (0.4 - 0.00421052631578947*x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.1737 * x_0 + -0.3593 * (x_0)**2
+R2 score: 0.00622160788693904
+NMSE: 0.993778392113061

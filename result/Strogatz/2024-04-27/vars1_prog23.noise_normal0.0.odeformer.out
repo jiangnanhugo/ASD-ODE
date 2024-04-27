@@ -1,0 +1,11 @@
+name: vars1_prog23
+description: Overdamped pendulum with constant driving torque/fireflies/Josephson junction (dimensionless)
+operator_set: ['add', 'sub', 'mul', 'div', 'const', 'sin']
+expressions: ['0.21 - np.sin(x[0])']
+[{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
+Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
+Loaded pretrained model
+(500, 1) (500,)
+x_0' = 0.2077 + -0.9765 * x_0
+R2 score: 0.9974229402615679
+NMSE: 0.0025770597384321414
