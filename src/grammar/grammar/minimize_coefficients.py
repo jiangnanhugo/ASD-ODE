@@ -1,4 +1,5 @@
 """optimize the coefficients in the candidate ODEs"""
+import sys
 
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify, symbols
@@ -88,8 +89,6 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     if num_changing_consts == 0:
         # zero constant
         var_ytrue = np.var(true_trajectories)
-
-        print(candidate_ode_equations)
         pred_trajectories = execute(candidate_ode_equations, init_cond, time_span, t_eval, input_var_Xs)
     elif num_changing_consts >= max_open_constants:
         # discourage over expressions with too many coefficients.
@@ -152,7 +151,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
 
     train_loss = loss_func(pred_trajectories, true_trajectories, var_ytrue)
     print('\t loss:', train_loss, 'eq:', candidate_ode_equations)
-
+    sys.stdout.flush()
     return train_loss, candidate_ode_equations, t_optimized_constants, t_optimized_obj
 
 
