@@ -153,7 +153,7 @@ def learn(grammar_model: ContextFreeGrammar,
         # Compute rewards (or retrieve cached rewards)
         r = np.array([p.valid_loss for p in grammar_expressions])
         if verbose:
-            print("rewards:", r)
+            print("rewards:", r.shape, r)
         r_train = r
 
         # Need for Vanilla Policy Gradient (epsilon = null)
@@ -204,14 +204,14 @@ def learn(grammar_model: ContextFreeGrammar,
                 quantile = weighted_quantile(values=combined_r, weights=combined_w, q=1 - epsilon)
 
             else:  # Empirical quantile
-                quantile = np.nanquantile(r, 1 - epsilon, interpolation="higher")
+                quantile = np.nanquantile(r, 1 - epsilon)
 
             '''
                 Here we get the returned as well as stored programs and properties.
             '''
 
             keep = r >= quantile
-            print('keep:',np.sum(keep), len(keep))
+            print('keep:',np.sum(keep), len(keep), "quantile:",quantile)
             r_train = r = r[keep]
             p_train = grammar_expressions = list(compress(grammar_expressions, keep))
 
@@ -272,7 +272,7 @@ def learn(grammar_model: ContextFreeGrammar,
         # Print new best expression
         if verbose and new_r_best:
             print(" Training epoch {}/{}, current best R: {}".format(epoch + 1, n_epochs, prev_r_best))
-            print(f"{p_r_best}")
+            print(f"\t{p_r_best}")
 
             print("\t** New best")
 
