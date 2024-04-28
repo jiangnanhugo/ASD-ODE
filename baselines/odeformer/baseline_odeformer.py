@@ -10,17 +10,20 @@ from scibench.symbolic_data_generator import DataX
 
 # ignore user warnings
 import warnings
+from grammar.grammar_regress_task import RegressTask
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
 np.random.seed(1000)  # Seed for reproducibility
 
 
-def get_data(func, nvars):
-    t_train = np.linspace(0.0001, 10, 500)
-    x0 = np.random.rand(nvars)
-    x_train = solve_ivp(func, (t_train[0], t_train[-1]), x0, t_eval=t_train).y.T
-    return t_train, x_train
+def get_data(func, nvars, t_eval, task):
+    task.rand_draw_init_cond()
+    x0 = task.init_cond.flatten()
+
+    print(x0.shape, x0)
+    x_train = solve_ivp(func, (t_eval[0], t_eval[-1]), x0, t_eval=t_eval).y.T
+    return t_eval, x_train
 
 
 @click.command()
@@ -31,34 +34,42 @@ def get_data(func, nvars):
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_type, noise_scale):
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
-                                           noise_type, noise_scale,
+    data_query_oracle = Equation_evaluator(equation_name, batch_size=1,
+                                           noise_type=noise_type, noise_scale=noise_scale,
                                            metric_name=metric_name)
     print(data_query_oracle.vars_range_and_types_to_json)
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
+
     nvars = data_query_oracle.get_nvars()
 
     time_span = (0.0001, 2)
-    trajectory_time_steps = 20
+    trajectory_time_steps = 100
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
-
+    task = RegressTask(1,
+                       nvars,
+                       dataXgen,
+                       data_query_oracle,
+                       time_span, t_eval)
     dstr = SymbolicTransformerRegressor(from_pretrained=True, pretrain_basepath=pretrain_basepath)
 
     model_args = {'beam_size': 200,
                   'beam_temperature': 0.1}
     dstr.set_model_args(model_args)
 
-    t_train, x_train = get_data(data_query_oracle.true_equation.np_eq, nvars)
-    t_valid, x_valid = get_data(data_query_oracle.true_equation.np_eq, nvars)
-
+    t_train, x_train = get_data(data_query_oracle.true_equation.np_eq, nvars, t_eval, task)
     print(x_train.shape, t_train.shape)
     dstr.fit(t_train, x_train)
 
     dstr.print()
-
-    pred_traj = dstr.predict(t_valid, x_valid[0])
-    one_r2_score = r2_score(x_valid, pred_traj)
+    all_true_traj = []
+    all_pred_traj = []
+    for _ in range(num_init_conds):
+        t_valid, x_valid = get_data(data_query_oracle.true_equation.np_eq, nvars, t_eval, task)
+        pred_traj = dstr.predict(t_valid, x_valid[0])
+        all_true_traj.append(x_valid)
+        all_pred_traj.append(pred_traj)
+    one_r2_score = r2_score(np.asarray(all_pred_traj).flatten(), np.asarray(all_true_traj).flatten())
     print("R2 score:", one_r2_score)
     print("neg_nmse:", -(1 - one_r2_score))
 
