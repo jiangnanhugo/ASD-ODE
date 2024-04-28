@@ -37,10 +37,7 @@
       // EXPERIMENTAL: Hyperparameters related to utilizing a memory buffer.
       "use_memory" : false,
       "memory_capacity" : 1e3,
-      "warm_start" : null,
-      "memory_threshold" : null,
-      // Parameters to control what outputs to save.
-      "save_positional_entropy" : false
+      "warm_start" : null
    },
 
    // Only the key RNN decoder hyperparameters are listed here. See

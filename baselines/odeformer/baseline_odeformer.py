@@ -69,9 +69,10 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
         pred_traj = dstr.predict(t_valid, x_valid[0])
         all_true_traj.append(x_valid)
         all_pred_traj.append(pred_traj)
-    one_r2_score = r2_score(np.asarray(all_pred_traj).flatten(), np.asarray(all_true_traj).flatten())
-    print("R2 score:", one_r2_score)
-    print("neg_nmse:", -(1 - one_r2_score))
+        one_r2_score = r2_score(np.asarray(all_pred_traj).flatten(), np.asarray(all_true_traj).flatten())
+        print("R2 score:", one_r2_score)
+        print("neg_nmse:", -(1 - one_r2_score))
+        print('-'*30)
 
 
 if __name__ == "__main__":

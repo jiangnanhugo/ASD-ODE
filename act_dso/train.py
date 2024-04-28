@@ -13,10 +13,10 @@ import math
 from grammar.memory import Batch, make_queue
 from grammar.variance import quantile_variance
 import sys
+
 # Ignore TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-
 
 """
     sess : tf.Session. TensorFlow Session object.
@@ -89,7 +89,7 @@ def learn(grammar_model: ContextFreeGrammar,
           baseline="R_e",
           b_jumpstart=False, early_stopping=True,
           debug=0, use_memory=False, memory_capacity=1e3,
-          warm_start=None, memory_threshold=None, save_positional_entropy=False):
+          warm_start=None):
     """
       Executes the main training loop.
     """
@@ -175,43 +175,14 @@ def learn(grammar_model: ContextFreeGrammar,
         """
         if epsilon is not None and epsilon < 1.0:
             # Compute reward quantile estimate
-            if use_memory:  # Memory-augmented quantile
-                # Get subset of Programs not in buffer
-                unique_programs = [p for p in grammar_expressions if p.traversal not in memory_queue.unique_items]
-                N = len(unique_programs)
-
-                # Get rewards
-                memory_r = memory_queue.get_rewards()
-                sample_r = [p.valid_loss for p in unique_programs]
-                combined_r = np.concatenate([memory_r, sample_r])
-
-                # Compute quantile weights
-                memory_w = memory_queue.compute_probs()
-                if N == 0:
-                    print("WARNING: Found no unique samples in batch!")
-                    combined_w = memory_w / memory_w.sum()  # Renormalize
-                else:
-                    sample_w = np.repeat((1 - memory_w.sum()) / N, N)
-                    combined_w = np.concatenate([memory_w, sample_w])
-
-                # Quantile variance/bias estimates
-                if memory_threshold is not None:
-                    print("Memory weight:", memory_w.sum())
-                    if memory_w.sum() > memory_threshold:
-                        quantile_variance(memory_queue, expression_decoder, batch_size, epsilon, epoch)
-
-                # Compute the weighted quantile
-                quantile = weighted_quantile(values=combined_r, weights=combined_w, q=1 - epsilon)
-
-            else:  # Empirical quantile
-                quantile = np.nanquantile(r, 1 - epsilon)
+            quantile = np.nanquantile(r, 1 - epsilon)
 
             '''
                 Here we get the returned as well as stored programs and properties.
             '''
 
             keep = r >= quantile
-            print('keep:',np.sum(keep), len(keep), "quantile:",quantile)
+            print('keep:', np.sum(keep), len(keep), "quantile:", quantile)
             r_train = r = r[keep]
             p_train = grammar_expressions = list(compress(grammar_expressions, keep))
 
@@ -238,7 +209,8 @@ def learn(grammar_model: ContextFreeGrammar,
             ewma = np.min(r_train) if ewma is None else alpha * quantile + (1 - alpha) * ewma
             b_train = ewma
         elif baseline == "combined":
-            ewma = np.mean(r_train) - quantile if ewma is None else alpha * (np.mean(r_train) - quantile) + (1 - alpha) * ewma
+            ewma = np.mean(r_train) - quantile if ewma is None else alpha * (np.mean(r_train) - quantile) + (
+                        1 - alpha) * ewma
             b_train = quantile + ewma
 
         # Compute sequence lengths
@@ -254,7 +226,7 @@ def learn(grammar_model: ContextFreeGrammar,
             pqt_batch = priority_queue.sample_batch(expression_decoder.pqt_batch_size)
         else:
             pqt_batch = None
-        summaries = expression_decoder.train_step(b_train, sampled_batch, pqt_batch)
+        expression_decoder.train_step(b_train, sampled_batch, pqt_batch)
 
         # Update the memory queue
         if memory_queue is not None:
