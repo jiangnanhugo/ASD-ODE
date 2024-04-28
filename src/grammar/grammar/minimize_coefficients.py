@@ -150,7 +150,7 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         return -np.inf, candidate_ode_equations, 0, np.inf
 
     train_loss = loss_func(pred_trajectories, true_trajectories, var_ytrue)
-    print('\t loss:', train_loss, 'eq:', candidate_ode_equations)
+    print('\t metric:', train_loss, 'eq:', candidate_ode_equations)
     sys.stdout.flush()
     return train_loss, candidate_ode_equations, t_optimized_constants, t_optimized_obj
 
