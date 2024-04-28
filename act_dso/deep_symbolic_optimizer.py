@@ -19,6 +19,7 @@ from utils import load_config
 from inputEmbeddingLayer import make_embedding_layer
 import sys
 
+
 class ActDeepSymbolicRegression(object):
     """
     Active Deep symbolic optimization for ODE.
@@ -62,14 +63,12 @@ class ActDeepSymbolicRegression(object):
         """
         print("extra arguments:\n {}".format(self.config_training))
         sys.stdout.flush()
-        result_dict = learn(self.cfg,
-                            self.sess,
-                            self.expression_decoder,
-                            reward_threshold=reward_threshold,
-                            n_epochs=n_epochs,
-                            **self.config_training)
-
-        return result_dict
+        learn(self.cfg,
+              self.sess,
+              self.expression_decoder,
+              reward_threshold=reward_threshold,
+              n_epochs=n_epochs,
+              **self.config_training)
 
     def set_config(self, config):
         config = load_config(config)
@@ -78,4 +77,3 @@ class ActDeepSymbolicRegression(object):
         self.config_training = self.config["training"]
         self.config_input_embedding = self.config["input_embedding"]
         self.config_expression_decoder = self.config["expression_decoder"]
-

@@ -124,10 +124,8 @@ class grammarProgram(object):
         print("many_expr_templates {}".format(len(many_expr_templates)))
         for i, ti in enumerate(many_expr_templates):
             print(" {}-th: {}".format(i, len(ti)))
-        print(
-            " init_cond_ncores {}, time_span_ncores {}, t_eval_ncores {}, true_trajectories_ncores {}".format(
-                len(init_cond_ncores), len(time_span_ncores), len(t_eval_ncores),
-                len(true_trajectories_ncores)))
+        print(" init_cond_ncores {}, time_span_ncores {}, t_eval_ncores {}, true_trajectories_ncores {}".format(
+            len(init_cond_ncores), len(time_span_ncores), len(t_eval_ncores), len(true_trajectories_ncores)))
 
         result = self.pool.map(fit_one_expr, many_expr_templates, init_cond_ncores, time_span_ncores, t_eval_ncores,
                                true_trajectories_ncores,

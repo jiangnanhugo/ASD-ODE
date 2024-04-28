@@ -60,7 +60,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
     pred_traj = dstr.predict(t_valid, x_valid[0])
     one_r2_score = r2_score(x_valid, pred_traj)
     print("R2 score:", one_r2_score)
-    print("NMSE:", 1 - one_r2_score)
+    print("neg_nmse:", -(1 - one_r2_score))
 
 
 if __name__ == "__main__":

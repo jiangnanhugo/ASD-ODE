@@ -44,6 +44,8 @@ def detect_function_set(one_ode):
         function_set_base.append('log')
     if 'cot' in one_ode:
         function_set_base.append('cot')
+    if '**' in one_ode:
+        function_set_base.append('pow')
     if 'abs' in one_ode or 'Abs' in one_ode > 0:
         function_set_base.append('abs')
     return function_set_base

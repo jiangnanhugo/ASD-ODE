@@ -87,10 +87,14 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
         rules += const_rules
     if 'inv' in operators_set:
         rules += inv_rules
+    if 'pow' in operators_set:
+        rules += [f'{non_terminal_node}->power({non_terminal_node}, {non_terminal_node})']
     if 'div' in operators_set:
         rules += div_rules
     if 'sin' in operators_set or 'cos' in operators_set:
         rules += get_sincos_vars_rules(nvars, non_terminal_node)
+    if 'cot' in operators_set:
+        rules += get_cot_vars_rules(nvars, non_terminal_node)
     if 'sqrt' in operators_set:
         rules += sqrt_rules
     if 'exp' in operators_set:
@@ -157,6 +161,13 @@ def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
     return rules
 
 
+def get_cot_vars_rules(nvars: int, non_terminal_node='A') -> list:
+    rules = []
+    for i in range(nvars):
+        rules += get_ith_cot_rules(i, non_terminal_node)
+    return rules
+
+
 # get extra rules:
 
 def get_var_i_production_rules(round_idx, operators_set):
@@ -179,6 +190,11 @@ def get_var_i_production_rules(round_idx, operators_set):
 def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
     # [A->C*sin(Xi), A->C*cos(Xi)]
     return [f'{non_terminal_node}->C*sin(X{i})', f'{non_terminal_node}->C*cos(X{i})']
+
+
+def get_ith_cot_rules(i: int, non_terminal_node='A') -> list:
+    # [A->C*sin(Xi), A->C*cos(Xi)]
+    return [f'{non_terminal_node}->C/tan(X{i})']
 
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:

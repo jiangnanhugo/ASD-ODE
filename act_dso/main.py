@@ -11,15 +11,15 @@ from grammar.grammar_program import grammarProgram
 from deep_symbolic_optimizer import ActDeepSymbolicRegression
 from utils import load_config
 
-averaged_var_y = 10
+
 threshold_values = {
-    'neg_mse': {'reward_threshold': 1e-6, 'expr_obj_thres': 0.01},
-    'neg_nmse': {'reward_threshold': 1e-6, 'expr_obj_thres': 0.01 / averaged_var_y},
-    'neg_nrmse': {'reward_threshold': 1e-3, 'expr_obj_thres': np.sqrt(0.01 / averaged_var_y)},
-    'neg_rmse': {'reward_threshold': 1e-3, 'expr_obj_thres': 0.1},
-    'inv_mse': {'reward_threshold': 1 / (1 + 1e-6), 'expr_obj_thres': -1 / (1 + 1e-6)},
-    'inv_nmse': {'reward_threshold': 1 / (1 + 1e-6), 'expr_obj_thres': -1 / (1 + 1e-6)},
-    'inv_nrmse': {'reward_threshold': 1 / (1 + 1e-6), 'expr_obj_thres': -1 / (1 + 1e-6)},
+    'neg_mse': {'reward_threshold': 1e-6},
+    'neg_nmse': {'reward_threshold': 1e-6},
+    'neg_nrmse': {'reward_threshold': 1e-3},
+    'neg_rmse': {'reward_threshold': 1e-3},
+    'inv_mse': {'reward_threshold': 1 / (1 + 1e-6)},
+    'inv_nmse': {'reward_threshold': 1 / (1 + 1e-6)},
+    'inv_nrmse': {'reward_threshold': 1 / (1 + 1e-6)},
 }
 
 
@@ -46,9 +46,8 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     nvars = data_query_oracle.get_nvars()
     function_set = data_query_oracle.get_operators_set()
 
-
     time_span = (0.0001, 2)
-    trajectory_time_steps = 20
+    trajectory_time_steps = 100
     max_opt_iter = 500
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
@@ -62,6 +61,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     nt_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvars)
     production_rules = []
     for one_nt_node in nt_nodes:
+        print(get_production_rules(nvars, function_set, one_nt_node))
         production_rules.extend(get_production_rules(nvars, function_set, one_nt_node))
 
     print("grammars:", production_rules)
@@ -81,7 +81,6 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
         reward_threhold=reward_thresh
     )
 
-    grammar_model.expr_obj_thres = threshold_values[metric_name]['expr_obj_thres']
     grammar_model.task = task
     grammar_model.program = program
 

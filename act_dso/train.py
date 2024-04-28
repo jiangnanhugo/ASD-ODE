@@ -276,9 +276,9 @@ def learn(grammar_model: ContextFreeGrammar,
 
             print("\t** New best")
 
-        if early_stopping and p_r_best.train_loss > reward_threshold:
-            print("Early stopping criteria met; breaking early.")
-            break
+        if early_stopping and p_r_best.valid_loss > reward_threshold:
+            print("Early stopping criteria met; terminate early.")
+            return
 
         if verbose and (epoch + 1) % 10 == 0:
             print("Training epoch {}/{}, current best R: {:.4f}".format(epoch + 1, n_epochs, prev_r_best))
@@ -300,11 +300,8 @@ def learn(grammar_model: ContextFreeGrammar,
             p = grammar_model.program.cache[item[0]]
             p.print_stats()
 
-    # Return the best expression
-    p = p_final if p_final is not None else p_r_best
-    print(p)
     sys.stdout.flush()
-    return [p]
+    return
 
 
 def print_var_means(sess):

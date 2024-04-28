@@ -441,7 +441,7 @@ equations = [
     'eq_description': 'Glider (dimensionless)',
     'const_description': 'c_0: drag coefficient',
     'var_description': 'x_0: speed, x_1: angle to horizontal',
-    'source': 'strogatz p.190'
+    'source': 'strogatz p.1901'
 },
 {
     'id': 34,

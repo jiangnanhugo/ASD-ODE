@@ -66,7 +66,7 @@ class STROGATZ_P_38(KnownEquation):
 
     def np_eq(self, t, x):
         return np.array([(0.5 * np.exp(1.04166666666667 * x[0]) - 0.824360635350064) / (
-                    np.exp(1.04166666666667 * x[0]) + 1.64872127070013)])
+                np.exp(1.04166666666667 * x[0]) + 1.64872127070013)])
 
 
 @register_eq_class
@@ -152,7 +152,7 @@ class STROGATZ_P_40(KnownEquation):
 @register_eq_class
 class STROGATZ_P_401(KnownEquation):
     _eq_name = 'vars1_prog10'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
     _description = "Refined language death model for two languages"
 
     def __init__(self):
@@ -528,7 +528,7 @@ class STROGATZ_P_190(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_190(KnownEquation):
+class STROGATZ_P_1901(KnownEquation):
     _eq_name = 'vars2_prog10'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
     _description = "Glider (dimensionless)"
@@ -572,10 +572,10 @@ class STROGATZ_P_194(KnownEquation):
                                      LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
-        self.sympy_eq = ['np.cos(x[0])*np.cot(x[1])', '(3.2*np.sin(x[1])**2 + 1.0)*np.sin(x[0])']
+        self.sympy_eq = ['np.cos(x[0])*cot(x[1])', '(3.2*np.sin(x[1])**2 + 1.0)*np.sin(x[0])']
 
     def np_eq(self, t, x):
-        return np.array([np.cos(x[0]) * np.cot(x[1]), (3.2 * np.sin(x[1]) ** 2 + 1.0) * np.sin(x[0])])
+        return np.array([np.cos(x[0]) / np.tan(x[1]), (3.2 * np.sin(x[1]) ** 2 + 1.0) * np.sin(x[0])])
 
 
 @register_eq_class
@@ -893,11 +893,11 @@ class MODEL_FOR_APOPTOSIS(KnownEquation):
 
     def np_eq(self, t, x):
         return np.array([(-0.4 * x[0] * x[1] + (0.1 - 0.05 * x[0]) * (x[0] + 0.1)) / (x[0] + 0.1), (
-                    -7.95 * x[0] * x[1] * (x[1] + 0.1) - 0.2 * x[1] * (x[1] + 2.0) + x[2] * (0.6 * x[1] + 0.06) * (
-                        x[1] + 0.1) * (x[1] + 2.0)) / ((x[1] + 0.1) * (x[1] + 2.0)), (
-                                     7.95 * x[0] * x[1] * (x[1] + 0.1) + 0.2 * x[1] * (x[1] + 2.0) - x[2] * (
-                                         0.6 * x[1] + 0.06) * (x[1] + 0.1) * (x[1] + 2.0)) / (
-                                     (x[1] + 0.1) * (x[1] + 2.0))])
+                -7.95 * x[0] * x[1] * (x[1] + 0.1) - 0.2 * x[1] * (x[1] + 2.0) + x[2] * (0.6 * x[1] + 0.06) * (
+                x[1] + 0.1) * (x[1] + 2.0)) / ((x[1] + 0.1) * (x[1] + 2.0)), (
+                                 7.95 * x[0] * x[1] * (x[1] + 0.1) + 0.2 * x[1] * (x[1] + 2.0) - x[2] * (
+                                 0.6 * x[1] + 0.06) * (x[1] + 0.1) * (x[1] + 2.0)) / (
+                                 (x[1] + 0.1) * (x[1] + 2.0))])
 
 
 @register_eq_class
@@ -1073,9 +1073,9 @@ class STROGATZ_P_295(KnownEquation):
 
     def np_eq(self, t, x):
         return np.array([(-x[0] * (0.246596963941606 * np.exp(0.4 * x[1] + 0.89 * x[2]) + 1) + 1) / (
-                    0.246596963941606 * np.exp(0.4 * x[1] + 0.89 * x[2]) + 1), 1.0 * x[0] - 1.0 * x[1],
+                0.246596963941606 * np.exp(0.4 * x[1] + 0.89 * x[2]) + 1), 1.0 * x[0] - 1.0 * x[1],
                          (-x[2] * (0.246596963941606 * np.exp(0.89 * x[0] + 0.4 * x[3]) + 1) + 1) / (
-                                     0.246596963941606 * np.exp(0.89 * x[0] + 0.4 * x[3]) + 1),
+                                 0.246596963941606 * np.exp(0.89 * x[0] + 0.4 * x[3]) + 1),
                          1.0 * x[2] - 1.0 * x[3]])
 
 
@@ -1096,4 +1096,3 @@ class SEIR_INFECTION_MODEL_PROPORTIONS(KnownEquation):
 
     def np_eq(self, t, x):
         return np.array([-0.28 * x[0] * x[2], 0.28 * x[0] * x[2] - 0.47 * x[1], 0.47 * x[1] - 0.3 * x[2], 0.3 * x[2]])
-
