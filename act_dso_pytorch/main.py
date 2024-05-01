@@ -1,4 +1,3 @@
-
 # main.py: From here, launch deep symbolic regression tasks. All
 # hyperparameters are exposed (info on them can be found in train.py). Unless
 # you'd like to impose new constraints / make significant modifications,
@@ -14,6 +13,7 @@ import numpy as np
 import random
 import torch
 import matplotlib.pyplot as plt
+
 
 ###############################################################################
 # Main Function
@@ -37,27 +37,27 @@ def main():
         y_constants,
         X_rnn,
         y_rnn,
-        operator_list = ['*', '+', '-', '/', '^', 'cos', 'sin', 'var_x'],
-        min_length = 2,
-        max_length = 15,
-        type = 'lstm',
-        num_layers = 2,
-        hidden_size = 250,
-        dropout = 0.0,
-        lr = 0.0005,
-        optimizer = 'adam',
-        inner_optimizer = 'rmsprop',
-        inner_lr = 0.1,
-        inner_num_epochs = 25,
-        entropy_coefficient = 0.005,
-        risk_factor = 0.95,
-        initial_batch_size = 2000,
-        scale_initial_risk = True,
-        batch_size = 500,
-        num_batches = 500,
-        use_gpu = False,
-        live_print = True,
-        summary_print = True
+        operator_list=['*', '+', '-', '/', '^', 'cos', 'sin', 'var_x'],
+        min_length=2,
+        max_length=15,
+        type='lstm',
+        num_layers=2,
+        hidden_size=250,
+        dropout=0.0,
+        lr=0.0005,
+        optimizer='adam',
+        inner_optimizer='rmsprop',
+        inner_lr=0.1,
+        inner_num_epochs=25,
+        entropy_coefficient=0.005,
+        risk_factor=0.95,
+        initial_batch_size=2000,
+        scale_initial_risk=True,
+        batch_size=500,
+        num_batches=500,
+        use_gpu=False,
+        live_print=True,
+        summary_print=True
     )
 
     # Unpack results
@@ -67,11 +67,12 @@ def main():
     best_expression = results[3]
 
     # Plot best rewards each epoch
-    plt.plot([i+1 for i in range(len(epoch_best_rewards))], epoch_best_rewards)
+    plt.plot([i + 1 for i in range(len(epoch_best_rewards))], epoch_best_rewards)
     plt.xlabel('Epoch')
     plt.ylabel('Reward')
     plt.title('Reward over Time')
     plt.show()
+
 
 ###############################################################################
 # Getting Data
@@ -81,7 +82,7 @@ def get_data():
     """Constructs data for model (currently x^3 + x^2 + x)
     """
     X = np.arange(-1, 1.1, 0.1)
-    y = X**3 + X**2 + X
+    y = X ** 3 + X ** 2 + X
     X = X.reshape(X.shape[0], 1)
 
     # Split randomly
@@ -91,12 +92,13 @@ def get_data():
 
     # Proportion used to train constants versus benchmarking functions
     training_proportion = 0.2
-    div = int(training_proportion*len(X))
+    div = int(training_proportion * len(X))
     X_constants, X_rnn = np.array(X[:div]), np.array(X[div:])
     y_constants, y_rnn = np.array(y[:div]), np.array(y[div:])
     X_constants, X_rnn = torch.Tensor(X_constants), torch.Tensor(X_rnn)
     y_constants, y_rnn = torch.Tensor(y_constants), torch.Tensor(y_rnn)
     return X_constants, X_rnn, y_constants, y_rnn
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()

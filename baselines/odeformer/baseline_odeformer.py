@@ -42,8 +42,8 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
 
     nvars = data_query_oracle.get_nvars()
 
-    time_span = (0.0001, 2)
-    trajectory_time_steps = 100
+    time_span = (0.0001, 10)
+    trajectory_time_steps = 1000
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(1,
@@ -58,10 +58,22 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
     dstr.set_model_args(model_args)
 
     t_train, x_train = get_data(data_query_oracle.true_equation.np_eq, nvars, t_eval, task)
+
     print(x_train.shape, t_train.shape)
+    print("train trajectory data:")
+    for xi in x_train:
+        print("[",", ".join(map(str, xi)),"],")
+    print('-'*30)
+    print("time sequence",t_train)
     dstr.fit(t_train, x_train)
 
     dstr.print()
+
+    pred_traj = dstr.predict(t_train, x_train[0])
+    one_r2_score = r2_score(np.asarray(pred_traj).flatten(), np.asarray(x_train).flatten())
+    print("train R2 score:", one_r2_score)
+
+    print('-' * 30)
     all_true_traj = []
     all_pred_traj = []
     for _ in range(num_init_conds):
