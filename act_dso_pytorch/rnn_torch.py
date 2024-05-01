@@ -6,10 +6,6 @@ import torch.nn.functional as F
 import torch
 
 
-###############################################################################
-# Sequence RNN Class
-###############################################################################
-
 class DSRRNN(nn.Module):
     def __init__(self, operators, hidden_size, device, min_length=2, max_length=15, type='rnn', num_layers=1,
                  dropout=0.0):
@@ -115,8 +111,7 @@ class DSRRNN(nn.Module):
             # next token will be valid or not based on whether we've just completed the sequence (or have in the past)
             sequence_mask = torch.cat(
                 (sequence_mask, torch.bitwise_and((counters > 0)[:, None], sequence_mask.all(dim=1)[:, None])),
-                axis=1
-            )
+                axis=1)
 
             # Compute next parent and sibling; assemble next input tensor
             parent_sibling = self.get_parent_sibling(sequences, lengths)
@@ -132,17 +127,17 @@ class DSRRNN(nn.Module):
     def forward(self, input, hidden, hidden_lstm=None):
         """Input should be [parent, sibling]
         """
-        if (self.type == 'rnn'):
+        if self.type == 'rnn':
             output, hidden = self.rnn(input[:, None].float(), hidden[None, :])
             output = output[:, 0, :]
             output = self.projection_layer(output)
             output = self.activation(output)
             return output, hidden[0, :]
-        elif (self.type == 'lstm'):
+        elif self.type == 'lstm':
             output, (hn, cn) = self.lstm(input[:, None].float(), (hidden_lstm[None, :], hidden[None, :]))
             output = self.activation(output[:, 0, :])
             return output, cn[0, :], hn[0, :]
-        elif (self.type == 'gru'):
+        elif self.type == 'gru':
             output, hn = self.gru(input[:, None].float(), hidden[None, :])
             output = output[:, 0, :]
             output = self.projection_layer(output)

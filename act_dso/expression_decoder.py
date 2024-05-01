@@ -63,12 +63,6 @@ class NeuralExpressionDecoder(object):
                  # Loss hyperparameters
                  entropy_weight=0.005,  # Coefficient for entropy bonus.
                  entropy_gamma=1.0,  # Gamma in entropy decay.
-                 # PQT hyperparameters
-                 pqt: bool = False,  # Train with priority queue training (PQT)?
-                 pqt_k=10,  # Size of priority queue.
-                 pqt_batch_size=1,  # Size of batch to sample (with replacement) from priority queue.
-                 pqt_weight=200.0,  # Coefficient for PQT loss function.
-                 pqt_use_pg=False,  # Use policy gradient loss when using PQT?
                  # Other hyperparameters
                  debug=0, max_length=30):
 
@@ -78,9 +72,6 @@ class NeuralExpressionDecoder(object):
 
         # Hyperparameters
         self.entropy_weight = entropy_weight
-        self.pqt = pqt
-        self.pqt_k = pqt_k
-        self.pqt_batch_size = pqt_batch_size
         self.cfg = cfg
         decoder_output_vocab_size = cfg.output_rules_size
 
@@ -210,10 +201,10 @@ class NeuralExpressionDecoder(object):
 
             # If entropy_gamma = 1, entropy_gamma_decay_mask == mask
             entropy_gamma_decay_mask = entropy_gamma_decay * mask  # ->(batch_size, max_length)
-            entropy_per_step = safe_cross_entropy(probs, logprobs,
-                                                  axis=2)  # Sum over action dim -> (batch_size, max_length)
-            entropy = tf.reduce_sum(entropy_per_step * entropy_gamma_decay_mask,
-                                    axis=1)  # Sum over time dim -> (batch_size, )
+            # Sum over action dim -> (batch_size, max_length)
+            entropy_per_step = safe_cross_entropy(probs, logprobs, axis=2)
+            # Sum over time dim -> (batch_size, )
+            entropy = tf.reduce_sum(entropy_per_step * entropy_gamma_decay_mask, axis=1)
 
             return neglogp, entropy
 
@@ -226,10 +217,6 @@ class NeuralExpressionDecoder(object):
         self.memory_probs = tf.exp(-memory_neglogp)
         self.memory_logps = -memory_neglogp
 
-        # PQT batch
-        pqt_loss = None
-        if pqt:
-            self.pqt_batch_ph = make_batch_ph("pqt_batch")
 
         # Setup losses
         with tf.compat.v1.name_scope("losses"):
@@ -240,17 +227,10 @@ class NeuralExpressionDecoder(object):
             entropy_loss = -self.entropy_weight * tf.reduce_mean(entropy, name="entropy_loss")
             loss = entropy_loss
 
-            if not pqt or (pqt and pqt_use_pg):
-                # Baseline is the worst of the current samples r
-                pg_loss = tf.reduce_mean((r - self.baseline) * neglogp, name="pg_loss")
-                # Loss already is set to entropy loss
-                loss += pg_loss
-
-            # Priority queue training loss
-            if pqt:
-                pqt_neglogp, _ = make_neglogp_and_entropy(self.pqt_batch_ph)
-                pqt_loss = pqt_weight * tf.reduce_mean(pqt_neglogp, name="pqt_loss")
-                loss += pqt_loss
+            # Baseline is the worst of the current samples r
+            pg_loss = tf.reduce_mean((r - self.baseline) * neglogp, name="pg_loss")
+            # Loss already is set to entropy loss
+            loss += pg_loss
 
             self.loss = loss
 
@@ -328,17 +308,12 @@ class NeuralExpressionDecoder(object):
         probs = self.sess.run([fetch], feed_dict=feed_dict)[0]
         return probs
 
-    def train_step(self, b, sampled_batch, pqt_batch):
+    def train_step(self, b, sampled_batch):
         """Computes loss and trains model."""
         feed_dict = {
             self.baseline: b,
             self.sampled_batch_ph: sampled_batch
         }
-
-        if self.pqt:
-            feed_dict.update({
-                self.pqt_batch_ph: pqt_batch
-            })
 
         _ = self.sess.run(self.train_op, feed_dict=feed_dict)
 

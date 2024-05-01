@@ -1,16 +1,5 @@
-###############################################################################
-# General Information
-###############################################################################
-# Author: Daniel DiPietro | dandipietro.com | https://github.com/dandip
-
-# Original Paper: https://arxiv.org/abs/1912.04871 (Petersen et al)
-
 # train.py: Contains main training loop (and reward functions) for PyTorch
 # implementation of Deep Symbolic Regression.
-
-###############################################################################
-# Dependencies
-###############################################################################
 
 import numpy as np
 from operators_torch import Operators
@@ -21,35 +10,7 @@ from expression_utils_torch import *
 ###############################################################################
 # Main Training loop
 ###############################################################################
-
-def train(
-        X_constants,
-        y_constants,
-        X_rnn,
-        y_rnn,
-        operator_list=['*', '+', '-', '/', '^', 'cos', 'sin', 'c', 'var_x'],
-        min_length=2,
-        max_length=12,
-        type='lstm',
-        num_layers=1,
-        dropout=0.0,
-        lr=0.0005,
-        optimizer='adam',
-        inner_optimizer='rmsprop',
-        inner_lr=0.1,
-        inner_num_epochs=15,
-        entropy_coefficient=0.005,
-        risk_factor=0.95,
-        initial_batch_size=2000,
-        scale_initial_risk=True,
-        batch_size=500,
-        num_batches=200,
-        hidden_size=500,
-        use_gpu=False,
-        live_print=True,
-        summary_print=True
-):
-    """Deep Symbolic Regression Training Loop
+"""Deep Symbolic Regression Training Loop
 
     ~ Parameters ~
     - X_constants (Tensor): X dataset used for training constants
@@ -83,6 +44,36 @@ def train(
     [2] best_reward (float): best reward obtained
     [3] best_expression (Expression): best expression obtained
     """
+def train(
+        X_constants,
+        y_constants,
+        X_rnn,
+        y_rnn,
+        operator_list=['*', '+', '-', '/', '^', 'cos', 'sin', 'c', 'var_x'],
+        min_length=2,
+        max_length=12,
+
+        type='lstm',
+        num_layers=1,
+        dropout=0.0,
+        lr=0.0005,
+        optimizer='adam',
+        inner_optimizer='rmsprop',
+        inner_lr=0.1,
+        inner_num_epochs=15,
+        entropy_coefficient=0.005,
+        risk_factor=0.95,
+        initial_batch_size=2000,
+        scale_initial_risk=True,
+        batch_size=500,
+        num_batches=200,
+        hidden_size=500,
+        use_gpu=False,
+        live_print=True,
+        summary_print=True,
+        metric_threshold=0.98,
+):
+
 
     epoch_best_rewards = []
     epoch_best_expressions = []
@@ -96,8 +87,7 @@ def train(
     # Initialize operators, RNN, and optimizer
     operators = Operators(operator_list, device)
     dsr_rnn = DSRRNN(operators, hidden_size, device, min_length=min_length,
-                     max_length=max_length, type=type, dropout=dropout
-                     ).to(device)
+                     max_length=max_length, type=type, dropout=dropout).to(device)
     if optimizer == 'adam':
         optim = torch.optim.Adam(dsr_rnn.parameters(), lr=lr)
     else:
@@ -117,7 +107,7 @@ def train(
                 Expression(operators, sequences[j].long().tolist(), sequence_lengths[j].long().tolist()).to(device)
             )
 
-        # Optimize constants of expressions (training data)
+        # Optimize constants of expressions using training data
         optimize_constants(expressions, X_constants, y_constants, inner_lr, inner_num_epochs, inner_optimizer)
 
         # Benchmark expressions (test dataset)
@@ -135,7 +125,7 @@ def train(
             best_expression = best_epoch_expression
 
         # Early stopping criteria
-        if best_performance >= 0.98:
+        if best_performance >= metric_threshold:
             best_str = str(best_expression)
             if (live_print):
                 print("~ Early Stopping Met ~")
@@ -144,9 +134,9 @@ def train(
 
         # Compute risk threshold
         if i == 0 and scale_initial_risk:
-            threshold = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
+            threshold = np.nanquantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
         else:
-            threshold = np.quantile(rewards, risk_factor)
+            threshold = np.nanquantile(rewards, risk_factor)
         indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] > threshold])
 
         if len(indices_to_keep) == 0 and summary_print:
@@ -166,7 +156,7 @@ def train(
         risk_seeking_grad = torch.clip(risk_seeking_grad / len(rewards), -1e6, 1e6)
         entropy_grad = entropy_coefficient * torch.clip(entropy_grad / len(rewards), -1e6, 1e6)
 
-        # Compute loss and backpropagate
+        # Compute loss and back-propagate
         loss = -1 * lr * (risk_seeking_grad + entropy_grad)
         loss.backward()
         optim.step()

@@ -59,7 +59,7 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
         noisy data when you can't be certain of success solely based on reward.
         If False, only the top Program is evaluated each iteration.
 
-    save_pareto_front : bool, optional. If True, compute and save the Pareto front at the end of training.
+    
     debug : int. Debug level, also passed to Controller. 0: No debug. 1: Print initial parameter means. 2: Print parameter means each step.
     use_memory : bool, optional. If True, use memory queue for reward quantile estimation.
     memory_capacity : int. Capacity of memory queue.
@@ -67,16 +67,9 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
     warm_start : int or None
         Number of samples to warm start the memory queue. If None, uses
         batch_size.
-
-    memory_threshold : float or None
-        If not None, run quantile variance/bias estimate experiments after
-        memory weight exceeds memory_threshold.
-
-    save_positional_entropy : bool, optional.  Whether to save evolution of positional entropy for each iteration.
-    
+  
     save_freq : int or None. Statistics are flushed to file every save_freq epochs (default == 1). If < 0, uses save_freq = inf
-    save_token_count : bool. Whether to save token counts each batch.
-
+  
     Return : dict. A dict describing the best-fit expression (determined by reward).
     """
 
@@ -97,40 +90,11 @@ def learn(grammar_model: ContextFreeGrammar,
     # Initialize compute graph
     sess.run(tf.compat.v1.global_variables_initializer())
 
-    # Create the priority queue
-    k = expression_decoder.pqt_k
-    if expression_decoder.pqt and k is not None and k > 0:
-        priority_queue = make_queue(priority=True, capacity=k)
-    else:
-        priority_queue = None
-
-    # Create the memory queue
-    if use_memory:
-        assert epsilon is not None and epsilon < 1.0, "Memory queue is only used with risk-seeking."
-        memory_queue = make_queue(expression_decoder=expression_decoder, priority=False,
-                                  capacity=int(memory_capacity))
-
-        # Warm start the queue
-        warm_start = warm_start if warm_start is not None else batch_size
-        actions, obs = expression_decoder.sample(warm_start)
-        print("sampled actions:", actions)
-        # construct program based on the input token indices
-
-        grammar_expressions = grammar_model.construct_expression(actions)
-        rewards = np.array([p.valid_loss for p in grammar_expressions])
-        expr_lengths = np.array([len(p.traversal.split(";")) for p in grammar_expressions])
-        sampled_batch = Batch(actions=actions, obs=obs,
-                              lengths=expr_lengths, rewards=rewards)
-        memory_queue.push_batch(sampled_batch, grammar_expressions)
-    else:
-        memory_queue = None
-
     if debug >= 1:
         print("\nInitial parameter means:")
         print_var_means(sess)
 
     # Main training loop
-    p_final = None
     r_best = -np.inf
     prev_r_best = None
     ewma = None if b_jumpstart else 0.0  # EWMA portion of baseline
@@ -219,18 +183,8 @@ def learn(grammar_model: ContextFreeGrammar,
         # Create the Batch
         sampled_batch = Batch(actions=actions, obs=obs,
                               lengths=lengths, rewards=r_train)
+        expression_decoder.train_step(b_train, sampled_batch)
 
-        # Update and sample from the priority queue
-        if priority_queue is not None:
-            priority_queue.push_best(sampled_batch, grammar_expressions)
-            pqt_batch = priority_queue.sample_batch(expression_decoder.pqt_batch_size)
-        else:
-            pqt_batch = None
-        expression_decoder.train_step(b_train, sampled_batch, pqt_batch)
-
-        # Update the memory queue
-        if memory_queue is not None:
-            memory_queue.push_batch(sampled_batch, grammar_expressions)
 
         # Update new best expression
         new_r_best = False
@@ -264,13 +218,6 @@ def learn(grammar_model: ContextFreeGrammar,
                                                                                      prev_r_best))
 
         grammar_model.print_hofs(verbose=True)
-
-    # Print the priority queue at the end of training
-    if verbose and priority_queue is not None:
-        for i, item in enumerate(priority_queue.iter_in_order()):
-            print("\nPriority queue entry {}:".format(i))
-            p = grammar_model.program.cache[item[0]]
-            p.print_stats()
 
     sys.stdout.flush()
     return
