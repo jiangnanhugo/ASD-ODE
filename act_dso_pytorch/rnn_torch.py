@@ -1,4 +1,4 @@
-# rnn.py: Houses the RNN model used to sample expressions. Supports batched
+# the RNN model used to sample expressions. Supports batched
 # sampling of variable length sequences. Can select RNN, LSTM, or GRU models.
 
 import torch.nn as nn
@@ -30,22 +30,13 @@ class DSRRNN(nn.Module):
 
         if self.type == 'rnn':
             self.rnn = nn.RNN(
-                input_size=self.input_size,
-                hidden_size=self.hidden_size,
-                num_layers=self.num_layers,
-                batch_first=True,
-                dropout=self.dropout
-            )
+                input_size=self.input_size, hidden_size=self.hidden_size, num_layers=self.num_layers,
+                batch_first=True, dropout=self.dropout)
             self.projection_layer = nn.Linear(self.hidden_size, self.output_size).to(self.device)
         elif self.type == 'lstm':
             self.lstm = nn.LSTM(
-                input_size=self.input_size,
-                hidden_size=self.hidden_size,
-                num_layers=self.num_layers,
-                batch_first=True,
-                proj_size=self.output_size,
-                dropout=self.dropout
-            ).to(self.device)
+                input_size=self.input_size, hidden_size=self.hidden_size, num_layers=self.num_layers,
+                batch_first=True, proj_size=self.output_size,dropout=self.dropout).to(self.device)
             self.init_hidden_lstm = nn.Parameter(data=torch.rand(self.num_layers, self.output_size),
                                                  requires_grad=True).to(self.device)
         elif self.type == 'gru':
@@ -54,8 +45,7 @@ class DSRRNN(nn.Module):
                 hidden_size=self.hidden_size,
                 num_layers=self.num_layers,
                 batch_first=True,
-                dropout=self.dropout
-            )
+                dropout=self.dropout)
             self.projection_layer = nn.Linear(self.hidden_size, self.output_size).to(self.device)
         self.activation = nn.Softmax(dim=1)
 
