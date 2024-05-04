@@ -1,11 +1,17 @@
 # train.py: Contains main training loop (and reward functions) for PyTorch
 # implementation of Deep Symbolic Regression.
 
-import numpy as np
-from operators_torch import Operators
-from rnn_torch import DSRRNN
-from expression_utils_torch import *
 
+import numpy as np
+import time
+import torch
+from torch import nn
+from grammar.grammar import ContextFreeGrammar
+from grammar.utils import empirical_entropy, weighted_quantile
+import math
+from grammar.memory import Batch, make_queue
+from grammar.variance import quantile_variance
+import sys
 
 ###############################################################################
 # Main Training loop
@@ -44,21 +50,15 @@ from expression_utils_torch import *
     [2] best_reward (float): best reward obtained
     [3] best_expression (Expression): best expression obtained
     """
-def train(
-        X_constants,
-        y_constants,
-        X_rnn,
-        y_rnn,
-        operator_list=['*', '+', '-', '/', '^', 'cos', 'sin', 'c', 'var_x'],
-        min_length=2,
-        max_length=12,
 
-        type='lstm',
-        num_layers=1,
-        dropout=0.0,
-        lr=0.0005,
-        optimizer='adam',
+
+def learn(
+        grammar_model: ContextFreeGrammar,
+        expression_decoder,
+        operators,
+        optim,
         inner_optimizer='rmsprop',
+        lr=0.001,
         inner_lr=0.1,
         inner_num_epochs=15,
         entropy_coefficient=0.005,
@@ -66,40 +66,23 @@ def train(
         initial_batch_size=2000,
         scale_initial_risk=True,
         batch_size=500,
-        num_batches=200,
-        hidden_size=500,
-        use_gpu=False,
+        n_epochs=200,
         live_print=True,
         summary_print=True,
-        metric_threshold=0.98,
+        reward_threshold=0.999999,
+        device="cpu"
 ):
-
-
     epoch_best_rewards = []
     epoch_best_expressions = []
-
-    # Establish GPU device if necessary
-    if use_gpu and torch.cuda.is_available():
-        device = torch.device("cuda:0")
-    else:
-        device = torch.device("cpu")
-
-    # Initialize operators, RNN, and optimizer
-    operators = Operators(operator_list, device)
-    dsr_rnn = DSRRNN(operators, hidden_size, device, min_length=min_length,
-                     max_length=max_length, type=type, dropout=dropout).to(device)
-    if optimizer == 'adam':
-        optim = torch.optim.Adam(dsr_rnn.parameters(), lr=lr)
-    else:
-        optim = torch.optim.RMSprop(dsr_rnn.parameters(), lr=lr)
 
     # Best expression and its performance
     best_expression, best_performance = None, float('-inf')
 
     # First sampling done outside of loop for initial batch size if desired
     start = time.time()
-    sequences, sequence_lengths, log_probabilities, entropies = dsr_rnn.sample_sequence(initial_batch_size)
-    for i in range(num_batches):
+    sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(initial_batch_size)
+
+    for i in range(n_epochs):
         # Convert sequences into Pytorch expressions that can be evaluated
         expressions = []
         for j in range(len(sequences)):
@@ -125,7 +108,7 @@ def train(
             best_expression = best_epoch_expression
 
         # Early stopping criteria
-        if best_performance >= metric_threshold:
+        if best_performance >= reward_threshold:
             best_str = str(best_expression)
             if (live_print):
                 print("~ Early Stopping Met ~")
@@ -173,7 +156,7 @@ def train(
             Best Expression (Epoch): {best_epoch_expression}
             """)
         # Sample for next batch
-        sequences, sequence_lengths, log_probabilities, entropies = dsr_rnn.sample_sequence(batch_size)
+        sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(batch_size)
 
     if summary_print:
         print(f"""
@@ -192,18 +175,15 @@ def train(
 
 def benchmark(expression, X_rnn, y_rnn):
     """Obtain reward for a given expression using the passed X_rnn and y_rnn
-    """
+        Compute NRMSE between predicted y and actual y
+        """
     with torch.no_grad():
         y_pred = expression(X_rnn)
-        return reward_nrmse(y_pred, y_rnn)
+        loss = nn.MSELoss()
+        val = torch.sqrt(loss(y_pred, y_rnn))  # Convert to RMSE
+        val = torch.std(y_rnn) * val  # Normalize using stdev of targets
+        val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
+        val = 1 / (1 + val)  # Squash
+        return val.item()
 
 
-def reward_nrmse(y_pred, y_rnn):
-    """Compute NRMSE between predicted y and actual y
-    """
-    loss = nn.MSELoss()
-    val = torch.sqrt(loss(y_pred, y_rnn))  # Convert to RMSE
-    val = torch.std(y_rnn) * val  # Normalize using stdev of targets
-    val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
-    val = 1 / (1 + val)  # Squash
-    return val.item()

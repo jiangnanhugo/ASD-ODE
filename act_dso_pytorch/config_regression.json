@@ -1,28 +1,7 @@
 {
-   "task" : {
-      // Metric to be used for the reward function. See regression.py for
-      // supported metrics.
-      "metric" : "inv_nmse",
-      "metric_params" : [1.0],
-      // With protected=false, floating-point errors (e.g. log of negative
-      // number) will simply returns a minimal reward. With protected=true,
-      // "protected" functions will prevent floating-point errors, but may
-      // introduce discontinuities in the learned functions.      
-      "protected" : false,
-      "normalize_variance" : false
-   },
-   
-
-   // Only the key training hyperparameters are listed here. See
-   // config_common.json for the full list.
    "training" : {
       "batch_size" : 100,
       "epsilon" : 0.5,
-      // <R> is the sample average _after_ epsilon sub-sampling and  R_e is the (1-epsilon)-quantile estimate.
-      // (1) "ewma_R" : b = EWMA(<R>) (2) "R_e" : b = R_e (3) "ewma_R_e" : b = EWMA(R_e) (4) "combined" : b = R_e + EWMA(<R> - R_e)
-      "baseline" : "R_e",
-      // Control variate parameters for vanilla policy gradient. If risk-seeking
-      // is used, these have no effect.
       "alpha" : 0.5,
       "b_jumpstart" : false,
 
@@ -33,12 +12,12 @@
       "debug" : 2,
       // Whether to stop early if success condition is met
       "early_stopping" : true,
-      "warm_start" : null
    },
 
    // Only the key RNN decoder hyperparameters are listed here. See
    // config_common.json for the full list.
    "expression_decoder" : {
+      "embedding_dim" : 128,
       // Maximum sequence length.
       "max_length" : 20,
       // Optimizer hyperparameters.
@@ -54,12 +33,6 @@
       "debug": 2
    },
     "input_embedding": {
-         // Observation hyperparameters
-         "observe_action" : false,
-         "observe_parent" : true,
-         "observe_sibling" : true,
-         "observe_dangling" : false,
-         "embedding" : false,
-         "embedding_dim" : 128
+
    }
 }
