@@ -6,10 +6,18 @@ import torch.nn.functional as F
 import torch
 
 
-class DSRRNN(nn.Module):
-    def __init__(self, operators, hidden_size, device, min_length=2, max_length=15, type='rnn', num_layers=1,
-                 dropout=0.0):
-        super(DSRRNN, self).__init__()
+class NeuralExpressionDecoder(nn.Module):
+    """
+    Recurrent neural network (RNN) used to generate expressions. Specifically, the RNN outputs a distribution over the
+    production rules of symbolic expression. It is trained using REINFORCE with baseline.
+    """
+
+    def __init__(self, operators, hidden_size, min_length=2, max_length=15,
+                 # RNN cell hyperparameters
+                 cell: str = 'rnn',  # cell : str Recurrent cell to use. Supports 'lstm' and 'gru'.
+                 num_layers: int = 1,  # Number of RNN layers.
+                 dropout=0.0, device='cpu'):
+        super(NeuralExpressionDecoder, self).__init__()
 
         self.input_size = 2 * len(operators)  # One-hot encoded parent and sibling
         self.hidden_size = hidden_size
@@ -18,12 +26,12 @@ class DSRRNN(nn.Module):
         self.dropout = dropout
         self.operators = operators
         self.device = device
-        self.type = type
+        self.type = cell
 
         # Initial cell optimization
         self.init_input = nn.Parameter(data=torch.rand(1, self.input_size), requires_grad=True).to(self.device)
-        self.init_hidden = nn.Parameter(data=torch.rand(self.num_layers, self.hidden_size), requires_grad=True).to(
-            self.device)
+        self.init_hidden = nn.Parameter(data=torch.rand(self.num_layers, self.hidden_size),
+                                        requires_grad=True).to(self.device)
 
         self.min_length = min_length
         self.max_length = max_length
@@ -36,7 +44,7 @@ class DSRRNN(nn.Module):
         elif self.type == 'lstm':
             self.lstm = nn.LSTM(
                 input_size=self.input_size, hidden_size=self.hidden_size, num_layers=self.num_layers,
-                batch_first=True, proj_size=self.output_size,dropout=self.dropout).to(self.device)
+                batch_first=True, proj_size=self.output_size, dropout=self.dropout).to(self.device)
             self.init_hidden_lstm = nn.Parameter(data=torch.rand(self.num_layers, self.output_size),
                                                  requires_grad=True).to(self.device)
         elif self.type == 'gru':

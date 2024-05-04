@@ -6,36 +6,6 @@ from grammar.memory import Batch
 from grammar.subroutines import parents_siblings
 
 
-class LinearWrapper:
-    """
-    RNNCell wrapper that adds a linear layer to the output.
-
-    See: https://github.com/tensorflow/models/blob/master/research/brain_coder/single_task/pg_agent.py
-    """
-
-    def __init__(self, cell, output_size):
-        self.cell = cell
-        self._output_size = output_size
-
-    def __call__(self, inputs, state, scope=None):
-        with tf.compat.v1.variable_scope(type(self).__name__):
-            outputs, state = self.cell(inputs, state, scope=scope)
-            logits = tf.compat.v1.layers.dense(outputs, units=self._output_size)
-
-        return logits, state
-
-    @property
-    def output_size(self):
-        return self._output_size
-
-    @property
-    def state_size(self):
-        return self.cell.state_size
-
-    def zero_state(self, batch_size, dtype):
-        return self.cell.zero_state(batch_size, dtype)
-
-
 class NeuralExpressionDecoder(object):
     """
     Recurrent neural network (RNN) used to generate expressions. Specifically, the RNN outputs a distribution over the
@@ -217,7 +187,6 @@ class NeuralExpressionDecoder(object):
         self.memory_probs = tf.exp(-memory_neglogp)
         self.memory_logps = -memory_neglogp
 
-
         # Setup losses
         with tf.compat.v1.name_scope("losses"):
             neglogp, entropy = make_neglogp_and_entropy(self.sampled_batch_ph)
@@ -318,6 +287,36 @@ class NeuralExpressionDecoder(object):
         _ = self.sess.run(self.train_op, feed_dict=feed_dict)
 
 
+class LinearWrapper:
+    """
+    RNNCell wrapper that adds a linear layer to the output.
+
+    See: https://github.com/tensorflow/models/blob/master/research/brain_coder/single_task/pg_agent.py
+    """
+
+    def __init__(self, cell, output_size):
+        self.cell = cell
+        self._output_size = output_size
+
+    def __call__(self, inputs, state, scope=None):
+        with tf.compat.v1.variable_scope(type(self).__name__):
+            outputs, state = self.cell(inputs, state, scope=scope)
+            logits = tf.compat.v1.layers.dense(outputs, units=self._output_size)
+
+        return logits, state
+
+    @property
+    def output_size(self):
+        return self._output_size
+
+    @property
+    def state_size(self):
+        return self.cell.state_size
+
+    def zero_state(self, batch_size, dtype):
+        return self.cell.zero_state(batch_size, dtype)
+
+
 def make_initializer(name):
     "initiailizer : str. Initializer for the recurrent cell. Supports 'zeros' and 'var_scale'."
     if name == "zeros":
@@ -344,7 +343,5 @@ def make_optimizer(name, learning_rate):
         return tf.compat.v1.train.AdamOptimizer(learning_rate=learning_rate)
     elif name == "rmsprop":
         return tf.compat.v1.train.RMSPropOptimizer(learning_rate=learning_rate, decay=0.99)
-    elif name == "sgd":
-        return tf.compat.v1.train.GradientDescentOptimizer(learning_rate=learning_rate)
     else:
         raise ValueError("Did not recognize optimizer '{}'".format(name))

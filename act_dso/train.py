@@ -81,7 +81,7 @@ def learn(grammar_model: ContextFreeGrammar,
           alpha=0.5, epsilon=0.05, verbose=True,
           baseline="R_e",
           b_jumpstart=False, early_stopping=True,
-          debug=0, use_memory=False, memory_capacity=1e3,
+          debug=0,
           warm_start=None):
     """
       Executes the main training loop.
@@ -99,7 +99,6 @@ def learn(grammar_model: ContextFreeGrammar,
     prev_r_best = None
     ewma = None if b_jumpstart else 0.0  # EWMA portion of baseline
     nevals = 0  # Total number of sampled expressions (from RL)
-    positional_entropy = np.zeros(shape=(n_epochs, expression_decoder.max_length), dtype=np.float32)
 
     print("-- RUNNING EPOCHS START -------------")
     sys.stdout.flush()
@@ -142,7 +141,7 @@ def learn(grammar_model: ContextFreeGrammar,
             quantile = np.nanquantile(r, 1 - epsilon)
 
             '''
-                Here we get the returned as well as stored programs and properties.
+             Here we get the returned as well as stored programs and properties.
             '''
 
             keep = r >= quantile
@@ -172,10 +171,6 @@ def learn(grammar_model: ContextFreeGrammar,
         elif baseline == "ewma_R_e":
             ewma = np.min(r_train) if ewma is None else alpha * quantile + (1 - alpha) * ewma
             b_train = ewma
-        elif baseline == "combined":
-            ewma = np.mean(r_train) - quantile if ewma is None else alpha * (np.mean(r_train) - quantile) + (
-                        1 - alpha) * ewma
-            b_train = quantile + ewma
 
         # Compute sequence lengths
         lengths = np.array([min(len(p.traversal), expression_decoder.max_length) for p in p_train], dtype=np.int32)
