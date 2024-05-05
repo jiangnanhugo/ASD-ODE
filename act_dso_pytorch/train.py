@@ -8,11 +8,6 @@ import torch
 from torch import nn
 from expression_decoder import NeuralExpressionDecoder
 from grammar.grammar import ContextFreeGrammar
-from grammar.utils import empirical_entropy, weighted_quantile
-import math
-from grammar.memory import Batch, make_queue
-from grammar.variance import quantile_variance
-import sys
 
 ###############################################################################
 # Main Training loop
@@ -21,23 +16,18 @@ import sys
 
     ~ Parameters ~
     - operator_list (list of str): operators to use (all variables must have prefix var_)
-    - min_length (int): minimum number of operators to allow in expression
     - max_length (int): maximum number of operators to allow in expression
     - type ('rnn', 'lstm', or 'gru'): type of architecture to use
     - num_layers (int): number of layers in RNN architecture
     - dropout (float): dropout (if any) for RNN architecture
-    - lr (float): learning rate for RNN
     - optimizer ('adam' or 'rmsprop'): optimizer for RNN
     - inner_optimizer ('lbfgs', 'adam', or 'rmsprop'): optimizer for expressions
-    - inner_lr (float): learning rate for constant optimization
     - inner_num_epochs (int): number of epochs for constant optimization
     - entropy_coefficient (float): entropy coefficient for RNN
     - risk_factor (float, >0, <1): we discard the bottom risk_factor quantile
       when training the RNN
     - batch_size (int): batch size for training the RNN
     - num_batches (int): number of batches (will stop early if found)
-
-    - use_gpu (bool): whether or not to train with GPU
     - live_print (bool): if true, will print updates during training process
 
     ~ Returns ~
@@ -53,14 +43,14 @@ def learn(
         grammar_model: ContextFreeGrammar,
         expression_decoder: NeuralExpressionDecoder,
         optim,
-        lr=0.001,
+        reward_threshold=0.999999,
         entropy_coefficient=0.005,
         risk_factor=0.95,
         initial_batch_size=2000,
         scale_initial_risk=True,
         batch_size=500,
         n_epochs=200,
-        reward_threshold=0.999999,
+
         live_print=True,
         summary_print=True,
 ):
@@ -84,7 +74,6 @@ def learn(
             if not p.valid_loss:
                 continue
             grammar_model.update_hall_of_fame(p)
-
 
         # Benchmark expressions (test dataset)
         # Compute rewards (or retrieve cached rewards)
@@ -132,7 +121,7 @@ def learn(
         entropy_grad = entropy_coefficient * torch.clip(entropy_grad / len(rewards), -1e6, 1e6)
 
         # Compute loss and back-propagate
-        loss = -1 * lr * (risk_seeking_grad + entropy_grad)
+        loss = -1 * (risk_seeking_grad + entropy_grad)
         loss.backward()
         optim.step()
 

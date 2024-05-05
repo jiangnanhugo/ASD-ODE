@@ -61,16 +61,16 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
 
     # get basic production rules
     reward_thresh = threshold_values[metric_name]
-    nt_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvars)
+    non_terminal_nodes, start_symbols = construct_non_terminal_nodes_and_start_symbols(nvars)
     production_rules = []
-    for one_nt_node in nt_nodes:
+    for one_nt_node in non_terminal_nodes:
         print(get_production_rules(nvars, function_set, one_nt_node))
         production_rules.extend(get_production_rules(nvars, function_set, one_nt_node))
 
     print("grammars:", production_rules)
     print("start_symbols:", start_symbols)
     program = grammarProgram(
-        non_terminal_nodes=nt_nodes,
+        non_terminal_nodes=non_terminal_nodes,
         optimizer=optimizer,
         metric_name=metric_name,
         n_cores=n_cores,
@@ -80,7 +80,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
         nvars=nvars,
         production_rules=production_rules,
         start_symbols=start_symbols,
-        non_terminal_nodes=nt_nodes,
+        non_terminal_nodes=non_terminal_nodes,
         max_length=max_len,
         hof_size=10,
         reward_threhold=reward_thresh

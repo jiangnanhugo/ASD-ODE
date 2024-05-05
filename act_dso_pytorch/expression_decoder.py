@@ -6,9 +6,6 @@ import torch.nn.functional as F
 import torch
 import numpy as np
 
-from grammar.grammar import ContextFreeGrammar
-from grammar.memory import Batch
-from grammar.subroutines import parents_siblings
 
 class NeuralExpressionDecoder(nn.Module):
     """

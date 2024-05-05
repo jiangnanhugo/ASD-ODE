@@ -1,23 +1,37 @@
-"""
-Implements the Nelder-Mead algorithm for maximizing a function with one or more
-variables.
+# https://github.com/domokane/FinancePy/blob/7f28e33ad405308301a657fa78e98d0b1d7379dc/financepy/utils/solver_nm.py#L31
 
-"""
-
+from collections import namedtuple
 import numpy as np
 from numba import njit
-from collections import namedtuple
 
-results = namedtuple('results', 'x fun success nit final_simplex')
+###############################################################################
+# from https://quanteconpy.readthedocs.io/en/latest/_modules/quantecon/optimize/root_finding.html #####################
+
+_ECONVERGED = 0
+_ECONVERR = -1
+
+_ITER = 100
+_XTOL = 2e-12
+_RTOL = 4*np.finfo(float).eps
 
 
-@njit
+results = namedtuple('results', 'root function_calls iterations converged')
+
+###############################################################################
+
+# This is from https://quanteconpy.readthedocs.io/en/latest/_modules/quantecon/optimize/nelder_mead.html#nelder_mead
+# An alternative optimizer when calibrating FX vol surface, which is faster than CG (although converges less often)
+
+# Numba has issues caching this
+
+
+@njit(fastmath=True)  # , cache=True)
 def nelder_mead(fun, x0, bounds=np.array([[], []]).T, args=(), tol_f=1e-10,
-                tol_x=1e-10, max_iter=1000):
+                tol_x=1e-10, max_iter=1000, roh=1., chi=2., v=0.5, sigma=0.5):
     """
     .. highlight:: none
 
-    Maximize a scalar-valued function with one or more variables using the
+    Minimize a scalar-valued function with one or more variables using the
     Nelder-Mead method.
 
     This function is JIT-compiled in `nopython` mode using Numba.
@@ -25,7 +39,7 @@ def nelder_mead(fun, x0, bounds=np.array([[], []]).T, args=(), tol_f=1e-10,
     Parameters
     ----------
     fun : callable
-        The objective function to be maximized: `fun(x, *args) -> float`
+        The objective function to be minimize: `fun(x, *args) -> float`
         where x is an 1-D array with shape (n,) and args is a tuple of the
         fixed parameters needed to completely specify the function. This
         function must be JIT-compiled in `nopython` mode using Numba.
@@ -51,17 +65,23 @@ def nelder_mead(fun, x0, bounds=np.array([[], []]).T, args=(), tol_f=1e-10,
     max_iter : scalar(float), optional(default=1000)
         The maximum number of allowed iterations.
 
-    Returns
-    -------
-    results : namedtuple
-        A namedtuple containing the following items:
-        ::
+    roh : scalar(float), optional(default=1.)
+        Reflection parameter. Must be strictly greater than 0.
 
-            "x" : Approximate local maximizer
-            "fun" : Approximate local maximum value
-            "success" : 1 if the algorithm successfully terminated, 0 otherwise
-            "nit" : Number of iterations
-            "final_simplex" : Vertices of the final simplex
+    chi : scalar(float), optional(default=2.)
+        Expansion parameter. Must be strictly greater than max(1, roh).
+
+    v : scalar(float), optional(default=0.5)
+        Contraction parameter. Must be strictly between 0 and 1.
+
+    sigma : scalar(float), optional(default=0.5)
+        Shrinkage parameter. Must be strictly between 0 and 1.
+
+    Returns
+    ----------
+    np.array
+
+    Approximate local minimnum
 
     Examples
     --------
@@ -78,7 +98,7 @@ def nelder_mead(fun, x0, bounds=np.array([[], []]).T, args=(), tol_f=1e-10,
                                  [0.99999814, 0.99999756]]))
 
     Notes
-    -----
+    --------
     This algorithm has a long history of successful use in applications, but it
     will usually be slower than an algorithm that uses first or second
     derivative information. In practice, it can have poor performance in
@@ -113,91 +133,30 @@ def nelder_mead(fun, x0, bounds=np.array([[], []]).T, args=(), tol_f=1e-10,
     .. [8] SciPy's Nelder-Mead implementation
 
     """
+
     vertices = _initialize_simplex(x0, bounds)
 
-    results = _nelder_mead_algorithm(fun, vertices, bounds, args=args,
-                                     tol_f=tol_f, tol_x=tol_x,
-                                     max_iter=max_iter)
+    # results = _nelder_mead_algorithm(fun, vertices, bounds, args=args,
+    #                                 tol_f=tol_f, tol_x=tol_x,
+    #                                 max_iter=max_iter)
 
-    return results
-
-
-@njit
-def _nelder_mead_algorithm(fun, vertices, bounds=np.array([[], []]).T,
-                           args=(), ρ=1., χ=2., γ=0.5, σ=0.5, tol_f=1e-8,
-                           tol_x=1e-8, max_iter=1000):
-    """
-    .. highlight:: none
-
-    Implements the Nelder-Mead algorithm described in Lagarias et al. (1998)
-    modified to maximize instead of minimizing. JIT-compiled in `nopython`
-    mode using Numba.
-
-    Parameters
-    ----------
-    fun : callable
-        The objective function to be maximized.
-            `fun(x, *args) -> float`
-        where x is an 1-D array with shape (n,) and args is a tuple of the
-        fixed parameters needed to completely specify the function. This
-        function must be JIT-compiled in `nopython` mode using Numba.
-
-    vertices : ndarray(float, ndim=2)
-        Initial simplex with shape (n+1, n) to be modified in-place.
-
-    args : tuple, optional
-        Extra arguments passed to the objective function.
-
-    ρ : scalar(float), optional(default=1.)
-        Reflection parameter. Must be strictly greater than 0.
-
-    χ : scalar(float), optional(default=2.)
-        Expansion parameter. Must be strictly greater than max(1, ρ).
-
-    γ : scalar(float), optional(default=0.5)
-        Contraction parameter. Must be stricly between 0 and 1.
-
-    σ : scalar(float), optional(default=0.5)
-        Shrinkage parameter. Must be strictly between 0 and 1.
-
-    tol_f : scalar(float), optional(default=1e-10)
-        Tolerance to be used for the function value convergence test.
-
-    tol_x : scalar(float), optional(default=1e-10)
-        Tolerance to be used for the function domain convergence test.
-
-    max_iter : scalar(float), optional(default=1000)
-        The maximum number of allowed iterations.
-
-    Returns
-    -------
-    results : namedtuple
-        A namedtuple containing the following items:
-        ::
-
-            "x" : Approximate solution
-            "fun" : Approximate local maximum
-            "success" : 1 if successfully terminated, 0 otherwise
-            "nit" : Number of iterations
-            "final_simplex" : The vertices of the final simplex
-
-    """
     n = vertices.shape[1]
-    _check_params(ρ, χ, γ, σ, bounds, n)
+    _check_params(roh, chi, v, sigma, bounds, n)
 
     nit = 0
 
-    ργ = ρ * γ
-    ρχ = ρ * χ
-    σ_n = σ ** n
+    rohv = roh * v
+    rohchi = roh * chi
+    sigma_n = sigma ** n
 
-    f_val = np.empty(n+1, dtype=np.float64)
-    for i in range(n+1):
-        f_val[i] = _neg_bounded_fun(fun, bounds, vertices[i], args=args)
+    f_val = np.empty(n + 1, dtype=np.float64)
+    for i in range(n + 1):
+        f_val[i] = fun(vertices[i], *args)
+        # f_val[i] = _bounded_fun(fun, bounds, vertices[i], args=args)
 
     # Step 1: Sort
     sort_ind = f_val.argsort()
-    LV_ratio = 1
+    lv_ratio = 1
 
     # Compute centroid
     x_bar = vertices[sort_ind[:n]].sum(axis=0) / n
@@ -214,77 +173,82 @@ def _nelder_mead_algorithm(fun, vertices, bounds=np.array([[], []]).T,
         term_f = f_val[worst_val_idx] - f_val[best_val_idx] < tol_f
 
         # Linearized volume ratio test (see [2])
-        term_x = LV_ratio < tol_x
+        term_x = lv_ratio < tol_x
 
         if term_x or term_f or fail:
             break
 
         # Step 2: Reflection
         # https://github.com/QuantEcon/QuantEcon.py/issues/530
-        temp = ρ * (x_bar - vertices[worst_val_idx])
+        temp = roh * (x_bar - vertices[worst_val_idx])
         x_r = x_bar + temp
-        f_r = _neg_bounded_fun(fun, bounds, x_r, args=args)
+        # f_r = _bounded_fun(fun, bounds, x_r, args=args)
+        f_r = fun(x_r, *args)
 
-        if f_r >= f_val[best_val_idx] and f_r < f_val[sort_ind[n-1]]:
+        if f_r >= f_val[best_val_idx] and f_r < f_val[sort_ind[n - 1]]:
             # Accept reflection
             vertices[worst_val_idx] = x_r
-            LV_ratio *= ρ
+            lv_ratio *= roh
 
         # Step 3: Expansion
         elif f_r < f_val[best_val_idx]:
             # https://github.com/QuantEcon/QuantEcon.py/issues/530
-            temp = χ * (x_r - x_bar)
+            temp = chi * (x_r - x_bar)
             x_e = x_bar + temp
-            f_e = _neg_bounded_fun(fun, bounds, x_e, args=args)
+            # f_e = _bounded_fun(fun, bounds, x_e, args=args)
+            f_e = fun(x_e, *args)
             if f_e < f_r:  # Greedy minimization
                 vertices[worst_val_idx] = x_e
-                LV_ratio *= ρχ
+                lv_ratio *= rohchi
             else:
                 vertices[worst_val_idx] = x_r
-                LV_ratio *= ρ
+                lv_ratio *= roh
 
-        # Step 4 & 5: Contraction and Shrink
+        # Step 4 and 5: Contraction and Shrink
         else:
             # Step 4: Contraction
             # https://github.com/QuantEcon/QuantEcon.py/issues/530
-            temp = γ * (x_r - x_bar)
+            temp = v * (x_r - x_bar)
             if f_r < f_val[worst_val_idx]:  # Step 4.a: Outside Contraction
                 x_c = x_bar + temp
-                LV_ratio_update = ργ
+                lv_ratio_update = rohv
             else:  # Step 4.b: Inside Contraction
                 x_c = x_bar - temp
-                LV_ratio_update = γ
+                lv_ratio_update = v
 
-            f_c = _neg_bounded_fun(fun, bounds, x_c, args=args)
+            # f_c = _bounded_fun(fun, bounds, x_c, args=args)
+            f_c = fun(x_c, *args)
             if f_c < min(f_r, f_val[worst_val_idx]):  # Accept contraction
                 vertices[worst_val_idx] = x_c
-                LV_ratio *= LV_ratio_update
+                lv_ratio *= lv_ratio_update
 
             # Step 5: Shrink
             else:
                 shrink = True
                 for i in sort_ind[1:]:
-                    vertices[i] = vertices[best_val_idx] + σ * \
+                    vertices[i] = vertices[best_val_idx] + sigma * \
                         (vertices[i] - vertices[best_val_idx])
-                    f_val[i] = _neg_bounded_fun(fun, bounds, vertices[i],
-                                                args=args)
-
+                    # f_val[i] = _bounded_fun(fun, bounds, vertices[i], args=args)
+                    f_val[i] = fun(vertices[i], *args)
                 sort_ind[1:] = f_val[sort_ind[1:]].argsort() + 1
 
-                x_bar = vertices[best_val_idx] + σ * \
+                x_bar = vertices[best_val_idx] + sigma * \
                     (x_bar - vertices[best_val_idx]) + \
                     (vertices[worst_val_idx] - vertices[sort_ind[n]]) / n
 
-                LV_ratio *= σ_n
+                lv_ratio *= sigma_n
 
         if not shrink:  # Nonshrink ordering rule
-            f_val[worst_val_idx] = _neg_bounded_fun(fun, bounds,
-                                                    vertices[worst_val_idx],
-                                                    args=args)
+            # fun(x, *args)
+            # f_val[worst_val_idx] = _bounded_fun(fun, bounds,
+            #                                        vertices[worst_val_idx],
+            #                                        args=args)
+
+            f_val[worst_val_idx] = fun(vertices[worst_val_idx], *args)
 
             for i, j in enumerate(sort_ind):
                 if f_val[worst_val_idx] < f_val[j]:
-                    sort_ind[i+1:] = sort_ind[i:-1]
+                    sort_ind[i + 1:] = sort_ind[i:-1]
                     sort_ind[i] = worst_val_idx
                     break
 
@@ -292,11 +256,16 @@ def _nelder_mead_algorithm(fun, vertices, bounds=np.array([[], []]).T,
 
         nit += 1
 
-    return results(vertices[sort_ind[0]], -f_val[sort_ind[0]], not fail, nit,
-                   vertices)
+    # Return more metadata with optimal value
+    # return results(vertices[sort_ind[0]], -f_val[sort_ind[0]], not fail, nit,
+    #                vertices)
+
+    return vertices[sort_ind[0]]
+
+###############################################################################
 
 
-@njit
+@njit(cache=True, fastmath=True)
 def _initialize_simplex(x0, bounds):
     """
     Generates an initial simplex for the Nelder-Mead method. JIT-compiled in
@@ -312,7 +281,7 @@ def _initialize_simplex(x0, bounds):
         Sequence of (min, max) pairs for each element in x0.
 
     Returns
-    -------
+    ----------
     vertices : ndarray(float, ndim=2)
         Initial simplex with shape (n+1, n).
 
@@ -336,25 +305,27 @@ def _initialize_simplex(x0, bounds):
 
     return vertices
 
+###############################################################################
 
-@njit
-def _check_params(ρ, χ, γ, σ, bounds, n):
+
+@njit(cache=True, fastmath=True)
+def _check_params(rho, chi, v, sigma, bounds, n):
     """
     Checks whether the parameters for the Nelder-Mead algorithm are valid.
     JIT-compiled in `nopython` mode using Numba.
 
     Parameters
     ----------
-    ρ : scalar(float)
+    rho : scalar(float)
         Reflection parameter. Must be strictly greater than 0.
 
-    χ : scalar(float)
-        Expansion parameter. Must be strictly greater than max(1, ρ).
+    chi : scalar(float)
+        Expansion parameter. Must be strictly greater than max(1, roh).
 
-    γ : scalar(float)
+    v : scalar(float)
         Contraction parameter. Must be stricly between 0 and 1.
 
-    σ : scalar(float)
+    sigma : scalar(float)
         Shrinkage parameter. Must be strictly between 0 and 1.
 
     bounds: ndarray(float, ndim=2)
@@ -364,24 +335,26 @@ def _check_params(ρ, χ, γ, σ, bounds, n):
         Number of independent variables.
 
     """
-    if ρ < 0:
-        raise ValueError("ρ must be strictly greater than 0.")
-    if χ < 1:
-        raise ValueError("χ must be strictly greater than 1.")
-    if χ < ρ:
-        raise ValueError("χ must be strictly greater than ρ.")
-    if γ < 0 or γ > 1:
-        raise ValueError("γ must be strictly between 0 and 1.")
-    if σ < 0 or σ > 1:
-        raise ValueError("σ must be strictly between 0 and 1.")
+    if rho < 0:
+        raise ValueError("roh must be strictly greater than 0.")
+    if chi < 1:
+        raise ValueError("chi must be strictly greater than 1.")
+    if chi < rho:
+        raise ValueError("chi must be strictly greater than roh.")
+    if v < 0 or v > 1:
+        raise ValueError("v must be strictly between 0 and 1.")
+    if sigma < 0 or sigma > 1:
+        raise ValueError("sigma must be strictly between 0 and 1.")
 
     if not (bounds.shape == (0, 2) or bounds.shape == (n, 2)):
         raise ValueError("The shape of `bounds` is not valid.")
     if (np.atleast_2d(bounds)[:, 0] > np.atleast_2d(bounds)[:, 1]).any():
         raise ValueError("Lower bounds must be greater than upper bounds.")
 
+###############################################################################
 
-@njit
+
+@njit(cache=True, fastmath=True)
 def _check_bounds(x, bounds):
     """
     Checks whether `x` is within `bounds`. JIT-compiled in `nopython` mode
@@ -396,50 +369,16 @@ def _check_bounds(x, bounds):
         Sequence of (min, max) pairs for each element in x.
 
     Returns
-    -------
+    ----------
     bool
         `True` if `x` is within `bounds`, `False` otherwise.
 
     """
+
     if bounds.shape == (0, 2):
         return True
     else:
         return ((np.atleast_2d(bounds)[:, 0] <= x).all() and
                 (x <= np.atleast_2d(bounds)[:, 1]).all())
 
-
-@njit
-def _neg_bounded_fun(fun, bounds, x, args=()):
-    """
-    Wrapper for bounding and taking the negative of `fun` for the
-    Nelder-Mead algorithm. JIT-compiled in `nopython` mode using Numba.
-
-    Parameters
-    ----------
-    fun : callable
-        The objective function to be minimized.
-            `fun(x, *args) -> float`
-        where x is an 1-D array with shape (n,) and args is a tuple of the
-        fixed parameters needed to completely specify the function. This
-        function must be JIT-compiled in `nopython` mode using Numba.
-
-    bounds: ndarray(float, ndim=2)
-        Sequence of (min, max) pairs for each element in x.
-
-    x : ndarray(float, ndim=1)
-        1-D array with shape (n,) of independent variables at which `fun` is
-        to be evaluated.
-
-    args : tuple, optional
-        Extra arguments passed to the objective function.
-
-    Returns
-    -------
-    scalar
-        `-fun(x, *args)` if x is within `bounds`, `np.inf` otherwise.
-
-    """
-    if _check_bounds(x, bounds):
-        return -fun(x, *args)
-    else:
-        return np.inf
+###############################################################################

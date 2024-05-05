@@ -5,7 +5,7 @@ import numpy as np
 import warnings
 
 from grammar.production_rules import concate_production_rules_to_expr
-from grammar.metrics import all_metrics
+from grammar.evaluation_metrics import all_metrics
 
 from pathos.multiprocessing import ProcessPool
 from grammar.minimize_coefficients import optimize

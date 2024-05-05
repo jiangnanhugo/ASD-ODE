@@ -8,7 +8,7 @@ import tensorflow as tf
 import numpy as np
 
 from grammar.grammar import ContextFreeGrammar
-from grammar.memory import Batch
+from memory import Batch
 import sys
 
 # Ignore TensorFlow warnings

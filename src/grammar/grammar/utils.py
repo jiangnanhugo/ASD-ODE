@@ -1,59 +1,38 @@
-"""Utility functions used in deep symbolic optimization."""
-
-import numpy as np
-
-from psutil._common import bytes2human
-
-
-def pprint_ntuple(nt):
-    for name in nt._fields:
-        value = getattr(nt, name)
-        if name != 'percent':
-            value = bytes2human(value)
-        print('%-10s : %7s' % (name.capitalize(), value))
+import sympy
+from sympy.core.numbers import Float, Rational, NegativeOne, Integer
+from sympy import simplify, expand, Symbol
+from sympy.parsing.sympy_parser import parse_expr
 
 
-def weighted_quantile(values, weights, q):
-    """
-    Computes the weighted quantile, equivalent to the exact quantile of the
-    empirical distribution.
-
-    Given ordered samples x_1 <= ... <= x_n, with corresponding weights w_1,
-    ..., w_n, where sum_i(w_i) = 1.0, the weighted quantile is the minimum x_i
-    for which the cumulative sum up to x_i is greater than or equal to 1.
-
-    Quantile = min{ x_i | x_1 + ... + x_i >= q }
-    """
-
-    sorted_indices = np.argsort(values)
-    sorted_weights = weights[sorted_indices]
-    sorted_values = values[sorted_indices]
-    cum_sorted_weights = np.cumsum(sorted_weights)
-    i_quantile = np.argmax(cum_sorted_weights >= q)
-    quantile = sorted_values[i_quantile]
+def pretty_print_expr(eq) -> str:
+    '''
+    ask sympy simplify to pretty print the expression.
+    '''
+    if type(eq) == str:
+        eq = parse_expr(eq)
+    return str(expand(simplify(eq)))
 
 
+def nth_repl(s, sub, repl, n):
+    find = s.find(sub)
+    # If find is not -1 we have found at least one match for the substring
+    i = find != -1
+    # loop util we find the nth or we find no match
+    while find != -1 and i != n:
+        # find + 1 means we start searching from after the last match
+        find = s.find(sub, find + 1)
+        i += 1
+    # If i is equal to n we found nth match so replace
+    if i == n:
+        return s[:find] + repl + s[find + len(sub):]
+    return s
 
-    return quantile
 
-
-# Entropy computation in batch
-def empirical_entropy(labels):
-    n_labels = len(labels)
-
-    if n_labels <= 1:
-        return 0
-
-    value, counts = np.unique(labels, return_counts=True)
-    probs = counts / n_labels
-    n_classes = np.count_nonzero(probs)
-
-    if n_classes <= 1:
-        return 0
-
-    ent = 0.
-    # Compute entropy
-    for i in probs:
-        ent -= i * np.log(i)
-
-    return ent
+def expression_to_template(expr, stand_alone_constants) -> str:
+    C = Symbol('C')
+    all_floats = list(expr.atoms(Float))
+    for fi in all_floats:
+        if len(stand_alone_constants) >= 1 and min([abs(fi - ci) for ci in stand_alone_constants]) < 1e-5:
+            continue
+        expr = expr.replace(fi, C)
+    return str(expr)

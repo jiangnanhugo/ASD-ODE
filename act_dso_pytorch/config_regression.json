@@ -18,8 +18,10 @@
    // config_common.json for the full list.
    "expression_decoder" : {
       "embedding_dim" : 128,
+      "dropout": 0.5,
       // Maximum sequence length.
       "max_length" : 20,
+
       // Optimizer hyperparameters.
       "initializer" : "var_scale",
       "learning_rate" : 0.009,

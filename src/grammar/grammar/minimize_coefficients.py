@@ -13,7 +13,7 @@ from scipy.optimize import minimize
 from scipy.optimize import basinhopping, shgo, dual_annealing, direct
 from scipy.integrate import solve_ivp
 
-from grammar.grammar_utils import pretty_print_expr
+from grammar.utils import pretty_print_expr
 from grammar.production_rules import check_non_terminal_nodes
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)

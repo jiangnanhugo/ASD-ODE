@@ -1,6 +1,6 @@
 """Numba-compiled subroutines used for deep symbolic optimization."""
 
-from numba import jit, prange
+
 import numpy as np
 
 
