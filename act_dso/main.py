@@ -11,7 +11,6 @@ from grammar.grammar_program import grammarProgram
 from deep_symbolic_optimizer import ActDeepSymbolicRegression
 from utils import load_config
 
-
 threshold_values = {
     'neg_mse': {'reward_threshold': 1e-6},
     'neg_nmse': {'reward_threshold': 1e-6},
@@ -66,11 +65,12 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
 
     print("grammars:", production_rules)
     print("start_symbols:", start_symbols)
-    program = grammarProgram(non_terminal_nodes=nt_nodes,
-                             optimizer=optimizer,
-                             metric_name=metric_name,
-                             n_cores=n_cores,
-                             max_opt_iter=max_opt_iter)
+    program = grammarProgram(
+        non_terminal_nodes=nt_nodes,
+        optimizer=optimizer,
+        metric_name=metric_name,
+        n_cores=n_cores,
+        max_opt_iter=max_opt_iter)
     grammar_model = ContextFreeGrammar(
         nvars=nvars,
         production_rules=production_rules,

@@ -4,6 +4,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
+import numpy as np
 
 from grammar.grammar import ContextFreeGrammar
 from grammar.memory import Batch
@@ -17,17 +18,27 @@ class NeuralExpressionDecoder(nn.Module):
 
     def __init__(self,
                  # grammar
-                 defined_grammar: ContextFreeGrammar,
-                 hidden_size, min_length=2, max_length=15,
+                 output_rules_size,
                  # RNN cell hyperparameters
                  cell: str = 'rnn',  # cell : str Recurrent cell to use. Supports 'lstm' and 'gru'.
                  num_layers: int = 1,  # Number of RNN layers.
-                 dropout=0.0, device='cpu'):
+                 hidden_size=128,      # hidden size of RNN layer
+                 max_length=30,        # maximum length of the RNN decoding
+                 dropout=0.0,
+                 # Loss hyperparameters
+                 entropy_weight=0.005,  # Coefficient for entropy bonus.
+                 entropy_gamma=1.0,  # Gamma in entropy decay.
+                 # Other hyperparameters
+                 device='cpu',
+                 debug=0):
+        """
+            - hidden_size (int): hidden dimension size for RNN
+        """
         super(NeuralExpressionDecoder, self).__init__()
-        self.defined_grammar = defined_grammar
-        self.input_vocab_size = defined_grammar.output_rules_size  # One-hot encoded parent and sibling
+
+        self.input_vocab_size = output_rules_size  # One-hot encoded parent and sibling
         self.hidden_size = hidden_size
-        self.output_size = defined_grammar.output_rules_size  # Output is a softmax distribution over all operators
+        self.output_size = output_rules_size  # Output is a softmax distribution over all operators
         self.num_layers = num_layers
         self.dropout = dropout
         self.device = device
@@ -40,7 +51,10 @@ class NeuralExpressionDecoder(nn.Module):
         self.embed_layer = nn.Embedding(self.input_vocab_size, hidden_size)
         self.embedding_size = hidden_size
 
-        self.min_length = min_length
+        # Entropy decay vector
+        entropy_gamma_decay = np.array([entropy_gamma ** t for t in range(max_length)])
+
+
         self.max_length = max_length
 
         if self.cell == 'lstm':
@@ -64,7 +78,7 @@ class NeuralExpressionDecoder(nn.Module):
     def sample_sequence(self, n,  max_length=15):
         sequences = torch.zeros((n, 0))
         entropies = torch.zeros((n, 0))  # Entropy for each sequence
-        log_probs = torch.zeros((n, 0))  # Log probability for each token
+        log_probabilities = torch.zeros((n, 0))  # Log probability for each token
 
         sequence_mask = torch.ones((n, 1), dtype=torch.bool)
 
@@ -92,7 +106,7 @@ class NeuralExpressionDecoder(nn.Module):
             lengths += 1
 
             # Add log probability of current token
-            log_probs = torch.cat((log_probs, dist.log_prob(token)[:, None]), axis=1)
+            log_probabilities = torch.cat((log_probabilities, dist.log_prob(token)[:, None]), axis=1)
 
             # Add entropy of current token
             entropies = torch.cat((entropies, dist.entropy()[:, None]), axis=1)
@@ -114,10 +128,10 @@ class NeuralExpressionDecoder(nn.Module):
 
         # Filter entropies log probabilities using the sequence_mask
         entropies = torch.sum(entropies * (sequence_mask[:, :-1]).long(), axis=1)
-        log_probs = torch.sum(log_probs * (sequence_mask[:, :-1]).long(), axis=1)
+        log_probabilities = torch.sum(log_probabilities * (sequence_mask[:, :-1]).long(), axis=1)
         sequence_lengths = torch.sum(sequence_mask.long(), axis=1)
 
-        return sequences, sequence_lengths, entropies, log_probs
+        return sequences, sequence_lengths, entropies, log_probabilities
 
     def forward(self, input, hidden, hidden_lstm=None):
         """Input should be [parent, sibling]

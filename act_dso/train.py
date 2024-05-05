@@ -8,10 +8,7 @@ import tensorflow as tf
 import numpy as np
 
 from grammar.grammar import ContextFreeGrammar
-from grammar.utils import empirical_entropy, weighted_quantile
-import math
-from grammar.memory import Batch, make_queue
-from grammar.variance import quantile_variance
+from grammar.memory import Batch
 import sys
 
 # Ignore TensorFlow warnings
@@ -140,10 +137,6 @@ def learn(grammar_model: ContextFreeGrammar,
             # Compute reward quantile estimate
             quantile = np.nanquantile(r, 1 - epsilon)
 
-            '''
-             Here we get the returned as well as stored programs and properties.
-            '''
-
             keep = r >= quantile
             print('keep:', np.sum(keep), len(keep), "quantile:", quantile)
             r_train = r = r[keep]
@@ -162,22 +155,17 @@ def learn(grammar_model: ContextFreeGrammar,
         sys.stdout.flush()
         # Compute baseline
         # NOTE: pg_loss = tf.reduce_mean((self.r - self.baseline) * neglogp, name="pg_loss")
-        if baseline == "ewma_R":
-            ewma = np.mean(r_train) if ewma is None else alpha * np.mean(r_train) + (1 - alpha) * ewma
-            b_train = ewma
-        elif baseline == "R_e":  # Default
-            ewma = -1
+        if baseline == "R_e":  # Default
             b_train = quantile
-        elif baseline == "ewma_R_e":
-            ewma = np.min(r_train) if ewma is None else alpha * quantile + (1 - alpha) * ewma
-            b_train = ewma
 
         # Compute sequence lengths
         lengths = np.array([min(len(p.traversal), expression_decoder.max_length) for p in p_train], dtype=np.int32)
 
         # Create the Batch
-        sampled_batch = Batch(actions=actions, obs=obs,
-                              lengths=lengths, rewards=r_train)
+        sampled_batch = Batch(actions=actions,
+                              obs=obs,
+                              lengths=lengths,
+                              rewards=r_train)
         expression_decoder.train_step(b_train, sampled_batch)
 
 

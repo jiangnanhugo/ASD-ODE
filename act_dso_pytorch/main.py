@@ -1,15 +1,5 @@
-# main.py: From here, launch deep symbolic regression tasks. All
-# hyperparameters are exposed (info on them can be found in train.py). Unless
-# you'd like to impose new constraints / make significant modifications,
-# modifying this file (and specifically the get_data function) is likely all
-# you need to do for a new symbolic regression task.
 
-
-from train import learn
-import numpy as np
-import random
 import torch
-import matplotlib.pyplot as plt
 import time
 import click
 import numpy as np
@@ -23,9 +13,6 @@ from grammar.grammar_program import grammarProgram
 from active_deep_symbolic_regression import ActDeepSymbolicRegression
 from utils import load_config
 
-#
-from expression_decoder import NeuralExpressionDecoder
-
 
 threshold_values = {
     'neg_mse': {'reward_threshold': 1e-6},
@@ -38,18 +25,6 @@ threshold_values = {
 }
 
 
-###############################################################################
-# Main Function
-###############################################################################
-
-# A note on operators:
-# Available operators are: '*', '+', '-', '/', '^', 'sin', 'cos', 'tan',
-#   'sqrt', 'square', and 'c.' You may also include constant floats, but they
-#   must be strings. For variable operators, you must use the prefix var_.
-#   Variable should be passed in the order that they appear in your data, i.e.
-#   if your input data is structued [[x1, y1] ... [[xn, yn]] with outputs
-#   [z1 ... zn], then var_x should precede var_y.
-
 @click.command()
 @click.argument('config_template', default="")
 @click.option('--equation_name', default=None, type=str, help="Name of equation")
@@ -59,9 +34,9 @@ threshold_values = {
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--max_len', default=10, help="max length of the sequence from the decoder")
-@click.option('--total_iterations', default=20, help="Number of iterations per rounds")
+@click.option('--total_iterations', default=20, help="Number of learning iterations")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
-@click.option('--use_gpu', default=-1, help="Number of cores for parallel evaluation")
+@click.option('--use_gpu', default=-1, help="use GPU or cpu for training")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, noise_type, noise_scale, max_len,
          total_iterations, n_cores, use_gpu):
     config = load_config(config_template)
@@ -94,11 +69,13 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
 
     print("grammars:", production_rules)
     print("start_symbols:", start_symbols)
-    program = grammarProgram(non_terminal_nodes=nt_nodes,
-                             optimizer=optimizer,
-                             metric_name=metric_name,
-                             n_cores=n_cores,
-                             max_opt_iter=max_opt_iter)
+    program = grammarProgram(
+        non_terminal_nodes=nt_nodes,
+        optimizer=optimizer,
+        metric_name=metric_name,
+        n_cores=n_cores,
+        max_opt_iter=max_opt_iter
+    )
     grammar_model = ContextFreeGrammar(
         nvars=nvars,
         production_rules=production_rules,
@@ -115,53 +92,20 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     """Trains and returns dict of reward, expressions"""
     model = ActDeepSymbolicRegression(config, grammar_model)
 
-    # Load training and test data
-    X_constants, X_rnn, y_constants, y_rnn = get_data()
-
     # Establish GPU device if necessary
     if use_gpu >= 0 and torch.cuda.is_available():
         device = torch.device("cuda:{}".format(use_gpu))
     else:
         device = torch.device("cpu")
 
-    # Initialize operators, RNN, and optimizer
+    start = time.time()
+    print("deep model setup.....")
 
-
-    max_length = 15
-    type = 'lstm'
-    num_layers = 2
-    hidden_size = 250
-    dropout = 0.0
-    lr = 0.0005
-
-    dsr_rnn = NeuralExpressionDecoder(hidden_size,
-                                      max_length=max_length, cell=type, dropout=dropout, device=device).to(device)
-    if optimizer == 'adam':
-        optim = torch.optim.Adam(dsr_rnn.parameters(), lr=lr)
-    else:
-        optim = torch.optim.RMSprop(dsr_rnn.parameters(), lr=lr)
-    # Perform the regression task
-    results = learn(
-        dsr_rnn,
-        optim,
-        inner_optimizer='rmsprop',
-        inner_lr=0.1,
-        inner_num_epochs=25,
-        entropy_coefficient=0.005,
-        risk_factor=0.95,
-        initial_batch_size=2000,
-        scale_initial_risk=True,
-        batch_size=500,
-        n_epochs=500,
-        live_print=True,
-        summary_print=True
+    model.setup(device)
+    epoch_best_rewards, epoch_best_expressions, best_reward, best_expression = model.train(
+        threshold_values[metric_name]['reward_threshold'],
+        total_iterations
     )
-
-    # Unpack results
-    epoch_best_rewards = results[0]
-    epoch_best_expressions = results[1]
-    best_reward = results[2]
-    best_expression = results[3]
 
     # Plot best rewards each epoch
     print(epoch_best_rewards)
@@ -169,9 +113,11 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     print(best_reward)
     print(best_expression)
 
+    #####
+    end_time = time.time() - start
 
-
-
+    grammar_model.print_hofs(verbose=True)
+    print("Final act_dso time {} mins".format(np.round(end_time / 60, 3)))
 
 
 if __name__ == '__main__':
