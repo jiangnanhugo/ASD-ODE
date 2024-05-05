@@ -53,8 +53,11 @@ class ActDeepSymbolicRegression(object):
         dropout = 0.0
         lr = 0.0005
 
-        self.expression_decoder = NeuralExpressionDecoder(hidden_size,
-                                          max_length=max_length, cell=type, dropout=dropout, device=device).to(device)
+        self.expression_decoder = NeuralExpressionDecoder(
+            self.defined_grammar.output_rules_size,
+            device=device,
+            **self.config_expression_decoder
+        ).to(device)
         if self.config_expression_decoder['optimizer'] == 'adam':
             optim = torch.optim.Adam(self.expression_decoder.parameters(), lr=lr)
         else:
@@ -73,24 +76,15 @@ class ActDeepSymbolicRegression(object):
         sys.stdout.flush()
         learn(self.defined_grammar,
               self.expression_decoder,
-              reward_threshold=reward_threshold,
-              n_epochs=n_epochs,
+
               **self.config_training)
         #
         results = learn(
             self.defined_grammar,
             self.expression_decoder,
             self.optim,
-            inner_optimizer='rmsprop',
-            inner_lr=0.1,
-            inner_num_epochs=25,
-            entropy_coefficient=0.005,
-            risk_factor=0.95,
-            initial_batch_size=2000,
-            scale_initial_risk=True,
-            batch_size=500,
-            n_epochs=500,
-            live_print=True,
-            summary_print=True
+            reward_threshold=reward_threshold,
+            n_epochs=n_epochs,
+            **self.config_training
         )
         return results
