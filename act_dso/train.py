@@ -155,8 +155,7 @@ def learn(grammar_model: ContextFreeGrammar,
         sys.stdout.flush()
         # Compute baseline
         # NOTE: pg_loss = tf.reduce_mean((self.r - self.baseline) * neglogp, name="pg_loss")
-        if baseline == "R_e":  # Default
-            b_train = quantile
+        b_train = quantile
 
         # Compute sequence lengths
         lengths = np.array([min(len(p.traversal), expression_decoder.max_length) for p in p_train], dtype=np.int32)

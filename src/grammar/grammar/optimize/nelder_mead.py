@@ -1,5 +1,4 @@
-# https://github.com/domokane/FinancePy/blob/7f28e33ad405308301a657fa78e98d0b1d7379dc/financepy/utils/solver_nm.py#L31
-
+# https://quanteconpy.readthedocs.io/en/latest/optimize/nelder_mead.html
 from collections import namedtuple
 import numpy as np
 from numba import njit

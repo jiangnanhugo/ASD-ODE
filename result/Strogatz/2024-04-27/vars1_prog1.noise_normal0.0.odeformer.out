@@ -5,7 +5,13 @@ expressions: ['0.303030303030303 - 0.360750360750361*x[0]']
 [{"name": "LogUniform", "range": [0.01, 10.0], "only_positive": true}]
 Found pretrained model at /home/jiangnan/PycharmProjects/act_ode/baselines/odeformer/model.pt
 Loaded pretrained model
-(500, 1) (500,)
-x_0' = 0.0812 * (-0.0503 + 0.7211 * x_0)**-1 + -0.1772 * x_0
-R2 score: 0.7904804521160289
-NMSE: 0.2095195478839711
+(1,) [0.91362664]
+(100, 1) (100,)
+x_0' = -0.0270 * x_0
+(1,) [0.01491975]
+(1,) [0.24181542]
+(1,) [0.05576842]
+(1,) [0.14037657]
+(1,) [2.61981219]
+R2 score: 0.9005263545937447
+neg_nmse: -0.09947364540625525

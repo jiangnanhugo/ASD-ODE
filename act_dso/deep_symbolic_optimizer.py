@@ -59,7 +59,7 @@ class ActDeepSymbolicRegression(object):
 
     def train(self, reward_threshold, n_epochs):
         """
-        return the best predicted expression under the current controlled variable settings.
+        return the best predicted expression.
         """
         print("extra arguments:\n {}".format(self.config_training))
         sys.stdout.flush()

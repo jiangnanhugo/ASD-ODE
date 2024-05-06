@@ -53,23 +53,27 @@ class ActDeepSymbolicRegression(object):
         if self.config_expression_decoder['optimizer'] == 'adam':
             optim = torch.optim.Adam(self.expression_decoder.parameters(),
                                      lr=self.config_expression_decoder['learning_rate'])
-        else:
+        elif self.config_expression_decoder['optimizer'] == 'RMSprop':
             optim = torch.optim.RMSprop(self.expression_decoder.parameters(),
                                         lr=self.config_expression_decoder['learning_rate'])
+        else:
+            optim = torch.optim.SGD(self.expression_decoder.parameters(),
+                                    lr=self.config_expression_decoder['learning_rate'])
         # Perform the regression task
         self.optim = optim
 
     def train(self, reward_threshold, n_epochs):
         """
-        return the best predicted expression under the current controlled variable settings.
+        use policy gradient to train model.
+        return the best predicted expression
         """
         print("extra arguments:\n {}".format(self.config_training))
         sys.stdout.flush()
 
         results = learn(
-            self.defined_grammar,
-            self.expression_decoder,
-            self.optim,
+            grammar_model=self.defined_grammar,
+            expression_decoder=self.expression_decoder,
+            optim=self.optim,
             reward_threshold=reward_threshold,
             n_epochs=n_epochs,
             **self.config_training

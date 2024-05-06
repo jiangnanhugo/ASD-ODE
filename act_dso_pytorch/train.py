@@ -46,9 +46,9 @@ def learn(
         reward_threshold=0.999999,
         entropy_coefficient=0.005,
         risk_factor=0.95,
-        initial_batch_size=2000,
+        initial_batch_size=200,
         scale_initial_risk=True,
-        batch_size=500,
+        batch_size=200,
         n_epochs=200,
 
         live_print=True,
@@ -62,7 +62,7 @@ def learn(
 
     # First sampling done outside of loop for initial batch size if desired
     start = time.time()
-    sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(initial_batch_size)
+    sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(batch_size)
 
     for i in range(n_epochs):
         # Convert sequences into expressions that can be evaluated
@@ -97,10 +97,7 @@ def learn(
             break
 
         # Compute risk threshold
-        if i == 0 and scale_initial_risk:
-            quantile = np.nanquantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
-        else:
-            quantile = np.nanquantile(rewards, risk_factor)
+        quantile = np.nanquantile(rewards, risk_factor)
         indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] >= quantile])
 
         if len(indices_to_keep) == 0 and summary_print:
@@ -113,23 +110,23 @@ def learn(
         entropies = torch.index_select(entropies, 0, indices_to_keep)
 
         # Compute risk seeking and entropy gradient
-        risk_seeking_grad = torch.sum((rewards - quantile) * log_probabilities, axis=0)
-        entropy_grad = torch.sum(entropies, axis=0)
+        risk_seeking_loss = torch.sum((rewards - quantile) * log_probabilities, axis=0)
+        entropy_loss = torch.sum(entropies, axis=0)
 
         # Mean reduction and clip to limit exploding gradients
-        risk_seeking_grad = torch.clip(risk_seeking_grad / len(rewards), -1e6, 1e6)
-        entropy_grad = entropy_coefficient * torch.clip(entropy_grad / len(rewards), -1e6, 1e6)
+        risk_seeking_loss = torch.clip(risk_seeking_loss / len(rewards), -1e6, 1e6)
+        entropy_loss = entropy_coefficient * torch.clip(entropy_loss / len(rewards), -1e6, 1e6)
 
         # Compute loss and back-propagate
-        loss = -1 * (risk_seeking_grad + entropy_grad)
+        loss = -1 * (risk_seeking_loss + entropy_loss)
         loss.backward()
         optim.step()
 
         # Epoch Summary
         if live_print:
             print(f"""Epoch: {i + 1} ({round(float(time.time() - start), 2)}s elapsed)
-            Entropy Loss: {entropy_grad.item()}
-            Risk-Seeking Loss: {risk_seeking_grad.item()}
+            Entropy Loss: {entropy_loss.item()}
+            Risk-Seeking Loss: {risk_seeking_loss.item()}
             Total Loss: {loss.item()}
             Best Performance (Overall): {best_performance}
             Best Performance (Epoch): {max(rewards)}

@@ -1,0 +1,1 @@
+implementation of symbolic discovery of ODE using pytorch
