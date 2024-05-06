@@ -3,15 +3,7 @@ import scipy
 from functools import partial
 
 
-def neg_nmse(y, y_hat, var_y):
-    return -np.mean((y - y_hat) ** 2)
 
-
-def neg_rmse(y, y_hat, var_y):
-    return -np.sqrt(np.mean((y - y_hat) ** 2))
-
-def inv_nrmse(y, y_hat, var_y):
-    return 1 / (1 + np.sqrt(np.mean((y - y_hat) ** 2) / var_y))
 
 all_metrics = {
     # Negative mean squared error

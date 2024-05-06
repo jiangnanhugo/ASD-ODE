@@ -107,9 +107,7 @@ class grammarProgram(object):
 
         all_candiate_odes = [SymbolicDifferentialEquations(one_rules) for one_rules in many_seqs_of_rules]
         many_expr_templates = [all_candiate_odes[i::self.n_cores] for i in range(self.n_cores)]
-        # chunk_size = len(all_candiate_odes) // self.n_cores
-        # for i in range(chunk_size):
-        #      many_expr_templates.append()
+
         init_cond_ncores = [init_cond for _ in range(self.n_cores)]
         true_trajectories_ncores = [true_trajectories for _ in range(self.n_cores)]
         input_var_Xes = [input_var_Xs for _ in range(self.n_cores)]
@@ -127,7 +125,8 @@ class grammarProgram(object):
         print(" init_cond_ncores {}, time_span_ncores {}, t_eval_ncores {}, true_trajectories_ncores {}".format(
             len(init_cond_ncores), len(time_span_ncores), len(t_eval_ncores), len(true_trajectories_ncores)))
 
-        result = self.pool.map(fit_one_expr, many_expr_templates, init_cond_ncores, time_span_ncores, t_eval_ncores,
+        result = self.pool.map(fit_one_expr, many_expr_templates,
+                               init_cond_ncores, time_span_ncores, t_eval_ncores,
                                true_trajectories_ncores,
                                input_var_Xes, evaluate_losses,
                                max_open_constantes, max_opt_iteres, optimizeres, non_terminal_nodes)

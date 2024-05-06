@@ -108,7 +108,13 @@ class ContextFreeGrammar(object):
         print(filtered_rules)
         return filtered_rules
 
-    def construct_expression(self, many_seq_of_rules):
+    def construct_expression(self, many_seq_of_rules, mode='default'):
+        """
+        mode
+        - "default": validate on randomly chosen data
+        - "active_region": validate on actively chosen regions
+        - "full": validate on all trajecotries
+        """
         filtered_many_rules = []
         for one_seq_of_rules in many_seq_of_rules:
             one_seq_of_rules = [self.production_rules[li] for li in one_seq_of_rules]
@@ -122,20 +128,24 @@ class ContextFreeGrammar(object):
         if self.program.n_cores == 1:
             many_expressions = self.program.fitting_new_expressions(
                 filtered_many_rules,
-                self.task.init_cond,
-                self.task.time_span, self.task.t_evals,
+                self.task.init_cond, self.task.time_span, self.task.t_evals,
                 true_trajectories,
                 self.input_var_Xs)
         elif self.program.n_cores > 1:
             many_expressions = self.program.fitting_new_expressions_in_parallel(
                 filtered_many_rules,
-                self.task.init_cond,
-                self.task.time_span, self.task.t_evals,
+                self.task.init_cond, self.task.time_span, self.task.t_evals,
                 true_trajectories,
                 self.input_var_Xs)
 
         # evaluate the fitted expressions on new validation proc_data;
-        self.task.rand_draw_init_cond()
+        if mode =='default':
+            self.task.rand_draw_init_cond()
+        elif mode =='active_region':
+            self.task.active_region_init_cond()
+        elif mode == 'full':
+            self.task.full_init_cond()
+
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
                 # print('\t', one_expression)
