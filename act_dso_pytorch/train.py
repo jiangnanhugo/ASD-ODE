@@ -5,7 +5,6 @@
 import numpy as np
 import time
 import torch
-from torch import nn
 from expression_decoder import NeuralExpressionDecoder
 from grammar.grammar import ContextFreeGrammar
 
@@ -44,15 +43,12 @@ def learn(
         expression_decoder: NeuralExpressionDecoder,
         optim,
         reward_threshold=0.999999,
-        entropy_coefficient=0.005,
-        risk_factor=0.95,
-        initial_batch_size=200,
-        scale_initial_risk=True,
-        batch_size=200,
         n_epochs=200,
+        entropy_coefficient=0.005,
+        risk_factor_epsilon=0.95,
+        sample_batch_size=200,
 
-        live_print=True,
-        summary_print=True,
+        verbose=True,
 ):
     epoch_best_rewards = []
     epoch_best_expressions = []
@@ -62,7 +58,7 @@ def learn(
 
     # First sampling done outside of loop for initial batch size if desired
     start = time.time()
-    sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(batch_size)
+    sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
 
     for i in range(n_epochs):
         # Convert sequences into expressions that can be evaluated
@@ -91,16 +87,16 @@ def learn(
         # Early stopping criteria
         if best_performance >= reward_threshold:
             best_str = str(best_expression)
-            if live_print:
+            if verbose:
                 print("~ Early Stopping Met ~")
                 print(f"""Best Expression: {best_str}""")
             break
 
         # Compute risk threshold
-        quantile = np.nanquantile(rewards, risk_factor)
+        quantile = np.nanquantile(rewards, risk_factor_epsilon)
         indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] >= quantile])
 
-        if len(indices_to_keep) == 0 and summary_print:
+        if len(indices_to_keep) == 0:
             print("quantile threshold removes all expressions. Terminating.")
             break
 
@@ -123,7 +119,7 @@ def learn(
         optim.step()
 
         # Epoch Summary
-        if live_print:
+        if verbose:
             print(f"""Epoch: {i + 1} ({round(float(time.time() - start), 2)}s elapsed)
             Entropy Loss: {entropy_loss.item()}
             Risk-Seeking Loss: {risk_seeking_loss.item()}
@@ -133,12 +129,12 @@ def learn(
             Best Expression (Overall): {best_expression}
             Best Expression (Epoch): {best_epoch_expression}""")
         # Sample for next batch
-        sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(batch_size)
+        sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
 
-    if summary_print:
-        print(f"""Time Elapsed: {round(float(time.time() - start), 2)}s
-        Epochs Required: {i + 1}
-        Best Performance: {round(best_performance.item(), 3)}
-        Best Expression: {best_expression}""")
+    print(f"""Time Elapsed: {round(float(time.time() - start), 2)}s
+            Epochs Required: {i + 1}
+            Best Performance: {round(best_performance.item(), 3)}
+            Best Expression: {best_expression}""")
+
 
     return epoch_best_rewards, epoch_best_expressions, best_performance, best_expression

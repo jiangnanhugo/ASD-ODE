@@ -14,7 +14,7 @@ from grammar.grammar_regress_task import RegressTask
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-np.random.seed(1000)  # Seed for reproducibility
+# np.random.seed(1000)  # Seed for reproducibility
 
 
 def get_data(func, nvars, t_eval, task):
@@ -42,8 +42,8 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
 
     nvars = data_query_oracle.get_nvars()
 
-    time_span = (0.0001, 10)
-    trajectory_time_steps = 1000
+    time_span = (0.0001, 5)
+    trajectory_time_steps = 500
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(1,
@@ -62,9 +62,9 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
     print(x_train.shape, t_train.shape)
     print("train trajectory data:")
     for xi in x_train:
-        print("[",", ".join(map(str, xi)),"],")
-    print('-'*30)
-    print("time sequence",t_train)
+        print("[", ", ".join(map(str, xi)), "],")
+    print('-' * 30)
+    # print("time sequence", t_train)
     dstr.fit(t_train, x_train)
 
     dstr.print()
@@ -84,7 +84,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
         one_r2_score = r2_score(np.asarray(all_pred_traj).flatten(), np.asarray(all_true_traj).flatten())
         print("R2 score:", one_r2_score)
         print("neg_nmse:", -(1 - one_r2_score))
-        print('-'*30)
+        print('-' * 30)
 
 
 if __name__ == "__main__":

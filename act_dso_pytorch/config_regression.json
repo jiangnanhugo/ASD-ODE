@@ -1,40 +1,31 @@
 {
    "training" : {
-      "batch_size" : 100,
-      "epsilon" : 0.5,
+      "sample_batch_size" : 100,
+      "risk_factor_epsilon" : 0.5,
       "alpha" : 0.5,
-      "b_jumpstart" : false,
-
-      // The constant optimizer used to optimized each "const" token.
       "verbose" : true,
-
       // Debug level
       "debug" : 2,
       // Whether to stop early if success condition is met
-      "early_stopping" : true,
+      "early_stopping" : true
    },
 
    // Only the key RNN decoder hyperparameters are listed here. See
    // config_common.json for the full list.
    "expression_decoder" : {
-      "embedding_dim" : 128,
-      "dropout": 0.5,
       // Maximum sequence length.
       "max_length" : 20,
 
       // Optimizer hyperparameters.
-      "initializer" : "var_scale",
       "learning_rate" : 0.009,
       "optimizer" : "adam",
       "entropy_weight" : 0.03,
       "entropy_gamma" : 0.7,
       // RNN architectural hyperparameters.
-      "cell" : "lstm",
+      "cell" : "gru",
       "num_layers" : 1,
-      "num_units" : 32,
+      "hidden_size" : 128,
+      "dropout": 0.5,
       "debug": 2
-   },
-    "input_embedding": {
-
    }
 }

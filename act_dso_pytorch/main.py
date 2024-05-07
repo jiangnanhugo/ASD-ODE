@@ -1,4 +1,3 @@
-
 import torch
 import time
 import click
@@ -12,7 +11,6 @@ from grammar.production_rules import get_production_rules, construct_non_termina
 from grammar.grammar_program import grammarProgram
 from active_deep_symbolic_regression import ActDeepSymbolicRegression
 from utils import load_config
-
 
 threshold_values = {
     'neg_mse': {'reward_threshold': 1e-6},
@@ -39,8 +37,7 @@ threshold_values = {
 @click.option('--use_gpu', default=-1, help="use GPU or cpu for training")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, noise_type, noise_scale, max_len,
          total_iterations, n_cores, use_gpu):
-    config = load_config(config_template)
-    config['task']['metric'] = metric_name
+
     data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
@@ -90,7 +87,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     grammar_model.program = program
 
     """Trains and returns dict of reward, expressions"""
-    model = ActDeepSymbolicRegression(config, grammar_model)
+    model = ActDeepSymbolicRegression(config_template, grammar_model)
 
     # Establish GPU device if necessary
     if use_gpu >= 0 and torch.cuda.is_available():

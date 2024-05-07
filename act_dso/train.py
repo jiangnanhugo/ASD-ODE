@@ -75,11 +75,11 @@ def learn(grammar_model: ContextFreeGrammar,
           sess, expression_decoder,
           n_epochs=12, batch_size=1000,
           reward_threshold=0.999999,
-          alpha=0.5, epsilon=0.05, verbose=True,
-          baseline="R_e",
+           epsilon=0.05, verbose=True,
+
           b_jumpstart=False, early_stopping=True,
           debug=0,
-          warm_start=None):
+          ):
     """
       Executes the main training loop.
     """

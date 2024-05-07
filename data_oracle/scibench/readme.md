@@ -1,9 +1,11 @@
+# data oracle of the ground-truth ODE #
+
 ## 0. Prequisites
 
 ### 0.1 Dependency packages
 
 ```bash
-pip install Cython
+pip install numpy scipy
 ```
 
 
@@ -26,7 +28,7 @@ Here,
 #### Data Oracle `Equation_evaluator`
 - Your Python package will need to access the Oracle by calling the evaluate method from an object of the class `Equation_evaluator`. In your `main.py`, you will need to initialize an `Equation_evaluator` object. You can do this in the following way. First in the header of `main.py`:
 ```python
-from symbolic_equation_evaluator import *
+from scibench.symbolic_equation_evaluator import Equation_evaluator
 ```
 Then in the main program, execute:
 ```python

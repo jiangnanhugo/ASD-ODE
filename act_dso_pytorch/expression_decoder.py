@@ -31,19 +31,15 @@ class NeuralExpressionDecoder(nn.Module):
             - hidden_size (int): hidden dimension size for RNN
         """
         super(NeuralExpressionDecoder, self).__init__()
-
-        self.input_vocab_size = output_rules_size  # One-hot encoded parent and sibling
+        # every grammar rules has one embedding, the start symbol also has the last embedding
+        self.input_vocab_size = output_rules_size + 1
         self.hidden_size = hidden_size
-        self.output_size = output_rules_size  # Output is a softmax distribution over all operators
+        # Output is a softmax distribution over all rules (exclude the start symbol
+        self.output_size = output_rules_size
         self.num_layers = num_layers
         self.dropout = dropout
         self.device = device
         self.cell = cell
-
-        # Initial cell optimization
-        # self.init_input = nn.Parameter(data=torch.rand(1, self.input_vocab_size), requires_grad=True).to(self.device)
-        # self.init_hidden = nn.Parameter(data=torch.rand(self.num_layers, self.hidden_size),
-        #                                 requires_grad=True).to(self.device)
 
         # Entropy decay vector
         self.entropy_weight = entropy_weight
@@ -52,9 +48,13 @@ class NeuralExpressionDecoder(nn.Module):
         self.max_length = max_length
         self.embed_layer = nn.Embedding(self.input_vocab_size, hidden_size)
         self.embedding_size = hidden_size
+
+        self.init_hidden = nn.Parameter(data=torch.rand(self.num_layers, self.hidden_size), requires_grad=True).to(
+            self.device)
+
         if self.cell == 'lstm':
             self.lstm = nn.LSTM(
-                input_size=self.input_vocab_size,
+                input_size=self.hidden_size,
                 hidden_size=self.hidden_size,
                 num_layers=self.num_layers,
                 batch_first=True, proj_size=self.output_size, dropout=self.dropout).to(self.device)
@@ -62,7 +62,7 @@ class NeuralExpressionDecoder(nn.Module):
                                                  requires_grad=True).to(self.device)
         elif self.cell == 'gru':
             self.gru = nn.GRU(
-                input_size=self.input_vocab_size,
+                input_size=self.hidden_size,
                 hidden_size=self.hidden_size,
                 num_layers=self.num_layers,
                 batch_first=True,
@@ -76,14 +76,10 @@ class NeuralExpressionDecoder(nn.Module):
         entropies = torch.zeros((seq_batch_size, self.max_length))  # Entropy for each sequence
         log_probabilities = torch.zeros((seq_batch_size, self.max_length))  # Log probability for each token
 
-        sequence_mask = torch.ones((seq_batch_size, 1), dtype=torch.bool)
-
-        input_tensor = self.init_input.repeat(seq_batch_size, 1)
+        input_tensor = torch.tensor([self.input_vocab_size-1]).repeat(seq_batch_size, 1)
         hidden_tensor = self.init_hidden.repeat(seq_batch_size, 1)
         if self.cell == 'lstm':
             hidden_lstm = self.init_hidden_lstm.repeat(seq_batch_size, 1)
-
-
 
         for ti in range(self.max_length):
             if self.cell == 'lstm':
@@ -98,19 +94,17 @@ class NeuralExpressionDecoder(nn.Module):
             # Add sampled tokens to sequences
             sequences[:, ti] = predicted_token
 
-
             # Add log probability of current token
             log_probabilities[:, ti] = dist.log_prob(predicted_token)
 
             # Add entropy of current token
             entropies[:, ti] = dist.entropy()
 
-            input_tensor = predicted_token
+            input_tensor = predicted_token.reshape(-1,1)
 
         # Filter entropies log probabilities using the sequence_mask
         entropy_gamma_decay_mask = self.entropy_gamma_decay
-        entropies = torch.sum(entropies * entropy_gamma_decay_mask, axis=1)
-        log_probabilities = torch.sum(log_probabilities, axis=1)
+        entropies = entropies * entropy_gamma_decay_mask
 
         return sequences, entropies, log_probabilities
 
@@ -123,6 +117,8 @@ class NeuralExpressionDecoder(nn.Module):
             output = self.activation(output[:, 0, :])
             return output, cn[0, :], hn[0, :]
         elif self.cell == 'gru':
+            # input: batch_size, sequence_length, embedding_dim
+            # hidden: (1, batch_size, hidden_size)
             output, hn = self.gru(embedded_input, hidden[None, :])
             output = output[:, 0, :]
             output = self.projection_layer(output)
