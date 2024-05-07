@@ -12,6 +12,8 @@ dist/
 */build/
 result/
 
+*/model.pt
+
 
 # Compiled Java class files
 *.class
