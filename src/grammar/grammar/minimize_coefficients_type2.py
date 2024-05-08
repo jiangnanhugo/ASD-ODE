@@ -71,6 +71,11 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         for c in c_lst:
             temp_equations = temp_equations.replace('C', c, 1)
         candidate_ode_equations = temp_equations.split("$$")
+        """
+        To improve performance, it's better to pre-compile the symbolic expression outside the optimization loop 
+        and use the resulting function directly within the objective function. 
+        This way, the symbolic expression is only compiled once.
+        """
         expr_odes = [parse_expr(one_expr) for one_expr in candidate_ode_equations]
         t = symbols('t')  # not used in this case
         num_function = lambdify((t, *input_var_Xs, *c_symbols), expr_odes, modules='numpy')
