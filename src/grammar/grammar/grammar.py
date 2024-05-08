@@ -13,11 +13,7 @@ class ContextFreeGrammar(object):
 
     noise_std = 0.0
 
-    """
-       A Task in which the search space is a binary tree. Observations include
-       the previous action, the parent, the sibling, and/or the number of dangling
-       (unselected) nodes.
-    """
+
     OBS_DIM = 4  # action, parent, sibling, dangling
 
     def __init__(self, nvars,

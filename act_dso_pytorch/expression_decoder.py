@@ -72,11 +72,11 @@ class NeuralExpressionDecoder(nn.Module):
 
     def sample_sequence(self, seq_batch_size):
         # [batch_size, sequence_length]
-        sequences = torch.zeros((seq_batch_size, self.max_length))
+        sequences = torch.zeros((seq_batch_size, self.max_length), dtype=torch.int)
         entropies = torch.zeros((seq_batch_size, self.max_length))  # Entropy for each sequence
         log_probabilities = torch.zeros((seq_batch_size, self.max_length))  # Log probability for each token
 
-        input_tensor = torch.tensor([self.input_vocab_size-1]).repeat(seq_batch_size, 1)
+        input_tensor = torch.tensor([self.input_vocab_size - 1]).repeat(seq_batch_size, 1)
         hidden_tensor = self.init_hidden.repeat(seq_batch_size, 1)
         if self.cell == 'lstm':
             hidden_lstm = self.init_hidden_lstm.repeat(seq_batch_size, 1)
@@ -100,12 +100,9 @@ class NeuralExpressionDecoder(nn.Module):
             # Add entropy of current token
             entropies[:, ti] = dist.entropy()
 
-            input_tensor = predicted_token.reshape(-1,1)
+            input_tensor = predicted_token.reshape(-1, 1)
 
-        # Filter entropies log probabilities using the sequence_mask
-        entropy_gamma_decay_mask = self.entropy_gamma_decay
-        entropies = entropies * entropy_gamma_decay_mask
-
+        entropies = entropies * self.entropy_gamma_decay
         return sequences, entropies, log_probabilities
 
     def forward(self, input, hidden, hidden_lstm=None):

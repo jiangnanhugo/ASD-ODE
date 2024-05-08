@@ -44,8 +44,9 @@ class Equation_evaluator(object):
     def evaluate(self, x_init_conds: list, time_span: tuple, t_evals: np.ndarray) -> np.ndarray:
         true_trajectories = []
         for one_x_init in x_init_conds:
-            one_solution = runge_kutta4(self.true_ode_equation, t_evals, one_x_init)
-            true_trajectories.append(one_solution)
+            one_solution=solve_ivp(self.true_ode_equation, tspan=time_span, t_evals=t_evals, y0=one_x_init, method='RK45')
+            # one_solution = runge_kutta4(self.true_ode_equation, t_evals, one_x_init)
+            true_trajectories.append(one_solution.y)
         true_trajectories = np.asarray(true_trajectories)
         return true_trajectories
 

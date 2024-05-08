@@ -1,5 +1,8 @@
-def sympy_plus_scipy():
-    from sympy import symbols, lambdify
+
+
+
+def symengine_int_ode():
+    from symengine import symbols, lambdify
     import numpy as np
     import scipy.integrate
 
@@ -27,8 +30,12 @@ def sympy_plus_scipy():
     #   the interval of integration,
     #   the initial state, and
     #   the arguments to pass to the function f
-    solution = scipy.integrate.solve_ivp(f, (0, 10), y0, t_eval=t_eval, vectorized=True)
+    solution = scipy.integrate.solve_ivp(f, (0, 10), y0, t_eval=t_eval)
     # Extract the y (concentration) values from SciPy solution result
     y = solution.y
     print(y.shape)
     # Plot the result graphically using matplotlib
+
+if __name__ == '__main__':
+    sympy_plus_scipy()
+    symengine_int_ode()

@@ -14,30 +14,20 @@ from grammar.grammar import ContextFreeGrammar
 """Deep Symbolic Regression Training Loop
 
     ~ Parameters ~
-    - operator_list (list of str): operators to use (all variables must have prefix var_)
-    - max_length (int): maximum number of operators to allow in expression
-    - type ('rnn', 'lstm', or 'gru'): type of architecture to use
-    - num_layers (int): number of layers in RNN architecture
-    - dropout (float): dropout (if any) for RNN architecture
     - optimizer ('adam' or 'rmsprop'): optimizer for RNN
-    - inner_optimizer ('lbfgs', 'adam', or 'rmsprop'): optimizer for expressions
-    - inner_num_epochs (int): number of epochs for constant optimization
     - entropy_coefficient (float): entropy coefficient for RNN
     - risk_factor (float, >0, <1): we discard the bottom risk_factor quantile
       when training the RNN
-    - batch_size (int): batch size for training the RNN
+    - sample_batch_size (int): batch size for training the RNN
     - num_batches (int): number of batches (will stop early if found)
-    - live_print (bool): if true, will print updates during training process
+    - verbose (bool): if true, will print updates during training process
 
-    ~ Returns ~
-    A list of four lists:
+    Returns: A list of four lists:
     [0] epoch_best_rewards (list of float): list of highest reward obtained each epoch
     [1] epoch_best_expressions (list of Expression): list of best expression each epoch
     [2] best_reward (float): best reward obtained
     [3] best_expression (Expression): best expression obtained
     """
-
-
 def learn(
         grammar_model: ContextFreeGrammar,
         expression_decoder: NeuralExpressionDecoder,
@@ -47,7 +37,6 @@ def learn(
         entropy_coefficient=0.005,
         risk_factor_epsilon=0.95,
         sample_batch_size=200,
-
         verbose=True,
 ):
     epoch_best_rewards = []
@@ -58,7 +47,7 @@ def learn(
 
     # First sampling done outside of loop for initial batch size if desired
     start = time.time()
-    sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
+    sequences, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
 
     for i in range(n_epochs):
         # Convert sequences into expressions that can be evaluated
@@ -129,7 +118,7 @@ def learn(
             Best Expression (Overall): {best_expression}
             Best Expression (Epoch): {best_epoch_expression}""")
         # Sample for next batch
-        sequences, sequence_lengths, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
+        sequences, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
 
     print(f"""Time Elapsed: {round(float(time.time() - start), 2)}s
             Epochs Required: {i + 1}
