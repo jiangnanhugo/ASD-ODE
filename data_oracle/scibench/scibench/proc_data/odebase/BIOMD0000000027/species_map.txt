@@ -1,0 +1,5 @@
+x1 = M
+x2 = Mp
+x3 = Mpp
+x4 = MAPKK
+x5 = MKP3

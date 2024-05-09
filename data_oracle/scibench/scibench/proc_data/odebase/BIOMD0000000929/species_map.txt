@@ -1,0 +1,5 @@
+x1 = Pancreatic_cancer_cells__C
+x2 = Pancreatic_stellate_cells__P
+x3 = CD8__T_cells__T
+x4 = NK_cells__N
+x5 = helper_T_cells__H

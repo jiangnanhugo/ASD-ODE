@@ -1,0 +1,7 @@
+k1 = b1
+k2 = u1
+k3 = b2
+k4 = u2
+k5 = v
+k6 = k
+k7 = bone_marrow

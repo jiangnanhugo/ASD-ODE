@@ -1,0 +1,13 @@
+k1 = r
+k2 = alpha1
+k3 = k
+k4 = a1
+k5 = a2
+k6 = delta
+k7 = alpha2
+k8 = u1
+k9 = u2
+k10 = b
+k11 = alpha3
+k12 = u3
+k13 = bladder_cancer_tme

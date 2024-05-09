@@ -1,0 +1,5 @@
+k1 = a1
+k2 = b1
+k3 = k1
+k4 = n1
+k5 = compartment

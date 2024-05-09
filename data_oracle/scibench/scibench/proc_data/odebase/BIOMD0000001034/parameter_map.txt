@@ -1,0 +1,13 @@
+k1 = mu1
+k2 = mu2
+k3 = p1
+k4 = p2
+k5 = p3
+k6 = p4
+k7 = p5
+k8 = alpha
+k9 = beta
+k10 = r
+k11 = b
+k12 = mu
+k13 = Bladder

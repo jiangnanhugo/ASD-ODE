@@ -1,0 +1,11 @@
+k1 = lambda
+k2 = rho
+k3 = alpha_1
+k4 = alpha_2
+k5 = beta
+k6 = delta
+k7 = epsilon
+k8 = gamma_1
+k9 = gamma_2
+k10 = gamma_3
+k11 = compartment

@@ -1,0 +1,8 @@
+k1 = p52_uM
+k2 = compartment
+k3 = __lp_r2_k1
+k4 = __lp_r3_Km
+k5 = __lp_r3_kcat
+k6 = __lp_r4_k1
+k7 = __lp_r5_k1
+k8 = p100t

@@ -1,0 +1,12 @@
+k1 = mu_c
+k2 = mu_m
+k3 = delta_m
+k4 = delta_h
+k5 = delta_c
+k6 = kappa_m
+k7 = kappa_c
+k8 = x
+k9 = y
+k10 = HMGCR_Rescaled
+k11 = mRNA_Rescaled
+k12 = compartment

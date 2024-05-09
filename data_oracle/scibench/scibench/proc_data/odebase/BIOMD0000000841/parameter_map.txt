@@ -1,0 +1,16 @@
+k1 = alpha_C
+k2 = delta_C
+k3 = alpha_F
+k4 = delta_F
+k5 = alpha_M
+k6 = delta_M
+k7 = k_P
+k8 = delta_P
+k9 = k_CM
+k10 = k_MF
+k11 = beta_FM
+k12 = gamma_FM
+k13 = n
+k14 = tau1
+k15 = tau2
+k16 = compartment

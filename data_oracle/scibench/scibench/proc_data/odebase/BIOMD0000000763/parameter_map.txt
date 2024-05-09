@@ -1,0 +1,9 @@
+k1 = gamma
+k2 = p
+k3 = k
+k4 = sigma_H
+k5 = alpha
+k6 = Ntilde
+k7 = delta_H
+k8 = sigma_C
+k9 = compartment

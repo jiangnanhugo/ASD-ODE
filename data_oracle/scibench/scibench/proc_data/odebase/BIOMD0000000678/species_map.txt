@@ -1,0 +1,4 @@
+x1 = NFAT_phosphorylated
+x2 = NFAT_dephosphorylated
+x3 = NFAT_transported
+x4 = stimulus

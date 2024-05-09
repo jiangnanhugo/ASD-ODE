@@ -1,0 +1,12 @@
+k1 = body
+k2 = __lp_r2_a
+k3 = __lp_r3_V
+k4 = __lp_r3_Km
+k5 = __lp_r4_V1
+k6 = __lp_r4_K1
+k7 = __lp_r5_V2
+k8 = __lp_r5_K2
+k9 = __lp_r6_V3
+k10 = __lp_r6_k3
+k11 = __lp_r7_V
+k12 = __lp_r7_Km

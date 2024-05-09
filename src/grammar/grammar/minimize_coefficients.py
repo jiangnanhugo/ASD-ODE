@@ -11,12 +11,13 @@ from grammar.utils import pretty_print_expr
 from grammar.production_rules import check_non_terminal_nodes
 
 from sympy.parsing.sympy_parser import parse_expr
-from sympy import lambdify, symbols
+from sympy import lambdify, symbols, Symbol
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, shgo, dual_annealing, direct
-from scipy.integrate import solve_ivp
+# from scipy.integrate import solve_ivp
 
-# from grammar.odeint.numpy_odeint import runge_kutta4
+
+from grammar.odeint_debug.numpy_odeint import runge_kutta4
 
 
 def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
@@ -65,29 +66,44 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         return -np.inf, candidate_ode_equations, t_optimized_constants, t_optimized_obj
     else:
         c_lst = ['c' + str(i) for i in range(num_changing_consts)]
+        c_symbols = [Symbol('c' + str(i)) for i in range(num_changing_consts)]
         temp_equations = "$$".join(candidate_ode_equations)
         for c in c_lst:
             temp_equations = temp_equations.replace('C', c, 1)
         candidate_ode_equations = temp_equations.split("$$")
+        """
+        To improve performance, it's better to pre-compile the symbolic expression outside the optimization loop 
+        and use the resulting function directly within the objective function. 
+        This way, the symbolic expression is only compiled once.
+        """
+        expr_odes = [parse_expr(one_expr) for one_expr in candidate_ode_equations]
+        t = symbols('t')  # not used in this case
+        num_function = lambdify((t, *input_var_Xs, *c_symbols), expr_odes)
 
-        def f(consts: list):
-            # sttime = time.time()
-            temp_equations = "$$".join(candidate_ode_equations)
-            for i in range(len(consts)):
-                temp_equations = temp_equations.replace('c' + str(i), str(consts[i]), 1)
-            eq_est = temp_equations.split("$$")
-            pred_trajectories = execute(eq_est, init_cond, time_span, t_eval, input_var_Xs)
+        def objective_function(coef):
+            def derivative(t, state):
+                return num_function(t, *state, *coef)
+            pred_trajectories = []
+            for one_x_init in init_cond:
+                # one_solution = solve_ivp(derivative, t_span=time_span, t_evals=t_eval, y0=one_x_init, method='RK45')
+                # pred_trajectories.append(one_solution.y)
+                one_solution = runge_kutta4(derivative, t_eval, one_x_init)
+                pred_trajectories.append(one_solution)
+            pred_trajectories = np.asarray(pred_trajectories)
+            # Compute some objective using sol.y (the solution) and desired output
+            # For example, you could use the mean squared error between sol.y and desired output
             var_ytrue = np.var(true_trajectories)
-            loss_val = -loss_func(pred_trajectories, true_trajectories, var_ytrue)
-            return loss_val
+            objective_value = -loss_func(pred_trajectories, true_trajectories, var_ytrue)
+            # print(coef, objective_value)
+            return objective_value
+
 
         # do more than one experiment,
         x0 = np.random.rand(len(c_lst))
         try:
-
             if user_scpeficied_iters > 0:
                 max_opt_iter = user_scpeficied_iters
-            opt_result = scipy_minimize(f, x0, optimizer_name, num_changing_consts, max_opt_iter)
+            opt_result = scipy_minimize(objective_function, x0, optimizer_name, num_changing_consts, max_opt_iter)
             t_optimized_constants = opt_result['x']
             c_lst = t_optimized_constants.tolist()
             t_optimized_obj = opt_result['fun']
@@ -123,6 +139,50 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
     print('\t metric:', train_loss, 'eq:', candidate_ode_equations)
     sys.stdout.flush()
     return train_loss, candidate_ode_equations, t_optimized_constants, t_optimized_obj
+
+
+def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_evals: np.ndarray,
+            input_var_Xs: list) -> np.ndarray:
+    """
+    given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
+
+    expr_strs: list of string. each string is one expression.
+    time_span: tuple
+    t_evals: np.linspace, or np.logspace
+    x_init_conds: [batch_size, nvars]
+    pred_trajectories: [batch_size, time_steps, nvars]
+    """
+    # sttime=time.time()
+
+    expr_odes = [parse_expr(one_expr) for one_expr in expr_strs]
+    t = symbols('t')  # not used in this case
+    try:
+        func = lambdify((t, input_var_Xs), expr_odes)
+        pred_trajectories = []
+        for one_x_init in x_init_conds:
+            # one_solution = runge_kutta4(func, t_evals, one_x_init)
+            # one_solution = solve_ivp(func, t_span=time_span, t_evals=t_evals, y0=one_x_init, method='RK45')
+            # pred_trajectories.append(one_solution.y)
+            one_solution = runge_kutta4(func, t_evals, one_x_init)
+            pred_trajectories.append(one_solution)
+        pred_trajectories = np.asarray(pred_trajectories)
+
+        if pred_trajectories is complex:
+            pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
+            return pred_trajectories
+            # return np.ones(init_cond.shape[-1]) * np.infty
+    except TypeError as e:
+        # print(e, expr, input_var_Xs, data_X.shape)
+        pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
+        return pred_trajectories
+    except KeyError as e:
+        # print(e, expr)
+        pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
+        return pred_trajectories
+    except ValueError as e:
+        pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
+        return pred_trajectories
+    return pred_trajectories
 
 
 def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
@@ -162,48 +222,6 @@ def scipy_minimize(f, x0, optimizer, num_changing_consts, max_opt_iter):
         opt_result = direct(f, bounds, maxiter=max_opt_iter)
 
     return opt_result
-
-
-def execute(expr_strs: list[str], x_init_conds: np.ndarray, time_span: tuple, t_evals: np.ndarray,
-            input_var_Xs: list) -> np.ndarray:
-    """
-    given a symbolic ODE (func) and the initial condition (init_cond), compute the time trajectory.
-
-    expr_strs: list of string. each string is one expression.
-    time_span: tuple
-    t_evals: np.linspace, or np.logspace
-    x_init_conds: [batch_size, nvars]
-    pred_trajectories: [batch_size, time_steps, nvars]
-    """
-    # sttime=time.time()
-
-    expr_odes = [parse_expr(one_expr) for one_expr in expr_strs]
-    t = symbols('t')  # not used in this case
-    try:
-        func = lambdify((t, input_var_Xs), expr_odes, modules='numpy')
-        pred_trajectories = []
-        for one_x_init in x_init_conds:
-            # one_solution = runge_kutta4(func, t_evals, one_x_init)
-            one_solution = solve_ivp(func, tspan=time_span, t_evals=t_evals, y0=one_x_init, method='RK45')
-            pred_trajectories.append(one_solution.y)
-        pred_trajectories = np.asarray(pred_trajectories)
-
-        if pred_trajectories is complex:
-            pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
-            return pred_trajectories
-            # return np.ones(init_cond.shape[-1]) * np.infty
-    except TypeError as e:
-        # print(e, expr, input_var_Xs, data_X.shape)
-        pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
-        return pred_trajectories
-    except KeyError as e:
-        # print(e, expr)
-        pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
-        return pred_trajectories
-    except ValueError as e:
-        pred_trajectories = np.ones(x_init_conds.shape[0], t_evals.shape[0], x_init_conds.shape[1]) * -np.infty
-        return pred_trajectories
-    return pred_trajectories
 
 
 def simplify_template(equations: list) -> list:

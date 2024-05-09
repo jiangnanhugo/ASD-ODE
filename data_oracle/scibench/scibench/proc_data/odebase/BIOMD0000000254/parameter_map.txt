@@ -1,0 +1,8 @@
+k1 = V_in
+k2 = k1
+k3 = kp
+k4 = km
+k5 = epsilon
+k6 = Tsum
+k7 = Tdiff
+k8 = compartment

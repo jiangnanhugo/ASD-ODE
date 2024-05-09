@@ -1,0 +1,9 @@
+k1 = s
+k2 = r_T_Tmax
+k3 = r_T_d
+k4 = R
+k5 = D
+k6 = beta
+k7 = pstar
+k8 = c
+k9 = compartment

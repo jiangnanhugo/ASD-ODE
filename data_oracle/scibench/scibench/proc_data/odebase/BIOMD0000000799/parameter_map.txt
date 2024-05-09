@@ -1,0 +1,7 @@
+k1 = a
+k2 = b
+k3 = c
+k4 = A
+k5 = B
+k6 = C
+k7 = compartment

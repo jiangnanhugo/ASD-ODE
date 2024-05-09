@@ -1,0 +1,11 @@
+k1 = k
+k2 = alpha
+k3 = n
+k4 = a
+k5 = k1
+k6 = beta
+k7 = fy
+k8 = gamma
+k9 = Cytosol
+k10 = ER
+k11 = Extracellular

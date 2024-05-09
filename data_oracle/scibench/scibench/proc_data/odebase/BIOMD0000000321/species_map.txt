@@ -1,0 +1,3 @@
+x1 = A_dopa
+x2 = C_dopa
+x3 = C_OMD

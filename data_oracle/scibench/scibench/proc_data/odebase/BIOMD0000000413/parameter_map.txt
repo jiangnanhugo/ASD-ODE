@@ -1,0 +1,12 @@
+k1 = kd
+k2 = ka
+k3 = mu
+k4 = ld
+k5 = lm
+k6 = la
+k7 = delta
+k8 = lambda
+k9 = TIR1T
+k10 = alpha_tr
+k11 = cell
+k12 = __cm_k12

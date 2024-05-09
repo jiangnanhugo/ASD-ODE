@@ -1,0 +1,8 @@
+k1 = beta
+k2 = omega
+k3 = sigma
+k4 = gamma
+k5 = R_fixed
+k6 = Fraction_infected
+k7 = USA
+k8 = __cm_k8

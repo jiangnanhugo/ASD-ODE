@@ -1,0 +1,6 @@
+k1 = alpha
+k2 = beta
+k3 = delta
+k4 = zeta
+k5 = p
+k6 = compartment

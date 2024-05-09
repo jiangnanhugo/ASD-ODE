@@ -1,0 +1,16 @@
+k1 = k_0_m
+k2 = k_i
+k3 = k_e
+k4 = k_o_c
+k5 = k_c_c
+k6 = k_d
+k7 = k_c_m
+k8 = k_b
+k9 = B_T
+k10 = v_1
+k11 = v_2
+k12 = V_m
+k13 = V_c
+k14 = V_n
+k15 = D
+k16 = human_lymphoma_cells

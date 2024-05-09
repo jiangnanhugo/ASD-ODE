@@ -1,0 +1,3 @@
+x1 = Cyclin
+x2 = Active_Cdc2_kinase
+x3 = Active_APC

@@ -1,0 +1,4 @@
+x1 = NT
+x2 = NI
+x3 = BT
+x4 = BI

@@ -1,0 +1,10 @@
+k1 = r
+k2 = delta
+k3 = p
+k4 = alpha
+k5 = phi
+k6 = g
+k7 = b
+k8 = gamma
+k9 = K
+k10 = compartment

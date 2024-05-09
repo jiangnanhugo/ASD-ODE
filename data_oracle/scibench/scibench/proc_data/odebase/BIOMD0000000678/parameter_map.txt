@@ -1,0 +1,12 @@
+k1 = k1
+k2 = k2
+k3 = k3
+k4 = k4
+k5 = stim_frequency
+k6 = dNFAT
+k7 = pNFAT
+k8 = tNFAT
+k9 = stim_duration
+k10 = ModelValue_17
+k11 = ModelValue_13
+k12 = Jurkat_cell

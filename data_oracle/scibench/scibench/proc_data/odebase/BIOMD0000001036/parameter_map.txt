@@ -1,0 +1,14 @@
+k1 = c
+k2 = mu2
+k3 = p1
+k4 = g1
+k5 = s1
+k6 = r2
+k7 = b
+k8 = a
+k9 = g2
+k10 = p2
+k11 = g3
+k12 = mu3
+k13 = s2
+k14 = Tumor_microenvironment

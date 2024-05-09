@@ -1,0 +1,6 @@
+k1 = Munr
+k2 = Mupcd
+k3 = Rrom
+k4 = ONLrom_0
+k5 = Murom
+k6 = Brain

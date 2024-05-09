@@ -1,0 +1,15 @@
+k1 = beta
+k2 = omega
+k3 = sigma
+k4 = gamma
+k5 = R_fixed
+k6 = Fraction_infected
+k7 = R_1
+k8 = R_2
+k9 = R_1_0
+k10 = R_2_0
+k11 = R_1_f
+k12 = R_2_f
+k13 = eta
+k14 = USA
+k15 = __cm_k15

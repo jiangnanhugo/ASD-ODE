@@ -14,12 +14,12 @@ from grammar.grammar import ContextFreeGrammar
 """Deep Symbolic Regression Training Loop
 
     ~ Parameters ~
-    - optimizer ('adam' or 'rmsprop'): optimizer for RNN
-    - entropy_coefficient (float): entropy coefficient for RNN
+    - optimizer ('adam' or 'rmsprop'): optimizer for expression decoder
+    - entropy_coefficient (float): entropy coefficient for expression decoder
     - risk_factor (float, >0, <1): we discard the bottom risk_factor quantile
-      when training the RNN
-    - sample_batch_size (int): batch size for training the RNN
-    - num_batches (int): number of batches (will stop early if found)
+      when training the expresion decoder
+    - sample_batch_size (int): number of sample to be drawn from the expression decoder
+    - num_batches (int): number of batches
     - verbose (bool): if true, will print updates during training process
 
     Returns: A list of four lists:
@@ -28,6 +28,8 @@ from grammar.grammar import ContextFreeGrammar
     [2] best_reward (float): best reward obtained
     [3] best_expression (Expression): best expression obtained
     """
+
+
 def learn(
         grammar_model: ContextFreeGrammar,
         expression_decoder: NeuralExpressionDecoder,
@@ -124,6 +126,5 @@ def learn(
             Epochs Required: {i + 1}
             Best Performance: {round(best_performance.item(), 3)}
             Best Expression: {best_expression}""")
-
 
     return epoch_best_rewards, epoch_best_expressions, best_performance, best_expression

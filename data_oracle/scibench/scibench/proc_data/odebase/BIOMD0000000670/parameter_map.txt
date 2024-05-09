@@ -1,0 +1,9 @@
+k1 = A
+k2 = N
+k3 = I
+k4 = K_l
+k5 = delta_l
+k6 = K_m
+k7 = xi
+k8 = S
+k9 = cell

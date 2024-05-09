@@ -1,0 +1,16 @@
+k1 = vin
+k2 = kout
+k3 = vM3
+k4 = k_CaA
+k5 = n
+k6 = k_CaI
+k7 = m
+k8 = kip3
+k9 = vM2
+k10 = k2
+k11 = kf
+k12 = vp
+k13 = kp
+k14 = kdeg
+k15 = compartment
+k16 = ER

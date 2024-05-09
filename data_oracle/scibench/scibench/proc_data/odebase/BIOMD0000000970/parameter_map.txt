@@ -1,0 +1,9 @@
+k1 = r_1
+k2 = r_2
+k3 = beta_1
+k4 = beta_2
+k5 = alpha
+k6 = gamma
+k7 = Wuhan
+k8 = Total_Population
+k9 = __cm_k9

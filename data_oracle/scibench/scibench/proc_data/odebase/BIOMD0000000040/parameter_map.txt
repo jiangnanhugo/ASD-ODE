@@ -1,0 +1,9 @@
+k1 = f
+k2 = BZ
+k3 = __lp_r2_k1
+k4 = __lp_r3_k2
+k5 = __lp_r4_k3
+k6 = __lp_r5_k4
+k7 = __lp_r6_k5
+k8 = BrO3
+k9 = HOBr

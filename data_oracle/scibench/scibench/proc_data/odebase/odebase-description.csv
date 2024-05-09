@@ -1,0 +1,248 @@
+BIOMD0000000004,"Goldbeter1991 - Min Mit Oscil Expl Inact",5,18
+BIOMD0000000008,Gardner1998 - Cell Cycle Goldbeter,5,24
+BIOMD0000000027,"Markevich2004 - MAPK double phosphorylation ordered Michaelis-Menton",5,11
+BIOMD0000000039,Marhl2000_CaOscillations,5,18
+BIOMD0000000040,Field1974_Oregonator,5,9
+BIOMD0000000043,Borghans1997 - Calcium Oscillation - Model 1,5,20
+BIOMD0000000100,Rozi2003_GlycogenPhosphorylase_Activation,5,34
+BIOMD0000000225,Westermark2003_Pancreatic_GlycOsc_basic,5,22
+BIOMD0000000275,Goldbeter2007_Somitogenesis_Switch,4,25
+BIOMD0000000289,Alexander2010_Tcell_Regulation_Sys1,5,17
+BIOMD0000000290,Alexander2010_Tcell_Regulation_Sys2,5,18
+BIOMD0000000295,Akman2008_Circadian_Clock_Model1,5,19
+BIOMD0000000306,Tyson2003_Activator_Inhibitor,5,15
+BIOMD0000000307,Tyson2003_Substrate_Depletion_Osc,5,13
+BIOMD0000000413,Band2012_DII-Venus_FullModel,5,12
+BIOMD0000000609,Reddyhoff2015 - Acetaminophen metabolism and toxicity,5,12
+BIOMD0000000629,Haffez2017 - RAR interaction with synthetic analogues,5,8
+BIOMD0000000662,Moore2004 - Chronic Myeloid Leukemic cells and T-lymphocyte interaction,5,15
+BIOMD0000000707,Revilla2003 - Controlling HIV infection using recombinant viruses,5,11
+BIOMD0000000708,Liu2017 - Dynamics of Avian Influenza with Logistic Growth,5,14
+BIOMD0000000709,Liu2017 - Dynamics of Avian Influenza with Allee Growth Effect,5,14
+BIOMD0000000715,Huo2017 - SEIS epidemic model with the impact of media,4,12
+BIOMD0000000721,Graham2013 - Role of osteocytes in targeted bone remodeling,5,26
+BIOMD0000000722,Bianchi2015 -Model for lymphangiogenesis in normal and diabetic wounds,5,34
+BIOMD0000000732,Kirschner1998_Immunotherapy_Tumour,5,17
+BIOMD0000000744,Hu2019 - Pancreatic cancer dynamics,5,24
+BIOMD0000000745,Jarrett2018 - trastuzumab-induced immune response in murine HER2+ breast cancer model,5,14
+BIOMD0000000766,Macnamara2015/1 - virotherapy full model,5,16
+BIOMD0000000768,Eftimie2010 - immunity to melanoma,5,24
+BIOMD0000000769,Eftimie2017/2 - interaction of Th and macrophage in melanoma,5,28
+BIOMD0000000796,Yang2012 - cancer growth with angiogenesis,5,28
+BIOMD0000000798,Sharp2019 - AML,5,15
+BIOMD0000000840,Caldwell2019 - The Vicodin abuse problem,5,11
+BIOMD0000000851,Ho2019 - Mathematical models of transmission dynamics and vaccine strategies in Hong Kong during the 2017-2018 winter influenza season (Simple),5,19
+BIOMD0000000868,"Simon2019 - NIK-dependent p100 processing into p52 Mass Action SBML 2v4",5,10
+BIOMD0000000869,"Simon2019 - NIK-dependent p100 processing into p52 and IkBd degradation Michaelis-Menten SBML 2v4",5,14
+BIOMD0000000886,Dubey2008 - Modeling the interaction between avascular cancerous cells and acquired immune response,5,19
+BIOMD0000000898,Jiao2018 - Feedback regulation in a stem cell model with acute myeloid leukaemia,5,23
+BIOMD0000000903,Solis-perez2019 - A fractional mathematical model of breast cancer competition model,5,29
+BIOMD0000000905,Dubey2007 - A mathematical model for the effect of toxicant on the immune system (with toxicant effect) Model2,5,16
+BIOMD0000000914,Parra_Guillen2013 - Mathematical model approach to describe tumour response in mice after vaccine administration_model1,5,11
+BIOMD0000000916,Kraan199_Kinetics of Cortisol Metabolism and Excretion.,5,7
+BIOMD0000000921,Khajanchi2017 - Uniform Persistence and Global Stability for a Brain Tumor and Immune System Interaction,5,25
+BIOMD0000000929,Li2016 - Model for pancreatic cancer patients receiving immunotherapy,5,40
+BIOMD0000000938,Gerard2013 - Model 3 - Embryonic-type eukaryotic Cell Cycle regulation based on negative feedback between Cdk/cyclin and APC and competitive inhibition between Cdk/cyclin and securin for polyubiquitylation_1,5,14
+BIOMD0000000945,Evans2004 - Cell based mathematical model of topotecan,5,16
+BIOMD0000000962,"Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan Hubei and China",4,73
+BIOMD0000000970,Hou2020 - SEIR model of COVID-19 transmission in Wuhan,5,9
+BIOMD0000000979,Malkov2020 - SEIRS model of COVID-19 transmission with reinfection,5,8
+BIOMD0000000980,Malkov2020 - SEIRS model of COVID-19 transmission with time-varying R values and reinfection,5,15
+BIOMD0000000984,Fang2020 - SEIR model of COVID-19 transmission considering government interventions in Wuhan,5,7
+BIOMD0000001014,Leon-Triana2021 - Competition between tumour cells and dual-target CAR T-cells,4,14
+BIOMD0000000006,Tyson1991 - Cell Cycle 2 var,4,7
+BIOMD0000000044,Borghans1997 - Calcium Oscillation - Model 2,4,23
+BIOMD0000000045,Borghans1997 - Calcium Oscillation - Model 3,4,23
+BIOMD0000000058,Bindschadler2001_coupled_Ca_oscillators,4,30
+BIOMD0000000060,Keizer1996_Ryanodine_receptor_adaptation,4,13
+BIOMD0000000062,Bhartiya2003_Tryptophan_operon,2,19
+BIOMD0000000092,Fuentes2005_ZymogenActivation,4,7
+BIOMD0000000113,Dupont1992_Ca_dpt_protein_phospho,4,21
+BIOMD0000000174,Del_Conte_Zerial2008_Rab5_Rab7_cut_out_switch,4,19
+BIOMD0000000224,Meyer1991_CalciumSpike_ICC,4,15
+BIOMD0000000233,Wilhelm2009_BistableReaction,4,7
+BIOMD0000000252,Hunziker2010_p53_StressSpecificResponse,4,10
+BIOMD0000000254,Bier2000_GlycolyticOscillation,4,8
+BIOMD0000000267,Lebeda2008 - BoNT paralysis (3 step model),4,10
+BIOMD0000000283,Chance1943_Peroxidase_ES_Kinetics,4,5
+BIOMD0000000309,Tyson2003_NegFB_Homeostasis,4,11
+BIOMD0000000310,Tyson2003_Mutual_Inhibition,4,13
+BIOMD0000000311,Tyson2003_Mutual_Activation,4,10
+BIOMD0000000322,Kim2011_Oscillator_SimpleI,4,15
+BIOMD0000000363,Lee2010_ThrombinActivation_OneForm_minimal,4,6
+BIOMD0000000435,deBack2012 - Lineage Specification in Pancreas Development,4,19
+BIOMD0000000459,Liebal2012 - B.subtilis post-transcriptional instability model,4,9
+BIOMD0000000460,Liebal2012 - B.subtilis sigB proteolysis model,4,9
+BIOMD0000000461,Liebal2012 - B.subtilis transcription inhibition model,4,8
+BIOMD0000000517,Smallbone2013 - Colon Crypt cycle - Version 3,4,21
+BIOMD0000000518,Smallbone2013 - Colon Crypt cycle - Version 2,4,21
+BIOMD0000000521,"Ribba2012 - Low-grade gliomas tumour growth inhibition model",4,12
+BIOMD0000000615,Kuznetsov2016(II) - α-syn aggregation kinetics in Parkinson's Disease,4,13
+BIOMD0000000616,Dunster2014 - WBC Interactions (Model1),4,9
+BIOMD0000000642,Mufudza2012 - Estrogen effect on the dynamics of breast cancer,4,20
+BIOMD0000000678,Tomida2003 - Calcium Oscillatory-induced translocation of nuclear factor of activated T cells,2,12
+BIOMD0000000679,Waugh2006 - Diabetic Wound Healing - Macrophage Dynamics,4,12
+BIOMD0000000680,Waugh2006 - Diabetic Wound Healing - TGF-B Dynamics,4,12
+BIOMD0000000683,Wodarz1999 CTL memory response HIV,4,13
+BIOMD0000000714,Reynolds2006 - Reduced model of the acute inflammatory response,4,26
+BIOMD0000000716,Lee2018 - Avian human bilinear incidence (BI) model,4,22
+BIOMD0000000717,Lee2018 - Avian human half-saturated incidence (HSI) model,4,22
+BIOMD0000000741,Eftimie2018 - Cancer and Immune biomarkers,4,29
+BIOMD0000000743,Gallaher2018 - Tumor–Immune dynamics in multiple myeloma,4,32
+BIOMD0000000746,Saad2017 - immune checkpoint and BCG in superficial bladder cancer,4,13
+BIOMD0000000748,Phan2017 - innate immune in oncolytic virotherapy,4,9
+BIOMD0000000756,Figueredo2013/3 - immunointeraction full model,4,21
+BIOMD0000000764,Malinzi2019 - chemovirotherapy,4,26
+BIOMD0000000765,Mager2005 - Quasi-equilibrium pharmacokinetic model for drugs exhibiting target-mediated drug disposition,4,15
+BIOMD0000000770,Eftimie2017/1 - interaction of Th and macrophage,4,17
+BIOMD0000000772,Wang2019 - A mathematical model of oncolytic virotherapy with time delay,4,10
+BIOMD0000000780,Wang2016/1 - oncolytic efficacy of M1 virus-SNTM model,4,16
+BIOMD0000000790,Alvarez2019 - A nonlinear mathematical model of cell-mediated immune response for tumor phenotypic heterogeneity,4,19
+BIOMD0000000797,Hu2018 - Dynamics of tumor-CD4+-cytokine-host cells interactions with treatments,4,20
+BIOMD0000000801,Sturrock2015 - glioma growth,4,18
+BIOMD0000000802,Hoffman2018- ADCC against cancer,4,12
+BIOMD0000000841,Dhawan2019 - Endogenous miRNA sponges mediate the generation of oscillatory dynamics for a non-coding RNA network,4,16
+BIOMD0000000847,Adams2019 - The regulatory role of shikimate in plant phenylalanine metabolism,4,18
+BIOMD0000000854,Gray2016 - The Akt switch model,4,11
+BIOMD0000000855,Cooper2015 - Modeling the effects of systemic mediators on the inflammatory phase of wound healing,4,40
+BIOMD0000000866,"Simon2019 - NIK-dependent p100 processing into p52 Michaelis-Menten SBML 2v4",4,8
+BIOMD0000000874,Perelson1993 - HIVinfection_CD4Tcells_ModelA,4,11
+BIOMD0000000875,Nelson2000- HIV-1 general model 1,4,9
+BIOMD0000000876,Aavani2019 - The role of CD4 T cells in immune system activation and viral reproduction in a simple model for HIV infection,4,12
+BIOMD0000000877,Ontah2019 - Dynamic analysis of a tumor treatment model using oncolytic virus and chemotherapy with saturated infection rate,4,13
+BIOMD0000000880,Trisilowati2018 - Optimal control of tumor-immune system interaction with treatment,4,15
+BIOMD0000000881,Kogan2013 - A mathematical model for the immunotherapeutic control of the TH1 TH2 imbalance in melanoma,4,28
+BIOMD0000000885,"Sumana2018 - Mathematical modeling of cancer-immune system considering the role of antibodies.",4,12
+BIOMD0000000887,Lim2014 - HTLV-I infection A dynamic struggle between viral persistence and host immunity,4,11
+BIOMD0000000888,"Unni2019 - Mathematical Modeling Analysis and Simulation of Tumor Dynamics with Drug Interventions",4,22
+BIOMD0000000892,Sandip2013 - Modeling the dynamics of hepatitis C virus with combined antiviral drug therapy: interferon and ribavirin.,4,12
+BIOMD0000000902,Wang2019 - A mathematical model of oncolytic virotherapy with time delay,4,10
+BIOMD0000000904,Admon2017 - Modelling tumor growth with immune response and drug using ordinary differential equations,4,20
+BIOMD0000000909,dePillis2003 - The dynamics of an optimally controlled tumor model: A case study,4,18
+BIOMD0000000920,"Jarrett2015 - Modelling the interaction between immune response bacterial dynamics and inflammatory damage",4,17
+BIOMD0000000930,Liu2017 - chemotherapy targeted model of tumor immune system,4,18
+BIOMD0000000932,Garde2020-Minimal model describing metabolic oscillations in Bacillus subtilis biofilms,4,8
+BIOMD0000000957,Roda2020 - SIR model of COVID-19 spread in Wuhan,4,5
+BIOMD0000001012,Leon-Triana2020 - CAR T-cell therapy in B-cell acute lymphoblastic leukaemia with contribution from immature B cells,4,11
+BIOMD0000001022,Creemers2021 - Tumor-immune dynamics and implications on immunotherapy responses,4,9
+BIOMD0000001025,Chaudhury2020 - EC50 expansion and killing mathematical model of CAR-T cell and tumour kinetics,3,15
+BIOMD0000001034,Bunimovich-Mendrazitsky2007 - Mathematical model of BCG immunotherapy,4,13
+BIOMD0000001035,Al-Tuwairqi2020 - Dynamics of cancer virotherapy with immune response,4,12
+BIOMD0000001041,Kimmel2021 - T cell competition and stochastic extinction events in CAR T cell therapy,4,11
+BIOMD0000000003,Goldbeter1991 - Min Mit Oscil,3,16
+BIOMD0000000024,Scheper1999_CircClock,3,10
+BIOMD0000000036,Tyson1999_CircClock,3,14
+BIOMD0000000054,Ataullahkhanov1996_Adenylate,3,11
+BIOMD0000000076,Cronwright2002_Glycerol_Synthesis,3,21
+BIOMD0000000079,Goldbeter2006_weightCycling,3,12
+BIOMD0000000156,Zatorsky2006_p53_Model5,3,8
+BIOMD0000000157,Zatorsky2006_p53_Model4,3,9
+BIOMD0000000159,Zatorsky2006_p53_Model1,3,8
+BIOMD0000000166,Zhu2007_TF_modulated_by_Calcium,3,24
+BIOMD0000000184,Lavrentovich2008_Ca_Oscillations,3,16
+BIOMD0000000191,Montañez2008_Arginine_catabolism,3,21
+BIOMD0000000258,Ortega2006 - bistability from double phosphorylation in signal transduction,3,11
+BIOMD0000000274,Rattanakul2003_BoneFormationModel,3,14
+BIOMD0000000278,Lemaire2004 - Role of RANK/RANKL/OPG pathway in bone remodelling process,3,31
+BIOMD0000000299,Leloup1999_CircadianRhythms_Neurospora,3,13
+BIOMD0000000312,Tyson2003_Perfect_Adaption,3,6
+BIOMD0000000319,Decroly1982_Enzymatic_Oscillator,3,8
+BIOMD0000000321,Grange2001 - L Dopa PK model,3,21
+BIOMD0000000323,Kim2011_Oscillator_SimpleIII,3,7
+BIOMD0000000329,Kummer2000 - Oscillations in Calcium Signalling,3,13
+BIOMD0000000341,Topp2000_BetaCellMass_Diabetes,3,10
+BIOMD0000000507,Gardner2000 - genetic toggle switch in E.coli,3,12
+BIOMD0000000519,Smallbone2013 - Colon Crypt cycle - Version 1,3,14
+BIOMD0000000520,Smallbone2013 - Colon Crypt cycle - Version 0,3,13
+BIOMD0000000538,Clarke2000 - One-hit model of cell death in neuronal degenerations,2,6
+BIOMD0000000548,Sneppen2009 - Modeling proteasome dynamics in Parkinson's disease,3,5
+BIOMD0000000552,Ehrenstein2000 - Positive-Feedback model for the loss of acetylcholine in Alzheimer's disease,2,5
+BIOMD0000000553,Ehrenstein1997 - The choline-leakage hypothesis in Alzheimer's disease,2,5
+BIOMD0000000657,Araujo2016 - Positive feedback in Cdk1 signalling keeps mitotic duration short and constant,3,22
+BIOMD0000000663,Wodarz2007 - HIV/CD4 T-cell interaction,3,8
+BIOMD0000000670,Owen1998 - tumour growth model,3,9
+BIOMD0000000713,Aston2018 - Dynamics of Hepatitis C Infection,3,9
+BIOMD0000000729,Goldbeter1996 - Cyclin Cdc2 kinase Oscillations,3,16
+BIOMD0000000733,Moore_2004_Mathematical model for CML and T cell interaction,3,13
+BIOMD0000000752,Wilkie2013r - immune-induced cancer dormancy and immune evasion-resistance,3,10
+BIOMD0000000754,Figueredo2013/2 - immunointeraction model with IL2,3,14
+BIOMD0000000763,Dritschel2018 - A mathematical model of cytotoxic and helper T cell interactions in a tumour microenvironment,3,9
+BIOMD0000000767,Macnamara2015/2 - virotherapy virus-free submodel,3,9
+BIOMD0000000771,Bajzer2008 - Modeling of cancer virotherapy with recombinant measles viruses,3,9
+BIOMD0000000773,Wodarz2018/2 - model with transit amplifying cells,3,22
+BIOMD0000000777,Chakrabarty2010 - A control theory approach to cancer remission aided by an optimal therapy,3,10
+BIOMD0000000778,"Wei2017 - tumor T cell and cytokine interaction",3,15
+BIOMD0000000781,Wang2016/2 - oncolytic efficacy of M1 virus-SNT model,3,11
+BIOMD0000000783,Dong2014 - Mathematical modeling on helper t cells in a tumor immune system,3,9
+BIOMD0000000800,Precup2012 - Mathematical modeling of cell dynamics after allogeneic bone marrow transplantation,3,11
+BIOMD0000000807,Fassoni2019 - Oncogenesis encompassing mutations and genetic instability,3,29
+BIOMD0000000813,Anderson2015 - Qualitative behavior of systems of tumor-CD4+-cytokine interactions with treatments,3,13
+BIOMD0000000821,Yazdjer2019 - reinforcement learning-based control of tumor growth under anti-angiogenic therapy,3,9
+BIOMD0000000831,Smith1980 - Hypothalamic Regulation,3,10
+BIOMD0000000838,Tsur2019 - Response of patients with melanoma to immune checkpoint blockade,3,9
+BIOMD0000000850,Jenner2019 - Oncolytic virotherapy for tumours following a Gompertz growth law,3,5
+BIOMD0000000878,Lenbury2001_InsulinKineticsModel_A,3,14
+BIOMD0000000879,Rodrigues2019 - A mathematical model for chemoimmunotherapy of chronic lymphocytic leukemia,3,19
+BIOMD0000000882,Munz2009 - Zombie SIZRC,3,6
+BIOMD0000000884,Cortes2019 - Optimality of the spontaneous prophage induction rate.,3,10
+BIOMD0000000890,Bhattacharya2014 - A mathematical model of the sterol regulatory element binding protein 2 cholesterol biosynthesis pathway,3,12
+BIOMD0000000891,Khajanchi2019 - Stability Analysis of a Mathematical Model forGlioma-Immune Interaction under OptimalTherapy,3,13
+BIOMD0000000893,GonzalezMiranda2013 - The effect of circadian oscillations on biochemical cell signaling by NF-κB,3,7
+BIOMD0000000894,Bose2011 - Noise-assisted interactions of tumor and immune cells,3,9
+BIOMD0000000906,Dubey2007 - A mathematical model for the effect of toxicant on the immune system (without toxicant effect) Model1,3,10
+BIOMD0000000910,Isaeva2008 - Modelling of Anti-Tumour Immune Response Immunocorrective Effect of Weak Centimetre Electromagnetic Waves,3,11
+BIOMD0000000911,Merola2008 - An insight into tumor dormancy equilibrium via the analysis of its domain of attraction,3,10
+BIOMD0000000912,Caravagna2010 - Tumour suppression by immune system,3,15
+BIOMD0000000922,Turner2015-Human/Mosquito ELP Model,3,10
+BIOMD0000000933,Kosiuk2015-Geometric analysis of the Goldbeter minimal model for the embryonic cell cycle,3,15
+BIOMD0000000937,"Ferrel2011 - Autonomous biochemical oscillator in regulation of CDK1 Plk1 and APC in Xenopus Laevis cell cycle",3,13
+BIOMD0000000944,Goldbeter2013-Oscillatory activity of cyclin-dependent kinases in the cell cycle,3,16
+BIOMD0000000982,Law2020 - SIR model of COVID-19 transmission in Malyasia with time-varying parameters,3,12
+BIOMD0000001010,Zhang2007 - Mechanism of DNA damage response (Model3),3,28
+BIOMD0000001011,Leon-Triana2020 - CAR T-cell therapy in B-cell acute lymphoblastic leukaemia,3,6
+BIOMD0000001023,Alharbi2020 - An ODE-based model of the dynamics of tumor cell progression and its effects on normal cell growth and immune system functionality,3,17
+BIOMD0000001030,Sontag2017 - Dynamic model of immune responses to antigen presentation by tumor or pathogen,3,7
+BIOMD0000001031,Al-Tuwairqi2020 - Dynamics of cancer virotherapy - Phase I treatment,3,5
+BIOMD0000001036,Cappuccio2007 - Tumor-immune system interactions and determination of the optimal therapeutic protocol in immunotherapy,3,14
+BIOMD0000001038,Alharbi2019 - Tumor-normal-vitamins model (TNVM) of the effects of vitamins on delaying the growth of tumor cells,3,11
+BIOMD0000000098,Goldbeter1990_CalciumSpike_CICR,2,15
+BIOMD0000000114,Somogyi1990_CaOscillations,2,11
+BIOMD0000000115,Somogyi1990_CaOscillations_SingleCaSpike,2,11
+BIOMD0000000154,Zatorsky2006_p53_Model3,2,8
+BIOMD0000000346,FitzHugh1961_NerveMembrane,2,5
+BIOMD0000000484,Cao2013 - Application of ABSIS method in birth-death process,2,4
+BIOMD0000000485,Cao2013 - Application of ABSIS method in the bistable Schlagl model,2,10
+BIOMD0000000486,Cao2013 - Application of ABSIS method in the reversible isomerization model,2,4
+BIOMD0000000549,Baker2013 - Cytokine Mediated Inflammation in Rheumatoid Arthritis - Age Dependent,2,9
+BIOMD0000000550,Baker2013 - Cytokine Mediated Inflammation in Rheumatoid Arthritis,2,6
+BIOMD0000000558,Cloutier2012 - Feedback motif for Parkinson's disease,2,9
+BIOMD0000000567,Morris2009 - α-Synuclein aggregation variable temperature and pH,2,6
+BIOMD0000000573,Aguilera 2014 - HIV latency. Interaction between HIV proteins and immune response,2,9
+BIOMD0000000728,Norel1990 - MPF and Cyclin Oscillations,2,5
+BIOMD0000000742,Garcia2018basic - cancer and immune cell count basic model,2,7
+BIOMD0000000751,Wilkie2013b - immune-induced cancer dormancy and immune evasion-basic,2,7
+BIOMD0000000753,Figueredo2013/1 - immunointeraction base model,2,9
+BIOMD0000000758,Babbs2012 - immunotherapy,2,5
+BIOMD0000000760,Feizabadi2011/1 - immunodeficiency in cancer core model,2,10
+BIOMD0000000762,Kuznetsov1994 - Nonlinear dynamics of immunogenic tumors,2,9
+BIOMD0000000774,Wodarz2018/1 - simple model,2,14
+BIOMD0000000776,Monro2008 - chemotherapy resistance,2,8
+BIOMD0000000782,Wang2016/3 - oncolytic efficacy of M1 virus-SN model,2,7
+BIOMD0000000785,Sotolongo-Costa2003 - Behavior of tumors under nonstationary therapy,2,4
+BIOMD0000000793,Chen2011/1 - bone marrow invasion absolute model,2,5
+BIOMD0000000795,Chen2011/2 - bone marrow invasion relative model,2,7
+BIOMD0000000799,Cucuianu2010 - A hypothetical-mathematical model of acute myeloid leukaemia pathogenesis,2,7
+BIOMD0000000815,Chrobak2011 - A mathematical model of induced cancer-adaptive immune system competition,2,7
+BIOMD0000000824,Lewkiewics2019 - effects of aging on naive T cell populations and diversity,2,8
+BIOMD0000000836,Radosavljevic2009_BioterroristAttack_PanicProtection_1,2,6
+BIOMD0000000897,Khajanchi2015 - The combined effects of optimal control in cancer remission,2,11
+BIOMD0000000919,Ledzewicz2013 - On optimal chemotherapy with a strongly targeted agent for a model of tumor immune system interactions with generalized logistic growth,2,10
+BIOMD0000000935,Ferrel2011 - Cdk1 and APC regulation in cell cycle in Xenopus laevis,2,9
+BIOMD0000001013,Leon-Triana2021 - Competition between tumour cells and single-target CAR T-cells,2,8
+BIOMD0000001024,Chaudhury2020 - Lotka-Volterra mathematical model of CAR-T cell and tumour kinetics,2,5
+BIOMD0000001037,Alharbi2019 - Tumor-normal model (TNM) of the development of tumor cells and their impact on normal cell dynamics,2,7
+BIOMD0000000414,Band2012_DII-Venus_ReducedModel,1,5
+BIOMD0000000425,"Tan2012 - Antibiotic Treatment Inoculum Effect",1,7
+BIOMD0000000561,Martins2013 - True and apparent inhibition of amyloid fribril formation,1,9
+BIOMD0000000614,Kamihira2000,1,4
+BIOMD0000000936,ferrel2011 - autonomous biochemical oscillator in cell cycle in Xenopus laevis v2,1,5

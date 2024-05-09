@@ -1,0 +1,4 @@
+x1 = As
+x2 = Bs
+x3 = Asyn
+x4 = Bsyn

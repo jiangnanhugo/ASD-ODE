@@ -1,0 +1,13 @@
+k1 = vs
+k2 = vm
+k3 = Km
+k4 = KI
+k5 = n
+k6 = Ft
+k7 = ks
+k8 = vd
+k9 = Kd
+k10 = k1
+k11 = k2
+k12 = Cytoplasm
+k13 = Nucleus

@@ -1,0 +1,4 @@
+x1 = CaI
+x2 = IP3
+x3 = CaS
+x4 = g

@@ -1,0 +1,11 @@
+k1 = kin
+k2 = koff
+k3 = alpha1
+k4 = alpha100
+k5 = beta1
+k6 = P_Perc
+k7 = Akt_Total
+k8 = Pp_Perc
+k9 = Pc_Perc
+k10 = compartment
+k11 = __cm_k11

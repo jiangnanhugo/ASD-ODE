@@ -1,0 +1,7 @@
+k1 = A
+k2 = B
+k3 = C
+k4 = epsilon
+k5 = delta
+k6 = compartment
+k7 = __lp_r5_k1

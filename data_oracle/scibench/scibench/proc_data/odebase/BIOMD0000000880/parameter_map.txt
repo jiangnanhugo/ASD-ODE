@@ -1,0 +1,15 @@
+k1 = a_1
+k2 = a_2
+k3 = a_3
+k4 = b_1__1
+k5 = b_2__1
+k6 = b_3__1
+k7 = e
+k8 = alpha_1
+k9 = alpha_2
+k10 = beta_1
+k11 = beta_2
+k12 = beta_3
+k13 = u_1
+k14 = u_2
+k15 = compartment

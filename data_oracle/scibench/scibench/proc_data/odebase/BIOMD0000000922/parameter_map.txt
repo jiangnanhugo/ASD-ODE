@@ -1,0 +1,10 @@
+k1 = Ar
+k2 = ep
+k3 = Te
+k4 = Me
+k5 = K0
+k6 = Tl
+k7 = Tp
+k8 = Mp
+k9 = Ml
+k10 = compartment

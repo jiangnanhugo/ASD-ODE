@@ -1,0 +1,5 @@
+k1 = f
+k2 = h
+k3 = m
+k4 = Whole_organism
+k5 = __lp_r4_k1

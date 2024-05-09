@@ -1,0 +1,7 @@
+k1 = parameter_1
+k2 = parameter_2
+k3 = parameter_3
+k4 = compartment_1
+k5 = __lp_r2_Shalve
+k6 = __lp_r3_Shalve
+k7 = __lp_r4_Shalve

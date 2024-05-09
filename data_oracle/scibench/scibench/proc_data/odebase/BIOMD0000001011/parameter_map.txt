@@ -1,0 +1,6 @@
+k1 = tao_B
+k2 = rho_L
+k3 = tao_C
+k4 = rho_C
+k5 = alpha
+k6 = compartment

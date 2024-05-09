@@ -1,0 +1,11 @@
+k1 = lamda
+k2 = k1
+k3 = P
+k4 = k2_pop1
+k5 = k3
+k6 = k4
+k7 = REG_50
+k8 = gamma
+k9 = Residual_error
+k10 = k2_pop2
+k11 = compartment

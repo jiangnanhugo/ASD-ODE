@@ -1,4 +1,4 @@
-"""Class for symbolic expression optimization."""
+"""optimize coefficients in the symbolic expression."""
 from itertools import chain
 import sys
 import numpy as np
@@ -8,6 +8,7 @@ from grammar.production_rules import concate_production_rules_to_expr
 from grammar.evaluation_metrics import all_metrics
 
 from pathos.multiprocessing import ProcessPool
+
 from grammar.minimize_coefficients import optimize
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)

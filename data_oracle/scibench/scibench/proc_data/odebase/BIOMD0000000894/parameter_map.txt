@@ -1,0 +1,9 @@
+k1 = t
+k2 = tau
+k3 = R
+k4 = Dx
+k5 = Dy
+k6 = Dz
+k7 = p
+k8 = mu
+k9 = compartment

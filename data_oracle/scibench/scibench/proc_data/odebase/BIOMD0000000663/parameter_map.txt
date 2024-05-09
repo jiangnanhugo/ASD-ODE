@@ -1,0 +1,8 @@
+k1 = r
+k2 = k
+k3 = d
+k4 = Beta
+k5 = a
+k6 = eta
+k7 = u
+k8 = compartment

@@ -1,0 +1,12 @@
+k1 = C_ast
+k2 = N
+k3 = beta
+k4 = lambda
+k5 = a
+k6 = k
+k7 = d_0
+k8 = a_L
+k9 = rho
+k10 = b
+k11 = e
+k12 = compartment

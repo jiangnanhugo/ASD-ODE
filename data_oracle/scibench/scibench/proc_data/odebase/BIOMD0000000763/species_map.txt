@@ -1,0 +1,3 @@
+x1 = N_Tumour
+x2 = T_H
+x3 = T_C

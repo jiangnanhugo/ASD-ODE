@@ -1,0 +1,10 @@
+k1 = rt
+k2 = kt
+k3 = b
+k4 = r0
+k5 = r1
+k6 = rn
+k7 = kn
+k8 = k
+k9 = t
+k10 = tumor_microenvironment

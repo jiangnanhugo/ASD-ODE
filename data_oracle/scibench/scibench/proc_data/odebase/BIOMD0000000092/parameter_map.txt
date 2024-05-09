@@ -1,0 +1,7 @@
+k1 = compartment
+k2 = __lp_r2_k1
+k3 = __lp_r3_k21
+k4 = __lp_r3_k22
+k5 = __lp_r4_k3
+k6 = __cm_k6
+k7 = __cm_k7

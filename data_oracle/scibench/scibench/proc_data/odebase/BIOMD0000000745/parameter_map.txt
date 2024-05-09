@@ -1,0 +1,14 @@
+k1 = g
+k2 = an
+k3 = av
+k4 = ut
+k5 = ui
+k6 = at
+k7 = ai
+k8 = uv
+k9 = beta
+k10 = un
+k11 = gamma
+k12 = delta
+k13 = rho
+k14 = tumor

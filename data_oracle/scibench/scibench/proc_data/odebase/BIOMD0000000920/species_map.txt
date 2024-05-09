@@ -1,0 +1,4 @@
+x1 = anti_inflammatory__A
+x2 = inflammation__I
+x3 = bacterial_infection__B
+x4 = pro_inflammatory__P

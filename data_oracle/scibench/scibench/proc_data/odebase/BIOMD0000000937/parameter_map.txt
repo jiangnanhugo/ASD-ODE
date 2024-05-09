@@ -1,0 +1,13 @@
+k1 = a1
+k2 = a2
+k3 = a3
+k4 = b1
+k5 = b2
+k6 = b3
+k7 = k1
+k8 = k2
+k9 = k3
+k10 = n1
+k11 = n2
+k12 = n3
+k13 = compartment

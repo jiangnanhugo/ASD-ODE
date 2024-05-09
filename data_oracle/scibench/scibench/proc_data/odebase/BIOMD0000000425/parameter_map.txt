@@ -1,0 +1,7 @@
+k1 = cell
+k2 = __lp_r2_alpha
+k3 = __lp_r3_kd
+k4 = __lp_r4_kappa
+k5 = __lp_r5_phi
+k6 = __lp_r5_delta
+k7 = __lp_r5_gamma

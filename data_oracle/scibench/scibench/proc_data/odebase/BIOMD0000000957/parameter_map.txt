@@ -1,0 +1,5 @@
+k1 = beta
+k2 = rho
+k3 = mu
+k4 = Wuhan
+k5 = __cm_k5

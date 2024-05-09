@@ -1,0 +1,9 @@
+k1 = rho
+k2 = xi
+k3 = h
+k4 = delta
+k5 = alpha
+k6 = p_s
+k7 = m_s
+k8 = Tumor
+k9 = Lymph_node

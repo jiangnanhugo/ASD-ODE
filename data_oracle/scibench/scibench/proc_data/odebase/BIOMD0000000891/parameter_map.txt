@@ -1,0 +1,13 @@
+k1 = r_1
+k2 = alpha_1
+k3 = alpha_2
+k4 = k_1
+k5 = r_2
+k6 = alpha_3
+k7 = k_2
+k8 = gamma_1
+k9 = k_3
+k10 = mu_1
+k11 = alpha_4
+k12 = k_4
+k13 = compartment

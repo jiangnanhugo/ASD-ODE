@@ -1,0 +1,11 @@
+k1 = d
+k2 = lamda
+k3 = beta
+k4 = a
+k5 = alpha
+k6 = b
+k7 = k
+k8 = u
+k9 = c
+k10 = q
+k11 = Plasma

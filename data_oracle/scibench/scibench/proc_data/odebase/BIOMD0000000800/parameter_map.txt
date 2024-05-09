@@ -1,0 +1,11 @@
+k1 = a
+k2 = A
+k3 = b
+k4 = B
+k5 = c
+k6 = C
+k7 = epsilon
+k8 = g
+k9 = G
+k10 = h
+k11 = compartment

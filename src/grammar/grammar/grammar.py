@@ -134,20 +134,21 @@ class ContextFreeGrammar(object):
                 true_trajectories,
                 self.input_var_Xs)
 
-        # evaluate the fitted expressions on new validation proc_data;
+        # evaluate the fitted expressions on new validation data;
         if mode =='default':
-            self.task.rand_draw_init_cond()
+            init_cond=self.task.rand_draw_init_cond()
         elif mode =='active_region':
-            self.task.active_region_init_cond()
+            regions=self.task.rand_draw_init_cond()
+            init_cond=self.sketch_phase_portraits(many_expressions,regions)
         elif mode == 'full':
-            self.task.full_init_cond()
+            init_cond=self.task.full_init_cond()
 
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
-                # print('\t', one_expression)
+
                 one_ode_str = [str(one_eq) for one_eq in one_expression.fitted_eq]
                 pred_trajectories = execute(one_ode_str,
-                                            self.task.init_cond, self.task.time_span, self.task.t_evals,
+                                            init_cond, self.task.time_span, self.task.t_evals,
                                             self.input_var_Xs)
                 if pred_trajectories is None or len(pred_trajectories) == 0:
                     one_expression.valid_loss = -np.inf
@@ -158,6 +159,39 @@ class ContextFreeGrammar(object):
                 one_expression.valid_loss = -np.inf
             print(one_expression)
         return many_expressions
+
+    def sketch_phase_portraits(self, list_of_odes, list_of_regions, num_init_cond_each_region=100):
+        """
+        given a set of ODEs expressions, determine some trajectories where most ODEs disagreee
+        # 1. randomly sample several sub-regions and sketch a phase portrait of each small region.
+        # 2. sample some initial condition in each region
+        # 3. given trajectories of shape [num_traj, time_step, num_vars] for one ode, flatten it
+        # 4. compute pairwise distance(F_i, F_j) \propto MSE(block_traj_i, block_traj_j).
+        # 4. the disagreement for region is sum over all pairwise distance
+        # 5 return the region with maximum disagreement
+        """
+        # 1. find_fixed_points
+        num_of_regions = len(list_of_regions)
+
+        disagree_score = -1
+        most_disagreed_init_conds = []
+        for i in range(num_of_regions):
+            init_conds = []
+            phase_portait_in_region = []
+            for one_ode in list_of_odes:
+                one_ode_phase_portait_ = []
+                for j in range(num_init_cond_each_region):
+                    temp_init_cond = self.task.draw_init_cond(list_of_regions[i])
+                    init_conds.append(temp_init_cond)
+                    one_short_traj = runge_kutta4(one_ode, temp_init_cond)
+                    one_ode_phase_portait_.append(one_short_traj)
+                phase_portait_in_region.append(one_ode_phase_portait_)
+            phase_portait_in_region = np.asarray(phase_portait_in_region).reshape(-1, len(list_of_odes), 1)
+            cur_disagreement_score = compute_disagreement_score(phase_portait_in_region, self.program.metric_name)
+            if cur_disagreement_score > disagree_score:
+                most_disagreed_init_conds.append(init_conds)
+                disagree_score = most_disagreed_init_conds
+        return most_disagreed_init_conds
 
     def update_hall_of_fame(self, one_fitted_expression: SymbolicDifferentialEquations):
         # the best equations should be placed at the top 1 slot of self.hall_of_fame
@@ -204,3 +238,24 @@ class ContextFreeGrammar(object):
             else:
                 print('        ', pr, end="\n")
         print("=" * 20)
+
+
+batch_based_metrics={
+     "neg_mse": lambda y, y_hat: -np.mean((y - y_hat) ** 2),
+    # (Protected) inverse mean squared error
+    "inv_mse": lambda y, y_hat: 1 / (1 + np.mean((y - y_hat) ** 2)),
+    # Pearson correlation coefficient       # Range: [0, 1]
+    "pearson": lambda y, y_hat: scipy.stats.pearsonr(y, y_hat)[0],
+    # Spearman correlation coefficient      # Range: [0, 1]
+    "spearman": lambda y, y_hat: scipy.stats.spearmanr(y, y_hat)[0],
+}
+
+def compute_disagreement_score(arrays, metric_function):
+    """
+    arrays shape: [time_step* num_vars, num_traj, 1]
+    """
+    abs_diffs = arrays - arrays.transpose(0, 2, 1)
+    # Sum the upper triangular part of the resulting matrix
+    result = np.apply_along_axis(metric_function, axis=0, arr=abs_diffs)
+    result = np.sum(result, axis=(1, 2))
+    return result

@@ -1,0 +1,11 @@
+k1 = tao_B
+k2 = rho_L
+k3 = tao_C
+k4 = rho_C
+k5 = alpha
+k6 = k
+k7 = tao_I
+k8 = beta
+k9 = C_50
+k10 = I_0
+k11 = Whole_organism_blood

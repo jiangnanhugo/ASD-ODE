@@ -1,0 +1,7 @@
+k1 = batch
+k2 = __lp_r2_k1
+k3 = __lp_r3_k2
+k4 = __lp_r4_k3
+k5 = __lp_r5_k4
+k6 = S
+k7 = P

@@ -1,0 +1,10 @@
+k1 = r_1
+k2 = k_1
+k3 = alpha_1
+k4 = d_1
+k5 = alpha_2
+k6 = r_2
+k7 = k_2
+k8 = mu_1
+k9 = mu_2
+k10 = compartment

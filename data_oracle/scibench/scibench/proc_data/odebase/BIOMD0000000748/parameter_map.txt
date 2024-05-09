@@ -1,0 +1,9 @@
+k1 = r
+k2 = a
+k3 = c
+k4 = d
+k5 = e
+k6 = m
+k7 = n
+k8 = b
+k9 = tumor_microenvironment

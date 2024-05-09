@@ -1,0 +1,13 @@
+k1 = d0
+k2 = b0
+k3 = c0
+k4 = m0
+k5 = a0
+k6 = d1
+k7 = b1
+k8 = c1
+k9 = m1
+k10 = a1
+k11 = d2
+k12 = T
+k13 = compartment

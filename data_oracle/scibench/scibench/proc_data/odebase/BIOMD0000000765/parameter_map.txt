@@ -1,0 +1,15 @@
+k1 = k_el
+k2 = V_c
+k3 = k_on
+k4 = K_D
+k5 = k_int
+k6 = k_deg
+k7 = k_syn
+k8 = k_off
+k9 = k_tp
+k10 = k_pt
+k11 = C_Concentration
+k12 = C_tot
+k13 = ModelValue_1
+k14 = Central
+k15 = Peripheral_Tissue

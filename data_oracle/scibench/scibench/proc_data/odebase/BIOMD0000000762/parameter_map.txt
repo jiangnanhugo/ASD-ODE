@@ -1,0 +1,9 @@
+k1 = p
+k2 = g
+k3 = m
+k4 = n
+k5 = d
+k6 = s
+k7 = a
+k8 = b
+k9 = compartment

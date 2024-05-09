@@ -1,0 +1,12 @@
+k1 = Pstar
+k2 = P0
+k3 = Q0
+k4 = lambda_P
+k5 = k_PQ
+k6 = k_Qp_P
+k7 = delta_QP
+k8 = gamma
+k9 = KDE
+k10 = K
+k11 = plama
+k12 = tissue

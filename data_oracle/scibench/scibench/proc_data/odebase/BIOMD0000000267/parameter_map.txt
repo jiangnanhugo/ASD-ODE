@@ -1,0 +1,10 @@
+k1 = tension
+k2 = extracellular
+k3 = endosome
+k4 = neuroplasm
+k5 = __lp_r2_kT
+k6 = __lp_r3_kL
+k7 = __lp_r4_kB
+k8 = __cm_k8
+k9 = __cm_k9
+k10 = __cm_k10

@@ -1,0 +1,12 @@
+k1 = s
+k2 = r
+k3 = k
+k4 = d1
+k5 = alpha
+k6 = d2
+k7 = beta
+k8 = d3
+k9 = nr
+k10 = c
+k11 = n1
+k12 = compartment

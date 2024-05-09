@@ -1,0 +1,17 @@
+k1 = tau
+k2 = mu2
+k3 = c
+k4 = p1
+k5 = g1
+k6 = s1
+k7 = r2
+k8 = a
+k9 = b
+k10 = g2
+k11 = mu3
+k12 = p2
+k13 = g3
+k14 = s2
+k15 = COMpartment
+k16 = Source
+k17 = Sink

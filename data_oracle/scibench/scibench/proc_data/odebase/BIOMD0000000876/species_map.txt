@@ -1,0 +1,4 @@
+x1 = C_Uninfected_CD4
+x2 = I_Infected_CD4
+x3 = F_CTL
+x4 = V_Virus

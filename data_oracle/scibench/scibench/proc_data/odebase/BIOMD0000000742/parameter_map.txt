@@ -1,0 +1,7 @@
+k1 = a
+k2 = b
+k3 = k
+k4 = s
+k5 = m
+k6 = d
+k7 = Tumor

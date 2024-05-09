@@ -1,0 +1,13 @@
+k1 = r
+k2 = K
+k3 = delta
+k4 = m
+k5 = beta
+k6 = k
+k7 = a
+k8 = alpha
+k9 = b
+k10 = mu
+k11 = I_1
+k12 = I_2
+k13 = compartment

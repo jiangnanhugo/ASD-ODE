@@ -1,0 +1,3 @@
+x1 = M_Tumor_Cells
+x2 = N_CTL
+x3 = Z_THL

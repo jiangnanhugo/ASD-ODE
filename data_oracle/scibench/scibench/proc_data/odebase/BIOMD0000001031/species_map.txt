@@ -1,0 +1,3 @@
+x1 = uninfected_cancer_cells
+x2 = infected_cancer_cells
+x3 = free_virus

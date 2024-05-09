@@ -1,0 +1,13 @@
+k1 = Sn
+k2 = n
+k3 = Kn
+k4 = De
+k5 = gamma_E
+k6 = An
+k7 = Ae
+k8 = Dn
+k9 = Rc
+k10 = Cmax
+k11 = Dc
+k12 = gamma_C
+k13 = TumorMicroenvr

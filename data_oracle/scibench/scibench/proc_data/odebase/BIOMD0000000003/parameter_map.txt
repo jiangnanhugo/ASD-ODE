@@ -1,0 +1,16 @@
+k1 = V1
+k2 = V3
+k3 = VM1
+k4 = VM3
+k5 = Kc
+k6 = cell
+k7 = __lp_r2_vi
+k8 = __lp_r3_kd
+k9 = __lp_r4_vd
+k10 = __lp_r4_Kd
+k11 = __lp_r5_K1
+k12 = __lp_r6_V2
+k13 = __lp_r6_K2
+k14 = __lp_r7_K3
+k15 = __lp_r8_K4
+k16 = __lp_r8_V4

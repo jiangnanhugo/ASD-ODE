@@ -1,0 +1,14 @@
+k1 = epsilon
+k2 = delta
+k3 = a1
+k4 = a2
+k5 = a3
+k6 = a4
+k7 = a5
+k8 = b1
+k9 = b2
+k10 = b3
+k11 = k1
+k12 = k2
+k13 = k3
+k14 = Compartment

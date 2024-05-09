@@ -1,0 +1,8 @@
+k1 = psi
+k2 = alpha_x
+k3 = alpha_xy
+k4 = beta_y
+k5 = alpha_y
+k6 = alpha_0
+k7 = Theta
+k8 = compartment

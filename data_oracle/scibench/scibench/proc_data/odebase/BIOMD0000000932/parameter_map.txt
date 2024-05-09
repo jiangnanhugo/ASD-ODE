@@ -1,0 +1,8 @@
+k1 = k1
+k2 = k2
+k3 = k3
+k4 = k4
+k5 = k5
+k6 = GE
+k7 = b
+k8 = compartment

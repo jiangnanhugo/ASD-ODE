@@ -1,0 +1,13 @@
+k1 = lamda
+k2 = d
+k3 = a
+k4 = log_y
+k5 = b
+k6 = log_w
+k7 = h
+k8 = beta
+k9 = p
+k10 = q
+k11 = c
+k12 = s
+k13 = COMpartment

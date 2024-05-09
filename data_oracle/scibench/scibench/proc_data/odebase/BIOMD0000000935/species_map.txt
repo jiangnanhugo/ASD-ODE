@@ -1,0 +1,2 @@
+x1 = CDK1_active
+x2 = APC_active

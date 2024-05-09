@@ -1,0 +1,11 @@
+k1 = lambda
+k2 = beta
+k3 = r
+k4 = tau
+k5 = gamma
+k6 = nu
+k7 = mu_1
+k8 = mu_2
+k9 = mu_3
+k10 = mu_4
+k11 = compartment

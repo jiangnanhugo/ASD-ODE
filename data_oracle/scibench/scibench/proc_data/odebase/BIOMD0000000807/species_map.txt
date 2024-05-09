@@ -1,0 +1,3 @@
+x1 = normalized_normal_cell_n
+x2 = normalized_pre_cancer_cell_g
+x3 = normalized_cancer_cell_a

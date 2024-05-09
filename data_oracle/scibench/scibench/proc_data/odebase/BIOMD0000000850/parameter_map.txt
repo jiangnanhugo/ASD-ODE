@@ -1,0 +1,5 @@
+k1 = m
+k2 = K
+k3 = xi
+k4 = gamma
+k5 = compartment

@@ -1,0 +1,12 @@
+k1 = r_1
+k2 = a
+k3 = h_1
+k4 = d_1
+k5 = c
+k6 = h_2
+k7 = e
+k8 = m_1
+k9 = m_2
+k10 = n
+k11 = b
+k12 = Whole_organism

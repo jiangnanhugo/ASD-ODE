@@ -1,0 +1,11 @@
+k1 = T
+k2 = M
+k3 = P
+k4 = J
+k5 = W2
+k6 = W3
+k7 = U
+k8 = W
+k9 = n
+k10 = k
+k11 = cell

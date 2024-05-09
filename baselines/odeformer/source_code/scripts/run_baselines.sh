@@ -35,7 +35,7 @@ do
     do
         for model in "${MODELS[@]}";
         do
-            echo "Evaluting ${model} with subsample_ratio=${subsample_ratio} and eval_noise_gamma=${eval_noise_gamma}"
+            echo "Evaluating ${model} with subsample_ratio=${subsample_ratio} and eval_noise_gamma=${eval_noise_gamma}"
             python run_baselines.py \
                 --baseline_model="${model}" \
                 --subsample_ratio="${subsample_ratio}" \

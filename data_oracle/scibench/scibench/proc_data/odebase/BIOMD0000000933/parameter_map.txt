@@ -1,0 +1,15 @@
+k1 = kd
+k2 = vi
+k3 = Kc
+k4 = Kd
+k5 = VM1
+k6 = V2
+k7 = VM3
+k8 = V4
+k9 = vd
+k10 = kj
+k11 = j
+k12 = V1C
+k13 = V3M
+k14 = epislon
+k15 = compartment

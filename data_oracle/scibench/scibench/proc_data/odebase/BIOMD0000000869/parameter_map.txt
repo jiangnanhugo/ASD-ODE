@@ -1,0 +1,14 @@
+k1 = p52_uM
+k2 = IkBd_uM
+k3 = compartment
+k4 = __lp_r2_k1
+k5 = __lp_r3_Km
+k6 = __lp_r3_kcat
+k7 = __lp_r4_k1
+k8 = __lp_r5_k1
+k9 = __lp_r6_k1
+k10 = __lp_r6_k2
+k11 = __lp_r7_k1
+k12 = __lp_r8_Km
+k13 = __lp_r8_kcat
+k14 = p100t

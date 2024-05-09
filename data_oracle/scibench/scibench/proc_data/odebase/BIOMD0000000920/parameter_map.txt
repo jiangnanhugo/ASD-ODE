@@ -1,0 +1,17 @@
+k1 = alpha_1
+k2 = rho_1
+k3 = beta_1
+k4 = mu_1
+k5 = K_B
+k6 = alpha_2
+k7 = beta_2
+k8 = mu_2
+k9 = alpha_3
+k10 = beta_3
+k11 = rho_2
+k12 = mu_3
+k13 = g
+k14 = alpha_4
+k15 = beta_4
+k16 = gamma
+k17 = BALB_c_Mouse

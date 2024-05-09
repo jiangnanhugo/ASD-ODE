@@ -1,0 +1,10 @@
+k1 = r
+k2 = k
+k3 = b
+k4 = tau
+k5 = a
+k6 = p
+k7 = c
+k8 = d
+k9 = n
+k10 = compartment

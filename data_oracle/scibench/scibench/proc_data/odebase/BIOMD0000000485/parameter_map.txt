@@ -1,0 +1,10 @@
+k1 = k1
+k2 = k2
+k3 = k3
+k4 = k4
+k5 = A
+k6 = B
+k7 = V
+k8 = value
+k9 = default
+k10 = __cm_k10

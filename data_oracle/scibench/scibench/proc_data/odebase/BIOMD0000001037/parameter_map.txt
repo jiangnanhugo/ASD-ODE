@@ -1,0 +1,7 @@
+k1 = r
+k2 = beta1
+k3 = gamma
+k4 = alpha1
+k5 = alpha2
+k6 = beta2
+k7 = Whole_organism

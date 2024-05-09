@@ -1,0 +1,13 @@
+k1 = nA
+k2 = k1
+k3 = k2
+k4 = qA
+k5 = QBs
+k6 = QBsyn
+k7 = TAh1
+k8 = TBh1
+k9 = Vs
+k10 = Vsyn
+k11 = t1
+k12 = t2
+k13 = default_compartment

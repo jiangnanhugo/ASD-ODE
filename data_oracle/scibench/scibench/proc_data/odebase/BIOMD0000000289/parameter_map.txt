@@ -1,0 +1,17 @@
+k1 = v
+k2 = f
+k3 = gamma
+k4 = beta
+k5 = pi1
+k6 = lambdaE
+k7 = muA
+k8 = muR
+k9 = muE
+k10 = muG
+k11 = b1
+k12 = sigma1
+k13 = mA
+k14 = mG
+k15 = R0
+k16 = body
+k17 = A_im

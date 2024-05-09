@@ -1,0 +1,5 @@
+k1 = p1_star
+k2 = p2
+k3 = lambda_star
+k4 = qj_star
+k5 = cell

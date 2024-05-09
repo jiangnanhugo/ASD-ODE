@@ -1,0 +1,9 @@
+k1 = alpha
+k2 = beta
+k3 = delta_1
+k4 = omega_1
+k5 = sigma_2
+k6 = delta_2
+k7 = rho
+k8 = omega_2
+k9 = compartment

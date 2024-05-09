@@ -1,0 +1,9 @@
+k1 = vt
+k2 = Gat
+k3 = Tt
+k4 = Gmt
+k5 = alt
+k6 = Bat
+k7 = A
+k8 = t1
+k9 = default_compartment

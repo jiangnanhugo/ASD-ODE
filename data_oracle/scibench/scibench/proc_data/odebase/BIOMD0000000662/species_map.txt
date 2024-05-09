@@ -1,0 +1,5 @@
+x1 = CML
+x2 = T_cell_naive
+x3 = T_cell_effector
+x4 = Source
+x5 = Sink

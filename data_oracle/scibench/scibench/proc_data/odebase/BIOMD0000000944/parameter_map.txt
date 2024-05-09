@@ -1,0 +1,16 @@
+k1 = K1
+k2 = K2
+k3 = K3
+k4 = K4
+k5 = Kc
+k6 = Kd
+k7 = kd
+k8 = V2
+k9 = V4
+k10 = vs
+k11 = vd
+k12 = Vm1
+k13 = Vm3
+k14 = V1
+k15 = V3
+k16 = compartment

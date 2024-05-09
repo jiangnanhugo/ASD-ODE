@@ -1,0 +1,5 @@
+k1 = m
+k2 = gamma
+k3 = nu
+k4 = sigma
+k5 = Brain

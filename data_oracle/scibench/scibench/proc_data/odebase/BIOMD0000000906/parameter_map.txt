@@ -1,0 +1,10 @@
+k1 = beta
+k2 = gamma
+k3 = beta0
+k4 = mu
+k5 = a
+k6 = b
+k7 = n
+k8 = alpha
+k9 = alpha0
+k10 = compartment

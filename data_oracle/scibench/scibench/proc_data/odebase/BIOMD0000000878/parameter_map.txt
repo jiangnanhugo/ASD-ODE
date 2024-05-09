@@ -1,0 +1,14 @@
+k1 = time_environment
+k2 = r_1
+k3 = r_2
+k4 = c_1
+k5 = r_3
+k6 = r_4
+k7 = c_2
+k8 = r_5
+k9 = r_6
+k10 = r_7
+k11 = z_hat
+k12 = y_hat
+k13 = epsilon
+k14 = COMpartment

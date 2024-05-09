@@ -1,0 +1,5 @@
+k1 = rho
+k2 = k_E
+k3 = g
+k4 = d
+k5 = Whole_organism_blood

@@ -1,0 +1,5 @@
+x1 = Osteocytes__S
+x2 = Pre_Osteoblasts__P
+x3 = Osteoblasts__B
+x4 = Osteoclasts__C
+x5 = Bone_volume__z

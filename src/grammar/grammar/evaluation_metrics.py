@@ -1,6 +1,5 @@
 import numpy as np
 import scipy
-from functools import partial
 
 
 
@@ -28,3 +27,4 @@ all_metrics = {
     # Accuracy based on R2 value.
     "accuracy(r2)": lambda y, y_hat, var_y, tau: 1 - np.mean((y - y_hat) ** 2) / var_y >= tau,
 }
+

@@ -1,0 +1,9 @@
+k1 = compartment
+k2 = __lp_r2_v
+k3 = __lp_r3_Km
+k4 = __lp_r3_Vmax
+k5 = __lp_r4_k1
+k6 = __lp_r5_k1
+k7 = __lp_r6_v
+k8 = __lp_r7_k1
+k9 = __lp_r8_k1

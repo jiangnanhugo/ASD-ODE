@@ -1,0 +1,7 @@
+k1 = beta_o
+k2 = k
+k3 = gamma
+k4 = omega
+k5 = beta
+k6 = Wuhan
+k7 = __cm_k7

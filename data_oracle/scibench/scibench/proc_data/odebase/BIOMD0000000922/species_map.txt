@@ -1,0 +1,3 @@
+x1 = Population_of_Eggs
+x2 = Population_of_Larvae
+x3 = Population_of_Pupae

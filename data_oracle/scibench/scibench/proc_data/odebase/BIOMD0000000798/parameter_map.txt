@@ -1,0 +1,15 @@
+k1 = Z1
+k2 = Z2
+k3 = ps
+k4 = pa
+k5 = pl
+k6 = ds
+k7 = da
+k8 = dl
+k9 = ud
+k10 = ut
+k11 = k1
+k12 = k2
+k13 = a
+k14 = y
+k15 = bone_marrow

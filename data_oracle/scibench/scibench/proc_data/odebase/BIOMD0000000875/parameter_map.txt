@@ -1,0 +1,9 @@
+k1 = k
+k2 = delta
+k3 = N
+k4 = c
+k5 = np
+k6 = HIV
+k7 = lambda
+k8 = delta1
+k9 = plasma

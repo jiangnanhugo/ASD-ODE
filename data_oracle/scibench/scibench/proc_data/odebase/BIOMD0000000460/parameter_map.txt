@@ -1,0 +1,9 @@
+k1 = kbd
+k2 = kbs
+k3 = kbx
+k4 = kxd
+k5 = kxs
+k6 = kzd
+k7 = kzs
+k8 = compartment
+k9 = IPTG

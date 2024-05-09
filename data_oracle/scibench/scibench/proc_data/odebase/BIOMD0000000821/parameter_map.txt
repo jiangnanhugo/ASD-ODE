@@ -1,0 +1,9 @@
+k1 = lambda_1
+k2 = lambda_2
+k3 = lambda_3
+k4 = b
+k5 = d
+k6 = e
+k7 = u
+k8 = a
+k9 = compartment
