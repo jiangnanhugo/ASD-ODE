@@ -67,7 +67,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
     # print("time sequence", t_train)
     dstr.fit(t_train, x_train)
 
-    dstr.print()
+    dstr.print(n_predictions=10)
 
     pred_traj = dstr.predict(t_train, x_train[0])
     one_r2_score = r2_score(np.asarray(pred_traj).flatten(), np.asarray(x_train).flatten())
