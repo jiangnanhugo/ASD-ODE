@@ -30,15 +30,20 @@ class RegressTask(object):
         self.regions = self.dataX.rand_draw_regions(self.num_of_regions)
         return self.regions
 
-    def active_region_init_cond(self):
-        init_cond = self.dataX.randn(sample_size=self.num_init_conds).T
-        self.init_cond = init_cond.reshape([-1, self.n_vars])
-
     def full_init_cond(self):
         pass
 
-    def rand_draw_init_cond(self):
-        init_cond = self.dataX.randn(sample_size=self.num_init_conds).T
+    def draw_init_cond(self):
+        if self.init_cond is not None:
+            return self.init_cond
+        else:
+            self.init_cond = self.dataX.randn(sample_size=self.num_init_conds).T
+
+            return self.init_cond
+
+    def rand_draw_init_cond(self, one_region=None):
+
+        init_cond = self.dataX.randn(sample_size=self.num_init_conds, one_region=one_region).T
         self.init_cond = init_cond.reshape([-1, self.n_vars])
 
     def evaluate(self):
@@ -50,8 +55,3 @@ class RegressTask(object):
     def evaluate_all_losses(self, pred_trajectories):
         return self.data_query_oracle._evaluate_all_losses(self.init_cond, self.time_span, self.t_evals,
                                                            pred_trajectories)
-
-
-
-
-

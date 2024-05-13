@@ -12,16 +12,7 @@ import os
 import time
 
 # # set up ODE config
-# ode_param = None
-# x_id = 0
-#
-# # data generation config
-# freq = 10
-# n_sample = 100
-# noise_sigma = 0.0
-#
-# # set up algorithm config
-# alg = 'gp'
+
 
 def run(ode_name, ode_param, x_id, freq, n_sample, noise_ratio, alg, seed, n_seed):
     np.random.seed(999)

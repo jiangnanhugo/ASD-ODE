@@ -50,17 +50,18 @@ def learn(
     # First sampling done outside of loop for initial batch size if desired
     start = time.time()
     sequences, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
-
+    log_probabilities = torch.sum(log_probabilities, dim=-1)
+    entropies = torch.sum(entropies, dim=-1)
     for i in range(n_epochs):
         # Convert sequences into expressions that can be evaluated
         # Optimize constants of expressions using training data
         grammar_expressions = grammar_model.construct_expression(sequences)
 
-        # Update HOF
+        # Update the best set of expressions discovered
         for p in grammar_expressions:
             if not p.valid_loss:
                 continue
-            grammar_model.update_hall_of_fame(p)
+            grammar_model.update_topK_expressions(p)
 
         # Benchmark expressions (test dataset)
         # Compute rewards (or retrieve cached rewards)
@@ -121,6 +122,8 @@ def learn(
             Best Expression (Epoch): {best_epoch_expression}""")
         # Sample for next batch
         sequences, log_probabilities, entropies = expression_decoder.sample_sequence(sample_batch_size)
+        log_probabilities = torch.sum(log_probabilities, dim=-1)
+        entropies = torch.sum(entropies, dim=-1)
 
     print(f"""Time Elapsed: {round(float(time.time() - start), 2)}s
             Epochs Required: {i + 1}

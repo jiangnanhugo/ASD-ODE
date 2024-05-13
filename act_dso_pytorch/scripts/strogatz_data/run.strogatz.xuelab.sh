@@ -12,6 +12,7 @@ n_cores=10
 num_init_conds=5
 nvars=$1
 total_progs=$2
+set -x
 for ei in {1..${total_progs}}; do
 	eq_name=${nvars}_prog${ei}
 	echo "submit $eq_name"
@@ -22,6 +23,6 @@ for ei in {1..${total_progs}}; do
 		echo "create output dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	CUDA_VISIBLE_DEVICES="" $py3 $basepath/act_dso/main.py $basepath/act_dso/config/config_regression.json --equation_name $eq_name \
+	CUDA_VISIBLE_DEVICES="" $py3 $basepath/act_dso_pytorch/main.py $basepath/act_dso_pytorch/config_regression.json --equation_name $eq_name \
 		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale --n_cores $n_cores >$dump_dir/Eq_${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out
 done

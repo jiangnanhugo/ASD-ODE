@@ -1,9 +1,9 @@
 #!/bin/bash
 
-CONDA_BASE=$(conda info --base)
-source $CONDA_BASE/etc/profile.d/conda.sh
-conda activate odeformer39
-
+#CONDA_BASE=$(conda info --base)
+#source $CONDA_BASE/etc/profile.d/conda.sh
+#conda activate odeformer39
+set -x
 MODELS=(
     # "afp"
     # "feafp"
@@ -31,7 +31,7 @@ baseline_to_sympy="True"
 
 for subsample_ratio in "0.0" "0.25" "0.5";
 do
-    for eval_noise_gamma in "0.0" "0.001" "0.01" "0.02" "0.03" "0.04" "0.05"; #"0" "0.001" "0.01"; #
+    for eval_noise_gamma in "0.0"; # "0.001" "0.01" "0.02" "0.03" "0.04" "0.05";  #
     do
         for model in "${MODELS[@]}";
         do

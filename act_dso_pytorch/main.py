@@ -10,7 +10,6 @@ from grammar.grammar_regress_task import RegressTask
 from grammar.production_rules import get_production_rules, construct_non_terminal_nodes_and_start_symbols
 from grammar.grammar_program import grammarProgram
 from active_deep_symbolic_regression import ActDeepSymbolicRegression
-from utils import load_config
 
 threshold_values = {
     'neg_mse': {'reward_threshold': 1e-6},
@@ -32,12 +31,11 @@ threshold_values = {
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--max_len', default=10, help="max length of the sequence from the decoder")
-@click.option('--total_iterations', default=20, help="Number of learning iterations")
+@click.option('--total_iterations', default=100, help="Number of learning iterations")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
 @click.option('--use_gpu', default=-1, help="use GPU or cpu for training")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, noise_type, noise_scale, max_len,
          total_iterations, n_cores, use_gpu):
-
     data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
@@ -47,8 +45,8 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     function_set = data_query_oracle.get_operators_set()
 
     time_span = (0.0001, 2)
-    trajectory_time_steps = 100
-    max_opt_iter = 500
+    trajectory_time_steps = 4
+    max_opt_iter = 50
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
                        nvars,
@@ -79,7 +77,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
         start_symbols=start_symbols,
         non_terminal_nodes=non_terminal_nodes,
         max_length=max_len,
-        hof_size=10,
+        topK_size=10,
         reward_threhold=reward_thresh
     )
 
@@ -113,7 +111,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     #####
     end_time = time.time() - start
 
-    grammar_model.print_hofs(verbose=True)
+    grammar_model.print_topk_expressions(verbose=True)
     print("Final act_dso time {} mins".format(np.round(end_time / 60, 3)))
 
 

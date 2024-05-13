@@ -14,10 +14,8 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify, symbols, Symbol
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, shgo, dual_annealing, direct
-# from scipy.integrate import solve_ivp
 
-
-from grammar.odeint_debug.numpy_odeint import runge_kutta4
+from grammar.odeint.numpy_odeint import runge_kutta4
 
 
 def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_trajectories, input_var_Xs,
@@ -76,13 +74,17 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
         and use the resulting function directly within the objective function. 
         This way, the symbolic expression is only compiled once.
         """
-        expr_odes = [parse_expr(one_expr) for one_expr in candidate_ode_equations]
-        t = symbols('t')  # not used in this case
-        num_function = lambdify((t, *input_var_Xs, *c_symbols), expr_odes)
-
+        try:
+            expr_odes = [parse_expr(one_expr) for one_expr in candidate_ode_equations]
+            t = symbols('t')  # not used in this case
+            num_function = lambdify((t, *input_var_Xs, *c_symbols), expr_odes)
+        except Exception as e:
+            print(e)
+            return -np.inf, candidate_ode_equations, 0, np.inf
         def objective_function(coef):
             def derivative(t, state):
                 return num_function(t, *state, *coef)
+
             pred_trajectories = []
             for one_x_init in init_cond:
                 # one_solution = solve_ivp(derivative, t_span=time_span, t_evals=t_eval, y0=one_x_init, method='RK45')
@@ -90,13 +92,10 @@ def optimize(candidate_ode_equations: list, init_cond, time_span, t_eval, true_t
                 one_solution = runge_kutta4(derivative, t_eval, one_x_init)
                 pred_trajectories.append(one_solution)
             pred_trajectories = np.asarray(pred_trajectories)
-            # Compute some objective using sol.y (the solution) and desired output
-            # For example, you could use the mean squared error between sol.y and desired output
             var_ytrue = np.var(true_trajectories)
             objective_value = -loss_func(pred_trajectories, true_trajectories, var_ytrue)
             # print(coef, objective_value)
             return objective_value
-
 
         # do more than one experiment,
         x0 = np.random.rand(len(c_lst))

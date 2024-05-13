@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+from sklearn.metrics import r2_score
 
 all_metrics = {
     # Negative mean squared error
@@ -22,6 +23,7 @@ all_metrics = {
     # Spearman correlation coefficient      # Range: [0, 1]
     "spearman": lambda y, y_hat: scipy.stats.spearmanr(y, y_hat)[0],
     # Accuracy based on R2 value.
+    "r2_score": lambda y, y_hat: r2_score(y, y_hat, multioutput='variance_weighted'),
     "accuracy(r2)": lambda y, y_hat, var_y, tau: 1 - np.mean((y - y_hat) ** 2) / var_y >= tau,
 }
 

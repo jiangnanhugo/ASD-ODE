@@ -227,10 +227,10 @@ if __name__ == "__main__":
     )
     params = parser.parse_args()
     if params.dataset == "strogatz":
-        params.eval_on_file = False
-        params.eval_on_oscillators = False
-        params.eval_on_pmlb = True
-        params.path_dataset = "datasets/strogatz.pkl"
+        params.eval_on_file = True
+        params.eval_on_oscillators = True
+        params.eval_on_pmlb = False
+        params.path_dataset = "strogatz.pkl"
         dataset_name = params.dataset
     elif params.dataset == "oscillators":
         params.eval_on_pmlb = False

@@ -94,7 +94,7 @@ class grammarProgram(object):
             one_expr.train_loss = train_loss
             one_expr.fitted_eq = fitted_eq
             result.append(one_expr)
-            print('idx=', i, f"/{len(many_seqs_of_rules)}")
+            print('idx=', i, f"/ {len(many_seqs_of_rules)}")
 
             sys.stdout.flush()
         return result

@@ -1,8 +1,9 @@
 import numpy as np
 from sympy import Symbol
-import math
+import scipy
 from grammar.grammar_program import SymbolicDifferentialEquations
 from grammar.minimize_coefficients import execute
+from grammar.odeint.numpy_odeint import runge_kutta4
 
 
 class ContextFreeGrammar(object):
@@ -13,13 +14,12 @@ class ContextFreeGrammar(object):
 
     noise_std = 0.0
 
-
     OBS_DIM = 4  # action, parent, sibling, dangling
 
     def __init__(self, nvars,
                  production_rules, start_symbols, non_terminal_nodes,
                  max_length,
-                 hof_size, reward_threhold):
+                 topK_size, reward_threhold):
         # number of input variables
         self.nvars = nvars
         # input variable symbols
@@ -29,17 +29,18 @@ class ContextFreeGrammar(object):
         self.start_symbol = "||".join(["f" for _ in range(self.nvars)]) + '->' + start_symbols
         self.non_terminal_nodes = non_terminal_nodes
         self.max_length = max_length
-        self.hof_size = hof_size
+        self.topK_size = topK_size
         self.reward_threhold = reward_threhold
         self.best_predicted_equations = []
         self.allowed_grammar = np.ones(len(self.production_rules), dtype=bool)
-        # those rules has terminal symbol on the right-hand side
+        # those rules have terminal symbol on the right-hand side
         self.terminal_rules = [g for g in self.production_rules if
                                sum([nt in g[3:] for nt in self.non_terminal_nodes]) == 0]
         self.print_grammar_rules()
         print(f"rules with only terminal symbols: {self.terminal_rules}")
 
         # used for output vocabulary
+        # this is not used for pytorch version, only used for tensorflow version.
         self.n_action_inputs = self.output_rules_size + 1  # Library tokens + empty token
         self.n_parent_inputs = self.output_rules_size + 1  # - len(self.terminal_rules)  # Parent sub-lib tokens + empty token
         self.n_sibling_inputs = self.output_rules_size + 1  # Library tokens + empty token
@@ -104,7 +105,7 @@ class ContextFreeGrammar(object):
         print(filtered_rules)
         return filtered_rules
 
-    def construct_expression(self, many_seq_of_rules, mode='default'):
+    def construct_expression(self, many_seq_of_rules, mode='phase_portrait'):
         """
         mode
         - "default": validate on randomly chosen data
@@ -135,13 +136,13 @@ class ContextFreeGrammar(object):
                 self.input_var_Xs)
 
         # evaluate the fitted expressions on new validation data;
-        if mode =='default':
-            init_cond=self.task.rand_draw_init_cond()
-        elif mode =='active_region':
-            regions=self.task.rand_draw_init_cond()
-            init_cond=self.sketch_phase_portraits(many_expressions,regions)
+        if mode == 'default':
+            init_cond = self.task.draw_init_cond()
+        elif mode == 'phase_portrait':
+            regions = self.task.rand_draw_regions()
+            init_cond = self.sketch_phase_portraits(many_expressions, regions)
         elif mode == 'full':
-            init_cond=self.task.full_init_cond()
+            init_cond = self.task.full_init_cond()
 
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
@@ -183,7 +184,8 @@ class ContextFreeGrammar(object):
                 for j in range(num_init_cond_each_region):
                     temp_init_cond = self.task.draw_init_cond(list_of_regions[i])
                     init_conds.append(temp_init_cond)
-                    one_short_traj = runge_kutta4(one_ode, temp_init_cond)
+                    one_short_traj = runge_kutta4(one_ode, temp_init_cond, self.task.time_span, self.task.t_evals,
+                                                  self.input_var_Xs)
                     one_ode_phase_portait_.append(one_short_traj)
                 phase_portait_in_region.append(one_ode_phase_portait_)
             phase_portait_in_region = np.asarray(phase_portait_in_region).reshape(-1, len(list_of_odes), 1)
@@ -193,13 +195,13 @@ class ContextFreeGrammar(object):
                 disagree_score = most_disagreed_init_conds
         return most_disagreed_init_conds
 
-    def update_hall_of_fame(self, one_fitted_expression: SymbolicDifferentialEquations):
+    def update_topK_expressions(self, one_fitted_expression: SymbolicDifferentialEquations):
         # the best equations should be placed at the top 1 slot of self.hall_of_fame
         if one_fitted_expression.traversal.count(';') <= self.max_length:
             if not self.best_predicted_equations:
                 self.best_predicted_equations = [one_fitted_expression]
             elif one_fitted_expression.traversal not in [x.traversal for x in self.best_predicted_equations]:
-                if len(self.best_predicted_equations) < self.hof_size:
+                if len(self.best_predicted_equations) < self.topK_size:
                     self.best_predicted_equations.append(one_fitted_expression)
                     # sorting the list in descending order
                     self.best_predicted_equations = sorted(self.best_predicted_equations,
@@ -213,11 +215,11 @@ class ContextFreeGrammar(object):
                             key=lambda x: x.train_loss,
                             reverse=False)
 
-    def print_hofs(self, verbose=False):
+    def print_topk_expressions(self, verbose=False):
         self.task.rand_draw_init_cond()
         print(f"PRINT Best Equations")
         print("=" * 20)
-        for pr in self.best_predicted_equations[:self.hof_size]:
+        for pr in self.best_predicted_equations[:self.topK_size]:
             if verbose:
                 print('        ', pr, end="\n")
                 # do not print expressions with NaN or Infty value.
@@ -240,8 +242,8 @@ class ContextFreeGrammar(object):
         print("=" * 20)
 
 
-batch_based_metrics={
-     "neg_mse": lambda y, y_hat: -np.mean((y - y_hat) ** 2),
+batch_based_metrics = {
+    "neg_mse": lambda y, y_hat: -np.mean((y - y_hat) ** 2),
     # (Protected) inverse mean squared error
     "inv_mse": lambda y, y_hat: 1 / (1 + np.mean((y - y_hat) ** 2)),
     # Pearson correlation coefficient       # Range: [0, 1]
@@ -249,6 +251,7 @@ batch_based_metrics={
     # Spearman correlation coefficient      # Range: [0, 1]
     "spearman": lambda y, y_hat: scipy.stats.spearmanr(y, y_hat)[0],
 }
+
 
 def compute_disagreement_score(arrays, metric_function):
     """

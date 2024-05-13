@@ -77,7 +77,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
         start_symbols=start_symbols,
         non_terminal_nodes=nt_nodes,
         max_length=max_len,
-        hof_size=10,
+        topK_size=10,
         reward_threhold=reward_thresh
     )
 
@@ -98,7 +98,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     )
     end_time = time.time() - start
 
-    grammar_model.print_hofs(verbose=True)
+    grammar_model.print_topk_expressions(verbose=True)
 
     print("Final act_dso time {} mins".format(np.round(end_time / 60, 3)))
 

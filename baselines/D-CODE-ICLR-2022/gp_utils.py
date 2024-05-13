@@ -106,8 +106,8 @@ def parse_program_to_list(program):
     return symbol_list, var_list, coef_list
 
 
-pow2 = make_function(lambda x: x ** 2, 'pow2', 1)
-pow3 = make_function(lambda x: x ** 3, 'pow3', 1)
+pow2 = make_function(function=lambda x: x ** 2, name='pow2', arity=1)
+pow3 = make_function(function=lambda x: x ** 3, name='pow3', arity=1)
 
 
 def run_gp(X_train, y_train, ode, x_id=0, seed=0):

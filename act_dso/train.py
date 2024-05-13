@@ -123,7 +123,7 @@ def learn(grammar_model: ContextFreeGrammar,
         for p in grammar_expressions:
             if not p.valid_loss:
                 continue
-            grammar_model.update_hall_of_fame(p)
+            grammar_model.update_topK_expressions(p)
 
         # Store in variables the values for the whole batch (those variables will be modified below)
         r_max = np.max(r)
@@ -199,7 +199,7 @@ def learn(grammar_model: ContextFreeGrammar,
             print("Ending training after epoch {}/{}, current best R: {:.4f}".format(epoch + 1, n_epochs,
                                                                                      prev_r_best))
 
-        grammar_model.print_hofs(verbose=True)
+        grammar_model.print_topk_expressions(verbose=True)
 
     sys.stdout.flush()
     return
