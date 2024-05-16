@@ -23,11 +23,11 @@ pip install -e .
 
 ### Methods
 
-- `act_dso`: the proposed method.
+- `apps_ode_pytorch`: the proposed method.
 - `ProGED`: from https://github.com/brencej/ProGED.
 - `SPL`: symbolic physics learner, from https://github.com/isds-neu/SymbolicPhysicsLearner.
-- `E2E`: End to end transformer for symbolic regression, from https://github.com/facebookresearch/symbolicregression.
-- `gp_and_cvgp`: genetic programming  (GP) and VSR-GP algorithm, from https://github.com/jiangnanhugo/cvgp
+- `baseline/E2E`: End to end transformer for symbolic regression, from https://github.com/facebookresearch/symbolicregression.
+- `gp`: genetic programming  (GP), from https://github.com/jiangnanhugo/cvgp
 - `dso_classic`: the codebase for DSR, VPG, PQT and GPMeld, from https://github.com/dso-org/deep-symbolic-optimization
 - `odeformer`: ODEFormer: Symbolic Regression of Dynamical Systems with Transformers.
 

@@ -2,8 +2,8 @@ import tensorflow as tf
 import numpy as np
 
 from grammar.grammar import ContextFreeGrammar
-from act_dso.memory import Batch
-from act_dso.subroutines import parents_siblings
+from src.act_dso.memory import Batch
+from src.act_dso.subroutines import parents_siblings
 
 
 class NeuralExpressionDecoder(object):
