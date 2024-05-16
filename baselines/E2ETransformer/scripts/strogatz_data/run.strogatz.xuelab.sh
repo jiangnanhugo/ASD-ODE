@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
-basepath=/home/$USER/PycharmProjects/act_ode
-py3=/home/$USER/miniconda3/bin/python
-
+basepath=/home/$USER/data/act_ode
+py3=/home/$USER/miniconda3/envs/py310/bin/python3.10
+#
 type=Strogatz
 method=e2etransformer
 

@@ -12,15 +12,15 @@ total_progs=$2
 pretrain_basepath=$basepath/baselines/odeformer/
 set -x
 for ei in {1..${total_progs}}; do
-        eq_name=${nvars}_prog${ei}
-        echo "submit $eq_name"
+    eq_name=${nvars}_prog${ei}
+    echo "submit $eq_name"
 
-        dump_dir=$basepath/result/${type}/$(date +%F)
-        echo $dump_dir
-        if [ ! -d "$dump_dir" ]; then
-                echo "create output dir: $dump_dir"
-                mkdir -p $dump_dir
-        fi
-        $py3 $basepath/baselines/odeformer/baseline_odeformer.py --pretrain_basepath $pretrain_basepath --equation_name $eq_name \
-                --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.odeformer.out
-done
+    dump_dir=$basepath/result/${type}/$(date +%F)
+    echo $dump_dir
+    if [ ! -d "$dump_dir" ]; then
+        echo "create output dir: $dump_dir"
+        mkdir -p $dump_dir
+    fi
+    $py3 $basepath/baselines/odeformer/baseline_odeformer.py --pretrain_basepath $pretrain_basepath --equation_name $eq_name \
+        --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.odeformer.out
+    done
