@@ -1,4 +1,4 @@
-from evaluate import *
+from baselines.rest_baselines.evaluate import *
 from odeformer.baselines.ffx_wrapper import FFXWrapper
 from odeformer.baselines.pysr_wrapper import PySRWrapper
 #from odeformer.baselines.ellyn_wrapper import (

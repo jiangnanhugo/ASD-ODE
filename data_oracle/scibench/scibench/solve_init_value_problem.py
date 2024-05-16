@@ -1,27 +1,6 @@
 import numpy as np
 
 
-# def init_solve_ivp(method):
-#     if method == 'euler':
-#         solve_ivp = euler_method
-#     elif method == 'RK23':
-#         solve_ivp = runge_kutta2
-#     elif method == 'RK45':
-#         solve_ivp = runge_kutta4
-#     else:
-#         raise NotImplementedError("Method {} not implemented".format(method))
-#     return solve_ivp
-
-
-# def solve_ivp(solve_ivp, func, times, x_init: np.ndarray) -> np.ndarray:
-#     """
-#     func: the function of ODE.
-#     times: discrete time points.
-#     x_init: initial values of ODE.
-#     """
-#     return solve_ivp(func, times, x_init)
-
-
 def euler_method(func, times, x_init):
     """
     https://perso.crans.org/besson/publis/notebooks/Runge-Kutta_methods_for_ODE_integration_in_Python.html
@@ -46,9 +25,7 @@ def runge_kutta2(func, times, x_init):
 
 
 def runge_kutta4(func, times, x_init):
-    """
-    solve a batch of initial conditions
-    """
+
     n = len(times)
     y = np.zeros((n, len(x_init)))
     y[0] = x_init

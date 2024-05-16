@@ -9,7 +9,7 @@ from tqdm import tqdm
 import matplotlib
 import matplotlib.pyplot as plt
 
-from .strogatz_equations import equations
+from baselines.rest_baselines.strogatz_equations import equations
 
 
 config = {

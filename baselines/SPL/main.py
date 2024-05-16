@@ -1,16 +1,17 @@
-
 import time
 import argparse
 import os
+import sys
 
 from mcts_model import MCTS
-from production_rules import get_var_i_production_rules, get_production_rules
-from utils import create_uniform_generations, create_reward_threshold
+from production_rules import  get_production_rules
+from sympy import lambdify, Symbol
+
 import random
 import numpy as np
-from scibench.symbolic_data_generator import DataX
+from scibench.symbolic_data_generator import DataX, compute_time_derivative
 from scibench.symbolic_equation_evaluator import Equation_evaluator
-from regress_task import RegressTask
+from grammar.grammar_regress_task import RegressTask
 from program import Program
 
 
@@ -84,57 +85,66 @@ def run_mcts(
     mcts_model.print_hofs(-2, verbose=True)
 
 
-def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer,
-         production_rules_mode, memray_output_bin, track_memory=False):
-    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
-    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
-    nvar = data_query_oracle.get_nvars()
-    operators_set = data_query_oracle.get_operators_set()
+def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, optimizer, num_episodes):
+    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
+                                           noise_type, noise_scale,
+                                           metric_name=metric_name)
+    dataX = DataX(data_query_oracle.vars_range_and_types_to_json)
+    nvars = data_query_oracle.get_nvars()
+    operators_set=data_query_oracle.operators_set
+    input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
+    time_span = (0.0001, 10)
+    trajectory_time_steps = 100
 
-    regress_batchsize = 256
-    allowed_input_tokens = np.ones(nvar, dtype=np.int32)
-    MCTS.task = RegressTask(regress_batchsize,
-                            allowed_input_tokens,
-                            dataXgen,
-                            data_query_oracle)
-    MCTS.program = Program(nvar, optimizer)
+    t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
+    task = RegressTask(num_init_conds,
+                       nvars,
+                       dataX,
+                       data_query_oracle,
+                       time_span, t_eval)
+
+    task.rand_draw_init_cond()
+    true_trajectories = task.evaluate()
+    X_train, y_train = compute_time_derivative(true_trajectories, t_eval)
+
+    print("X_train.shape: {}, y_train.shape: {}".format(X_train.shape, y_train.shape))
+    sys.stdout.flush()
+    # data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    # dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    # nvar = data_query_oracle.get_nvars()
+    # operators_set = data_query_oracle.get_operators_set()
+    #
+    # regress_batchsize = 256
+    allowed_input_tokens = np.ones(nvars, dtype=np.int32)
+    MCTS.task = task
+    MCTS.program = Program(nvars, optimizer)
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
 
-    production_rules = get_production_rules(nvar, operators_set)
+    production_rules = get_production_rules(nvars, operators_set)
     print("The production rules are:", production_rules)
-    if track_memory:
-        if os.path.isfile(memray_output_bin):
-            os.remove(memray_output_bin)
-
-        start = time.time()
-        run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-        end_time = time.time() - start
-    else:
-        start = time.time()
-        run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-        end_time = time.time() - start
+    start = time.time()
+    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+    end_time = time.time() - start
     print("MCTS {} mins".format(np.round(end_time / 60, 3)))
-
-
-
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--equation_name", help="the filename of the true program.")
+    parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
+
+    parser.add_argument("--num_init_conds", type=int, default=5, help="batch of initial condition of dataset.")
     parser.add_argument('--optimizer',
                         nargs='?',
-                        choices=['BFGS', 'L-BFGS-B', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
+                        choices=['BFGS', 'L-BFGS-B', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo',
+                                 'direct'],
                         help='list servers, storage, or both (default: %(default)s)')
-    parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
+
     parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
     parser.add_argument("--num_per_episodes", type=int, default=30, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
-    parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
-    parser.add_argument("--memray_output_bin", type=str, help="memory profile")
-    parser.add_argument("--production_rule_mode", type=str, default='trigometric', help="production rules")
-    parser.add_argument("--track_memory", action="store_true",
-                        help="whether run memery track evaluation.")
+    parser.add_argument("--noise_scale", type=float, default=0.0,
+                        help="This parameter adds the standard deviation of the noise")
 
     args = parser.parse_args()
 
@@ -148,6 +158,6 @@ if __name__ == '__main__':
     print(args)
 
     # run Monte Carlo Tree Search
-    mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
-         args.production_rule_mode,
-         args.memray_output_bin, args.track_memory)
+    mcts(args.equation_name, args.metric_name, args.num_init_conds, args.noise_type, args.noise_scale, args.optimizer,
+         args.num_episodes
+         )

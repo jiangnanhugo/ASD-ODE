@@ -42,6 +42,9 @@ class Equation_evaluator(object):
         self.noises = construct_noise(self.noise_type)
 
     def evaluate(self, x_init_conds: list, time_span: tuple, t_evals: np.ndarray) -> np.ndarray:
+        """
+        compute the true trajectory for each x_init_cond
+        """
         true_trajectories = []
         for one_x_init in x_init_conds:
             # one_solution = solve_ivp(self.true_ode_equation, t_span=time_span, t_evals=t_evals, y0=one_x_init,
@@ -50,7 +53,8 @@ class Equation_evaluator(object):
             one_solution = runge_kutta4(self.true_ode_equation, t_evals, one_x_init)
             true_trajectories.append(one_solution)
         true_trajectories = np.asarray(true_trajectories)
-        return true_trajectories
+
+        return true_trajectories + self.noises(self.noise_scale, true_trajectories.shape)
 
     def _evaluate_loss(self, X_init_cond, time_span: tuple, t_evals: np.ndarray,
                        pred_trajectories: np.ndarray) -> float:
@@ -76,7 +80,8 @@ class Equation_evaluator(object):
         pred_trajectories = pred_trajectories
         true_trajectories = self.evaluate(X_init_cond, time_span, t_evals)
         loss_val_dict = {}
-        for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'inv_mse']:
+        for metric_name in ['neg_mse', 'inv_mse', 'neg_nmse', 'inv_nmse', 'neg_nrmse', 'inv_nrmse',
+                            'neg_rmse']:
             metric = all_metrics[metric_name]
             loss_val = metric(true_trajectories, pred_trajectories, np.var(true_trajectories))
             loss_val_dict[metric_name] = loss_val

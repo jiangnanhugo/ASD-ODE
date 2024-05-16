@@ -51,22 +51,13 @@ def print_expressions(pr, task, input_var_Xs):
 @click.option('--pretrained_model_filepath', type=str, help="pertrained pytorch model filepath")
 @click.option('--mode', type=str, default='cpu', help="cpu or cuda")
 def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pretrained_model_filepath, mode):
-    model = torch.load(pretrained_model_filepath, map_location=torch.device(mode))
-
-    est = symbolicregression.model.SymbolicTransformerRegressor(
-        model=model,
-        max_input_points=200,
-        n_trees_to_refine=100,
-        rescale=True
-    )
-
     data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
     dataX = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
     input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
-    time_span = (0.0001, 10)
+    time_span = (0.0001, 2)
     trajectory_time_steps = 100
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
@@ -83,6 +74,14 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
     print("X_train.shape: {}, y_train.shape: {}".format(X_train.shape, y_train.shape))
     sys.stdout.flush()
 
+    model = torch.load(pretrained_model_filepath, map_location=torch.device(mode))
+
+    est = symbolicregression.model.SymbolicTransformerRegressor(
+        model=model,
+        max_input_points=200,
+        n_trees_to_refine=100,
+        rescale=True
+    )
     topk = 5
     task.rand_draw_init_cond()
     print(f"PRINT Best Equations")

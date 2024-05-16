@@ -3,7 +3,7 @@ basepath=/home/$USER/data/act_ode
 py3=/home/$USER/miniconda3/envs/py310/bin/python3.10
 #
 type=Strogatz
-#datapath=$basepath/data/differential_equations/
+method=act_ode
 opt=Nelder-Mead
 noise_type=normal
 noise_scale=0.0
@@ -23,5 +23,5 @@ for ei in {1..${total_progs}}; do
 		mkdir -p $dump_dir
 	fi
 	CUDA_VISIBLE_DEVICES="" $py3 $basepath/act_dso/main.py $basepath/act_dso/config/config_regression.json --equation_name $eq_name \
-		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale --n_cores $n_cores >$dump_dir/Eq_${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out
+		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale --n_cores $n_cores >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.$method.out
 done

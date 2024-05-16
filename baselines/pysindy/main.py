@@ -1,5 +1,3 @@
-
-
 import numpy as np
 from scipy.integrate import solve_ivp
 from pysindy.utils import lorenz
@@ -8,27 +6,19 @@ import pysindy as ps
 
 # ignore user warnings
 import warnings
+
 warnings.filterwarnings("ignore", category=UserWarning)
 import torch
 import click
-import sympy as sp
-from scibench.symbolic_data_generator import DataX, compute_time_derivative
+from scibench.symbolic_data_generator import DataX
 import numpy as np
 from grammar.grammar_regress_task import RegressTask
 from scibench.symbolic_equation_evaluator import Equation_evaluator
-from sympy.parsing.sympy_parser import parse_expr
 from grammar.minimize_coefficients import execute
-from sympy import lambdify, Symbol
+from sympy import  Symbol
 import sys
-import warnings
-np.random.seed(1000)  # Seed for reproducibility
 
-t_train = np.linspace(0.0001, 10, 25600)
-x0 = np.random.rand(3)
-x_train = solve_ivp(lorenz, (t_train[0], t_train[-1]), x0, t_eval=t_train).y.T
-print("x_train.shape: ", x_train.shape)
-print(t_train)
-print(x_train)
+
 
 
 class SymbolicDifferentialEquations(object):
@@ -57,6 +47,7 @@ def print_expressions(pr, task, input_var_Xs):
         print(f"{metric_name} {dict_of_result[metric_name]}")
     print('-' * 30)
 
+
 @click.command()
 @click.option('--equation_name', default=None, type=str, help="Name of equation")
 @click.option('--metric_name', default='inv_nrmse', type=str, help="evaluation metrics")
@@ -73,7 +64,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
     nvars = data_query_oracle.get_nvars()
     input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
     time_span = (0.0001, 10)
-    trajectory_time_steps = 100
+    trajectory_time_steps = 1000
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
@@ -93,21 +84,28 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
     )
 
     model.fit(true_trajectories, t_eval)
+    predicted_eq = model.equations()
+    predicted_eq = [model_str.replace(' + ', '+')  for model_str in predicted_eq]
+    predicted_eq = [model_str.replace('+-', '-') for model_str in predicted_eq]
+    predicted_eq = [model_str.replace(' ', '*') for model_str in predicted_eq]
+    predicted_eq = [model_str.replace('^', '**') for model_str in predicted_eq]
+
+    for i in range(nvars):
+        predicted_eq = [model_str.replace(f'x{i}', f"X{i}")  for model_str in predicted_eq]
+
     model.print()
 
     sys.stdout.flush()
 
     # topk = 5
-    # task.rand_draw_init_cond()
-    # print(f"PRINT Best Equations")
-    # print("=" * 20)
-    # for _ in range(topk):
-    #     one_predict_ode = []
-    #
-    #     temp = SymbolicDifferentialEquations(one_predict_ode)
-    #
-    #     print_expressions(temp, task, input_var_Xs)
-    # print("=" * 20)
+    task.rand_draw_init_cond()
+    print(f"PRINT Best Equations")
+    print("=" * 20)
+
+    temp = SymbolicDifferentialEquations(predicted_eq)
+    print(temp)
+    print_expressions(temp, task, input_var_Xs)
+    print("=" * 20)
 
 
 if __name__ == "__main__":

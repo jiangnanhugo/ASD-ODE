@@ -5,6 +5,7 @@ py3=/home/$USER/workspace/miniconda3/envs/py310/bin/python
 
 type=Strogatz
 opt=Nelder-Mead
+method=act_ode
 noise_type=normal
 noise_scale=0.0
 metric_name=inv_mse
@@ -42,7 +43,7 @@ do
 hostname
 
 $py3 $basepath/act_dso/main.py $basepath/act_dso/config/config_regression.json --equation_name $eq_name \
-		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out
+		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.$method.out
 
 EOT
 done

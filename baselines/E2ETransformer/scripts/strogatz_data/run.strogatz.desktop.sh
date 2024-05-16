@@ -22,6 +22,6 @@ for ei in {1..${total_progs}}; do
 		echo "create output dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	CUDA_VISIBLE_DEVICES="" $py3 $basepath/act_dso/main.py --equation_name $eq_name --pretrained_model_filepath $basepath/baselines/E2ETransformer/model.pt --mode cuda \
-		--metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/Eq_${eq_name}.noise_${noise_type}${noise_scale}.$method.out
+	$py3 $basepath/baselines/E2ETransformer/main.py --equation_name $eq_name --pretrained_model_filepath $basepath/baselines/E2ETransformer/model.pt --mode cuda \
+		--metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.$method.out
 done

@@ -7,7 +7,6 @@
 
 import json
 import random
-import argparse
 import numpy as np
 import torch
 import os
@@ -21,8 +20,8 @@ from odeformer.utils import bool_flag, initialize_exp
 from odeformer.model import check_model_params, build_modules
 from odeformer.envs import build_env
 from odeformer.trainer import Trainer
-from evaluate import Evaluator, setup_odeformer
-from parsers import get_parser
+from baselines.rest_baselines.evaluate import Evaluator, setup_odeformer
+from baselines.rest_baselines.parsers import get_parser
 import setproctitle
 
 np.seterr(all="raise")

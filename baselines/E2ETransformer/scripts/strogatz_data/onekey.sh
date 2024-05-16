@@ -1,2 +1,2 @@
-./run.strogatz.xuelab.sh vars1 23
-./run.strogatz.xuelab.sh vars2 28
+./run.strogatz.desktop.sh vars1 23
+./run.strogatz.desktop.sh vars2 28
