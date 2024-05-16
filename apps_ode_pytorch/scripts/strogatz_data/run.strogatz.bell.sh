@@ -4,6 +4,7 @@ basepath=/home/$USER/data/act_ode
 py3=/home/$USER/workspace/miniconda3/envs/py310/bin/python
 
 type=Strogatz
+method=apps_ode
 opt=Nelder-Mead
 noise_type=normal
 noise_scale=0.0
@@ -29,12 +30,12 @@ do
 		mkdir -p $dump_dir
 	fi
 	total_cores=$((n_cores+1))
-  echo "output dir: $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out"
+  echo "output dir: $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.$method.out"
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=${total_cores} <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="ODE-${eq_name}"
-#SBATCH --output=$log_dir/${eq_name}.noise_${noise_type}_${noise_scale}.opt$opt.act_dso.out
+#SBATCH --job-name="APPS-${eq_name}"
+#SBATCH --output=$log_dir/${eq_name}.noise_${noise_type}_${noise_scale}.opt$opt.$method.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
 #SBATCH --mem=8GB
@@ -42,7 +43,7 @@ do
 hostname
 
 $py3 $basepath/apps_ode_pytorch/main.py $basepath/apps_ode_pytorch/config_regression.json --equation_name $eq_name \
-		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.act_dso.out
+		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale  --n_cores $n_cores  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt$opt.$method.out
 
 EOT
 done
