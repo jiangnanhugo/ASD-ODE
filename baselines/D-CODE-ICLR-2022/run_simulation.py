@@ -11,6 +11,7 @@ import pickle
 import os
 import time
 
+
 # # set up ODE config
 
 
@@ -57,20 +58,13 @@ def run(ode_name, ode_param, x_id, freq, n_sample, noise_ratio, alg, seed, n_see
     if not os.path.isdir(path_base):
         os.makedirs(path_base)
 
-    for s in range(seed, seed+n_seed):
+    for s in range(seed, seed + n_seed):
         print(' ')
         print('Running with seed {}'.format(s))
-        if x_id == 0:
-            path = path_base + 'grad_seed_{}.pkl'.format(s)
-        else:
-            path = path_base + 'grad_x_{}_seed_{}.pkl'.format(x_id, s)
-
-        if os.path.isfile(path):
-            print('Skipping seed {}'.format(s))
-            continue
         start = time.time()
+        print("X_train, y_train", X_train.shape, y_train.shape)
         f_hat, est_gp = run_gp(X_train, y_train, ode, x_id, s)
-        print(f_hat)
+        print("best predicted expression:", f_hat)
         f_true = ode.get_expression()[x_id]
         if not isinstance(f_true, tuple):
             correct = sympy.simplify(f_hat - f_true) == 0
@@ -79,22 +73,19 @@ def run(ode_name, ode_param, x_id, freq, n_sample, noise_ratio, alg, seed, n_see
             correct = max(correct_list) == 1
 
         end = time.time()
-
-        with open(path, 'wb') as f:
-            pickle.dump({
-                'model': est_gp._program,
-                'X_train': X_train,
-                'y_train': y_train,
-                'seed': s,
-                'correct': correct,
-                'f_hat': f_hat,
-                'ode': ode,
-                'noise_ratio': noise_ratio,
-                'noise_sigma': noise_sigma,
-                'dg': dg,
-                'time': end-start,
-            }, f)
-
+        jsoned = {
+            'model': est_gp._program,
+            'X_train': X_train,
+            'y_train': y_train,
+            'seed': s,
+            'correct': correct,
+            'f_hat': f_hat,
+            'ode': ode,
+            'noise_ratio': noise_ratio,
+            'noise_sigma': noise_sigma,
+            'dg': dg,
+            'time': end - start,
+        }
         print(f_hat)
         print(correct)
 
@@ -122,4 +113,5 @@ if __name__ == '__main__':
         freq = int(args.freq)
     else:
         freq = args.freq
-    run(args.ode_name, param, args.x_id, freq, args.n_sample, args.noise_sigma, args.alg, seed=args.seed, n_seed=args.n_seed)
+    run(args.ode_name, param, args.x_id, freq, args.n_sample, args.noise_sigma, args.alg, seed=args.seed,
+        n_seed=args.n_seed)

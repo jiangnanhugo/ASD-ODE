@@ -1,6 +1,6 @@
 
 ################################  Gompertz ODE Noise ################################
-
+set -x
 mkdir -p results/GompertzODE
 mkdir -p results_vi/GompertzODE
 mkdir -p results_spline/GompertzODE

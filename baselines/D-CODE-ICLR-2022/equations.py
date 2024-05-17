@@ -3,19 +3,6 @@ import scipy.integrate
 import sympy
 import abc
 
-# X0 = sympy.Symbol('X0', positive=True)
-# X1 = sympy.Symbol('X1', positive=True)
-# X2 = sympy.Symbol('X2', positive=True)
-# X3 = sympy.Symbol('X3', positive=True)
-# C = sympy.Symbol('C', positive=True)
-#
-# VarDict = {
-#     'X0': X0,
-#     'X1': X1,
-#     'X2': X2,
-#     'X3': X3,
-#     'C': C,
-# }
 
 def get_ode(ode_name, param):
     if ode_name == 'SineWave':

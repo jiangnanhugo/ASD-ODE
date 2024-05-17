@@ -18,7 +18,7 @@ def get_eq_obj(key):
 class KnownEquation(object):
     _eq_name = None
     _operator_set = ['add', 'sub', 'mul', 'div', 'inv', 'pow', 'sin', 'cos', 'exp', 'log', 'const']
-    simulated_exec = False
+
 
     def __init__(self, num_vars, vars_range_and_types):
         self.num_vars = num_vars

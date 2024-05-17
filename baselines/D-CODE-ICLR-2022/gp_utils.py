@@ -112,7 +112,7 @@ pow3 = make_function(function=lambda x: x ** 3, name='pow3', arity=1)
 
 def run_gp(X_train, y_train, ode, x_id=0, seed=0):
     config = get_config(ode, x_id)
-
+    print("config:", config)
     est_gp = SymbolicRegressor(random_state=seed, **config)
     est_gp.fit(X_train, y_train)
     print(est_gp._program)
@@ -122,10 +122,7 @@ def run_gp(X_train, y_train, ode, x_id=0, seed=0):
         a = gp_to_pysym_with_coef(est_gp, ode, tol=0.05, expand=True)
     else:
         a = gp_to_pysym_with_coef(est_gp, ode)
-    # try:
 
-    # except Exception:
-    #     a = None
     return a, est_gp
 
 

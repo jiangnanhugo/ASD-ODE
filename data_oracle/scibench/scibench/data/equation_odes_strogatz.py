@@ -1,6 +1,6 @@
 import numpy as np
 from scibench.data.base import KnownEquation, register_eq_class
-from scibench.symbolic_data_generator import LogUniformSampling
+from scibench.symbolic_data_generator import LogUniformSampling, UniformSampling
 
 
 @register_eq_class
@@ -377,12 +377,12 @@ class STROGATZ_P_104(KnownEquation):
 @register_eq_class
 class STROGATZ_P_126(KnownEquation):
     _eq_name = 'vars2_prog1'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Harmonic oscillator without damping"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[1]', '-2.1*x[0]']
@@ -394,12 +394,12 @@ class STROGATZ_P_126(KnownEquation):
 @register_eq_class
 class STROGATZ_P_144(KnownEquation):
     _eq_name = 'vars2_prog2'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Harmonic oscillator with damping"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[1]', '-4.5*x[0] - 0.43*x[1]']
@@ -411,7 +411,7 @@ class STROGATZ_P_144(KnownEquation):
 @register_eq_class
 class STROGATZ_P_157(KnownEquation):
     _eq_name = 'vars2_prog3'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Lotka-Volterra competition model (Strogatz version with sheeps and rabbits)"
 
     def __init__(self):
@@ -428,12 +428,12 @@ class STROGATZ_P_157(KnownEquation):
 @register_eq_class
 class LOTKA_VOLTERRA(KnownEquation):
     _eq_name = 'vars2_prog4'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Lotka-Volterra simple (as on Wikipedia)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[0]*(1.84 - 1.45*x[1])', 'x[1]*(1.62*x[0] - 3.0)']
@@ -449,8 +449,8 @@ class STROGATZ_P_169(KnownEquation):
     _description = "Pendulum without friction"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[1]', '-0.9*np.sin(x[0])']
@@ -462,12 +462,12 @@ class STROGATZ_P_169(KnownEquation):
 @register_eq_class
 class STROGATZ_P_181(KnownEquation):
     _eq_name = 'vars2_prog6'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Dipole fixed point"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [LogUniformSampling((0.001, 10.0), only_positive=True),
+                                     UniformSampling((-3, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['0.65*x[0]*x[1]', '-x[0]**2 + x[1]**2']
@@ -479,12 +479,12 @@ class STROGATZ_P_181(KnownEquation):
 @register_eq_class
 class STROGATZ_P_187(KnownEquation):
     _eq_name = 'vars2_prog7'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "RNA molecules catalyzing each others replication"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 0.6), only_positive=True),
+                                     UniformSampling((1e-2, 0.6), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[0]*x[1]*(1 - 1.61*x[0])', 'x[0]*x[1]*(1 - 1.61*x[1])']
@@ -496,12 +496,12 @@ class STROGATZ_P_187(KnownEquation):
 @register_eq_class
 class STROGATZ_P_188(KnownEquation):
     _eq_name = 'vars2_prog8'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "SIR infection model only for healthy and sick"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['-0.4*x[0]*x[1]', 'x[1]*(0.4*x[0] - 0.314)']
@@ -513,12 +513,12 @@ class STROGATZ_P_188(KnownEquation):
 @register_eq_class
 class STROGATZ_P_190(KnownEquation):
     _eq_name = 'vars2_prog9'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Damped double well oscillator"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-5, 5.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[1]', '-x[0]**3 + x[0] - 0.18*x[1]']
@@ -534,11 +534,11 @@ class STROGATZ_P_1901(KnownEquation):
     _description = "Glider (dimensionless)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
-        self.sympy_eq = ['-0.08*x[0]**2 - np.sin(x[1])', 'x[0] - np.cos(x[1])/x[0]']
+        self.sympy_eq = ['-0.08*x[0]**2 - sin(x[1])', 'x[0] - cos(x[1])/x[0]']
 
     def np_eq(self, t, x):
         return np.array([-0.08 * x[0] ** 2 - np.sin(x[1]), x[0] - np.cos(x[1]) / x[0]])
@@ -555,7 +555,7 @@ class STROGATZ_P_191(KnownEquation):
                                      LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
-        self.sympy_eq = ['x[1]', '(np.cos(x[0]) - 0.93)*np.sin(x[0])']
+        self.sympy_eq = ['x[1]', '(cos(x[0]) - 0.93)*sin(x[0])']
 
     def np_eq(self, t, x):
         return np.array([x[1], (np.cos(x[0]) - 0.93) * np.sin(x[0])])
@@ -581,7 +581,7 @@ class STROGATZ_P_194(KnownEquation):
 @register_eq_class
 class STROGATZ_P_195(KnownEquation):
     _eq_name = 'vars2_prog13'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'const', 'sin', 'cos']
     _description = "Pendulum with non-linear damping, no driving (dimensionless)"
 
     def __init__(self):
@@ -598,7 +598,7 @@ class STROGATZ_P_195(KnownEquation):
 @register_eq_class
 class STROGATZ_P_200(KnownEquation):
     _eq_name = 'vars2_prog14'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Van der Pol oscillator (standard form)"
 
     def __init__(self):
@@ -615,12 +615,12 @@ class STROGATZ_P_200(KnownEquation):
 @register_eq_class
 class STROGATZ_P_214(KnownEquation):
     _eq_name = 'vars2_prog15'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Van der Pol oscillator (simplified form from Strogatz)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['-1.12333333333333*x[0]**3 + 3.37*x[0] + 3.37*x[1]', '-0.29673590504451*x[0]']
@@ -632,7 +632,7 @@ class STROGATZ_P_214(KnownEquation):
 @register_eq_class
 class STROGATZ_P_207(KnownEquation):
     _eq_name = 'vars2_prog16'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Glycolytic oscillator, e.g., ADP and F6P in yeast (dimensionless)"
 
     def __init__(self):
@@ -649,12 +649,12 @@ class STROGATZ_P_207(KnownEquation):
 @register_eq_class
 class STROGATZ_P_217(KnownEquation):
     _eq_name = 'vars2_prog17'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Duffing equation (weakly non-linear oscillation)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[1]', '-0.886*x[0]**2*x[1] - x[0] + 0.886*x[1]']
@@ -666,7 +666,7 @@ class STROGATZ_P_217(KnownEquation):
 @register_eq_class
 class STROGATZ_P_238(KnownEquation):
     _eq_name = 'vars2_prog18'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'n3', 'const']
     _description = "Cell cycle model by Tyson for interaction between protein cdc2 and cyclin (dimensionless)"
 
     def __init__(self):
@@ -768,27 +768,8 @@ class STROGATZ_P_289(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_290(KnownEquation):
-    _eq_name = 'vars2_prog24'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'exp']
-    _description = "Binocular rivalry model (no oscillations)"
-
-    def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
-        super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
-        x = self.x
-        self.sympy_eq = ['-x[0] + 1/(0.246596963941606*np.exp(4.89*x[1]) + 1)',
-                         '-x[1] + 1/(0.246596963941606*np.exp(4.89*x[0]) + 1)']
-
-    def np_eq(self, t, x):
-        return np.array([-x[0] + 1 / (0.246596963941606 * np.exp(4.89 * x[1]) + 1),
-                         -x[1] + 1 / (0.246596963941606 * np.exp(4.89 * x[0]) + 1)])
-
-
-@register_eq_class
 class STROGATZ_P_293(KnownEquation):
-    _eq_name = 'vars2_prog25'
+    _eq_name = 'vars2_prog24'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Bacterial respiration model for nutrients and oxygen levels"
 
@@ -807,13 +788,13 @@ class STROGATZ_P_293(KnownEquation):
 
 @register_eq_class
 class STROGATZ_P_296(KnownEquation):
-    _eq_name = 'vars2_prog26'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _eq_name = 'vars2_prog25'
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Brusselator: hypothetical chemical oscillation model (dimensionless)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
+                                     UniformSampling((-10, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['3.1*x[0]**2*x[1] - 4.03*x[0] + 1', 'x[0]*(-3.1*x[0]*x[1] + 3.03)']
@@ -824,13 +805,13 @@ class STROGATZ_P_296(KnownEquation):
 
 @register_eq_class
 class STROGATZ_P_2961(KnownEquation):
-    _eq_name = 'vars2_prog27'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _eq_name = 'vars2_prog26'
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Chemical oscillator model by Schnackenberg 1979 (dimensionless)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-5, 5.0), only_positive=True),
+                                     UniformSampling((-5, 5.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[0]**2*x[1] - x[0] + 0.24', '-x[0]**2*x[1] + 1.43']
@@ -841,7 +822,7 @@ class STROGATZ_P_2961(KnownEquation):
 
 @register_eq_class
 class STROGATZ_P_301(KnownEquation):
-    _eq_name = 'vars2_prog28'
+    _eq_name = 'vars2_prog27'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
     _description = "Oscillator death model by Ermentrout and Kopell 1990"
 
@@ -919,7 +900,7 @@ class STROGATZ_P_319(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_319(KnownEquation):
+class STROGATZ_P_3194(KnownEquation):
     _eq_name = 'vars3_prog4'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Lorenz equations in complex periodic regime"
@@ -939,7 +920,7 @@ class STROGATZ_P_319(KnownEquation):
 
 
 @register_eq_class
-class STROGATZ_P_3191(KnownEquation):
+class STROGATZ_P_3195(KnownEquation):
     _eq_name = 'vars3_prog5'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     _description = "Lorenz equations standard parameters (chaotic)"
@@ -1019,9 +1000,9 @@ class AIZAWA_ATTRACTOR_CHAOTIC(KnownEquation):
     _description = "Aizawa attractor (chaotic)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-1.5, 1.5), only_positive=True),
+                                     UniformSampling((-1.5, 1.5), only_positive=True),
+                                     UniformSampling((-0.5, 1.5), only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[0]*x[2] - 0.7*x[0] - 3.5*x[1]', '3.5*x[0] + x[1]*x[2] - 0.7*x[1]',
@@ -1037,7 +1018,7 @@ class AIZAWA_ATTRACTOR_CHAOTIC(KnownEquation):
 class CHEN_LEE_ATTRACTOR(KnownEquation):
     _eq_name = 'vars3_prog10'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
-    _description = "Chen-Lee attractor; system for gyro motion with feedback control of rigid body (chaotic)"
+    _description = "Chen-Lee attractor"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
