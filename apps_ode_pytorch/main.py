@@ -28,13 +28,14 @@ threshold_values = {
 @click.option('--optimizer', default='BFGS', type=str, help="optimizer for the expressions")
 @click.option('--metric_name', default='inv_nrmse', type=str, help="evaluation metrics")
 @click.option('--num_init_conds', default=10, type=int, help="batch of initial condition of dataset")
+@click.option('--num_regions', default=10, type=int, help="number of regions to be sampled")
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--max_len', default=10, help="max length of the sequence from the decoder")
 @click.option('--total_iterations', default=100, help="Number of learning iterations")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
 @click.option('--use_gpu', default=-1, help="use GPU or cpu for training")
-def main(config_template, optimizer, equation_name, metric_name, num_init_conds, noise_type, noise_scale, max_len,
+def main(config_template, optimizer, equation_name, metric_name, num_init_conds, num_regions, noise_type, noise_scale, max_len,
          total_iterations, n_cores, use_gpu):
     data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
                                            noise_type, noise_scale,
@@ -52,7 +53,9 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
                        nvars,
                        dataXgen,
                        data_query_oracle,
-                       time_span, t_eval)
+                       time_span, t_eval,
+                       num_of_regions=num_regions,
+                       width=0.1)
 
     # get basic production rules
     reward_thresh = threshold_values[metric_name]

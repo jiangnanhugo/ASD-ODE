@@ -3,7 +3,7 @@ from sympy import Symbol
 import scipy
 from grammar.grammar_program import SymbolicDifferentialEquations
 from grammar.minimize_coefficients import execute
-from grammar.odeint.numpy_odeint import runge_kutta4
+from grammar.act_sampling import compute_disagreement_score
 
 
 class ContextFreeGrammar(object):
@@ -105,7 +105,7 @@ class ContextFreeGrammar(object):
         print(filtered_rules)
         return filtered_rules
 
-    def construct_expression(self, many_seq_of_rules, mode='phase_portrait'):
+    def construct_expression(self, many_seq_of_rules, active_mode='phase_portrait'):
         """
         mode
         - "default": validate on randomly chosen data
@@ -136,19 +136,20 @@ class ContextFreeGrammar(object):
                 self.input_var_Xs)
 
         # evaluate the fitted expressions on new validation data;
-        if mode == 'default':
+        if active_mode == 'default':
             init_cond = self.task.draw_init_cond()
-        elif mode == 'phase_portrait':
+        elif active_mode == 'phase_portrait':
             regions = self.task.rand_draw_regions()
             init_cond = self.sketch_phase_portraits(many_expressions, regions)
-        elif mode == 'full':
+        elif active_mode == 'query_by_committee':
+            init_cond = self.task.full_init_cond()
+        elif active_mode == 'full':
             init_cond = self.task.full_init_cond()
 
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
 
-                one_ode_str = [str(one_eq) for one_eq in one_expression.fitted_eq]
-                pred_trajectories = execute(one_ode_str,
+                pred_trajectories = execute(one_expression.fitted_eq,
                                             init_cond, self.task.time_span, self.task.t_evals,
                                             self.input_var_Xs)
                 if pred_trajectories is None or len(pred_trajectories) == 0:
@@ -161,7 +162,7 @@ class ContextFreeGrammar(object):
             print(one_expression)
         return many_expressions
 
-    def sketch_phase_portraits(self, list_of_odes, list_of_regions, num_init_cond_each_region=100):
+    def sketch_phase_portraits(self, list_of_odes, list_of_regions, num_init_cond_each_region=11):
         """
         given a set of ODEs expressions, determine some trajectories where most ODEs disagreee
         # 1. randomly sample several sub-regions and sketch a phase portrait of each small region.
@@ -176,23 +177,19 @@ class ContextFreeGrammar(object):
 
         disagree_score = -1
         most_disagreed_init_conds = []
-        for i in range(num_of_regions):
-            init_conds = []
+        for region_i in list_of_regions:
             phase_portait_in_region = []
+            batch_drawed_inits = self.task.rand_draw_init_cond(num_init_cond_each_region, region_i)
             for one_ode in list_of_odes:
-                one_ode_phase_portait_ = []
-                for j in range(num_init_cond_each_region):
-                    temp_init_cond = self.task.draw_init_cond(list_of_regions[i])
-                    init_conds.append(temp_init_cond)
-                    one_short_traj = runge_kutta4(one_ode, temp_init_cond, self.task.time_span, self.task.t_evals,
-                                                  self.input_var_Xs)
-                    one_ode_phase_portait_.append(one_short_traj)
-                phase_portait_in_region.append(one_ode_phase_portait_)
-            phase_portait_in_region = np.asarray(phase_portait_in_region).reshape(-1, len(list_of_odes), 1)
+                phase_portait_in_region.append(execute(one_ode.fitted_eq,
+                                                       batch_drawed_inits, self.task.time_span, self.task.t_evals,
+                                                       self.input_var_Xs))
+            phase_portait_in_region = np.asarray(phase_portait_in_region).reshape(len(list_of_odes), -1)
             cur_disagreement_score = compute_disagreement_score(phase_portait_in_region, self.program.metric_name)
+            print("region={}, disagreement_score={}".format(region_i, cur_disagreement_score))
             if cur_disagreement_score > disagree_score:
-                most_disagreed_init_conds.append(init_conds)
-                disagree_score = most_disagreed_init_conds
+                most_disagreed_init_conds = batch_drawed_inits
+                disagree_score = cur_disagreement_score
         return most_disagreed_init_conds
 
     def update_topK_expressions(self, one_fitted_expression: SymbolicDifferentialEquations):
@@ -242,23 +239,3 @@ class ContextFreeGrammar(object):
         print("=" * 20)
 
 
-batch_based_metrics = {
-    "neg_mse": lambda y, y_hat: -np.mean((y - y_hat) ** 2),
-    # (Protected) inverse mean squared error
-    "inv_mse": lambda y, y_hat: 1 / (1 + np.mean((y - y_hat) ** 2)),
-    # Pearson correlation coefficient       # Range: [0, 1]
-    "pearson": lambda y, y_hat: scipy.stats.pearsonr(y, y_hat)[0],
-    # Spearman correlation coefficient      # Range: [0, 1]
-    "spearman": lambda y, y_hat: scipy.stats.spearmanr(y, y_hat)[0],
-}
-
-
-def compute_disagreement_score(arrays, metric_function):
-    """
-    arrays shape: [time_step* num_vars, num_traj, 1]
-    """
-    abs_diffs = arrays - arrays.transpose(0, 2, 1)
-    # Sum the upper triangular part of the resulting matrix
-    result = np.apply_along_axis(metric_function, axis=0, arr=abs_diffs)
-    result = np.sum(result, axis=(1, 2))
-    return result

@@ -38,21 +38,23 @@ class DataX(object):
         if one_region is None:
             list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
         else:
-            list_of_X = [one_sampler.sample_with_range(sample_size, ranged) for one_sampler, ranged in
-                         zip(self.data_X_samplers, one_region)]
+            list_of_X = [one_sampler(sample_size, ranged) for one_sampler, ranged in zip(self.data_X_samplers, one_region)]
         return np.stack(list_of_X, axis=0).squeeze()
 
-    def rand_draw_regions(self, num_of_regions, width_fraction):
+    def rand_draw_regions(self, num_of_regions, width_fraction=1):
         """
         width_fraction in (0, 1). defined as the fraction of the original variable range.
         """
-        list_of_X = [one_sampler(num_of_regions) for one_sampler in self.data_X_samplers]
+        list_of_X = [one_sampler(sample_size=num_of_regions) for one_sampler in self.data_X_samplers]
+        list_of_X = np.asarray(list_of_X).T
         regions = []
 
-        for i, xi in enumerate(list_of_X):
-            width = (self.data_X_samplers[i].range[1] - self.data_X_samplers[i].range[0]) * width_fraction
-            one_region = (xi, min(xi + width, self.data_X_samplers[i].range[1]))
-            regions.append(one_region)
+        for j in range(num_of_regions):
+            one_region = []
+            for i, xi in enumerate(list_of_X[j]):
+                width = (self.data_X_samplers[i].range[1] - self.data_X_samplers[i].range[0]) * width_fraction
+                one_region.append((xi, min(xi + width, self.data_X_samplers[i].range[1])))
+                regions.append(one_region)
         return regions
 
 
@@ -65,8 +67,7 @@ class DefaultSampling(object):
     def draw_regions(self):
         return
 
-    def sample_with_range(self, sample_size, ranged):
-        return
+
 
     def to_dict(self):
         return {'name': self.name,

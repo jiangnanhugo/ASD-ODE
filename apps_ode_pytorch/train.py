@@ -39,6 +39,7 @@ def learn(
         entropy_coefficient=0.005,
         risk_factor_epsilon=0.95,
         sample_batch_size=200,
+        active_mode='default',
         verbose=True,
 ):
     epoch_best_rewards = []
@@ -55,7 +56,7 @@ def learn(
     for i in range(n_epochs):
         # Convert sequences into expressions that can be evaluated
         # Optimize constants of expressions using training data
-        grammar_expressions = grammar_model.construct_expression(sequences)
+        grammar_expressions = grammar_model.construct_expression(sequences, active_mode=active_mode)
 
         # Update the best set of expressions discovered
         for p in grammar_expressions:

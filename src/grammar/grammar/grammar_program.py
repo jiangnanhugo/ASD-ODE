@@ -10,7 +10,7 @@ from grammar.evaluation_metrics import all_metrics
 from pathos.multiprocessing import ProcessPool
 
 from grammar.minimize_coefficients import optimize
-
+from sympy.parsing.sympy_parser import parse_expr
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.set_printoptions(precision=4, linewidth=np.inf)
 

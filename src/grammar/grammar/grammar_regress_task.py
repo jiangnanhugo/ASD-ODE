@@ -7,7 +7,7 @@ class RegressTask(object):
     """
 
     def __init__(self, num_init_conds, n_vars, dataX, data_query_oracle,
-                 time_span=(0, 10), t_evals=np.linspace(0, 10, 50), num_of_regions=0):
+                 time_span=(0, 10), t_evals=np.linspace(0, 10, 50), num_of_regions=0, width=1):
         """
             n_vars: number of variables
             dataX: draw the initial conditions
@@ -24,27 +24,32 @@ class RegressTask(object):
         #
         self.n_vars = n_vars
         self.num_of_regions = num_of_regions
+        self.width = width
 
     def rand_draw_regions(self):
         """ draw several regions for each variable"""
-        self.regions = self.dataX.rand_draw_regions(self.num_of_regions)
+        self.regions = self.dataX.rand_draw_regions(self.num_of_regions, self.width)
         return self.regions
 
     def full_init_cond(self):
-        pass
+        z = self.dataX.randn(sample_size=self.full_mesh_size).T
+
+        self.full_mesh = np.meshgrid(*z)
+        return self.full_mesh
 
     def draw_init_cond(self):
         if self.init_cond is not None:
             return self.init_cond
         else:
             self.init_cond = self.dataX.randn(sample_size=self.num_init_conds).T
-
             return self.init_cond
 
-    def rand_draw_init_cond(self, one_region=None):
-
-        init_cond = self.dataX.randn(sample_size=self.num_init_conds, one_region=one_region).T
+    def rand_draw_init_cond(self, sample_size=None, one_region=None):
+        if sample_size is None:
+            sample_size = self.num_init_conds
+        init_cond = self.dataX.randn(sample_size=sample_size, one_region=one_region).T
         self.init_cond = init_cond.reshape([-1, self.n_vars])
+        return self.init_cond
 
     def evaluate(self):
         return self.data_query_oracle.evaluate(self.init_cond, self.time_span, self.t_evals)

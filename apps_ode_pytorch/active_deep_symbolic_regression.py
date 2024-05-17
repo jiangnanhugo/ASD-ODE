@@ -84,6 +84,7 @@ class ActDeepSymbolicRegression(object):
             n_epochs=n_epochs,
             risk_factor_epsilon=self.config_training['risk_factor_epsilon'],
             sample_batch_size=self.config_training['sample_batch_size'],
+            active_mode=self.config_training['active_mode'],
             verbose=self.config_training['verbose']
         )
         return results
