@@ -15,10 +15,8 @@ import numpy as np
 from grammar.grammar_regress_task import RegressTask
 from scibench.symbolic_equation_evaluator import Equation_evaluator
 from grammar.minimize_coefficients import execute
-from sympy import  Symbol
+from sympy import Symbol
 import sys
-
-
 
 
 class SymbolicDifferentialEquations(object):
@@ -85,19 +83,19 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
 
     model.fit(true_trajectories, t_eval)
     predicted_eq = model.equations()
-    predicted_eq = [model_str.replace(' + ', '+')  for model_str in predicted_eq]
+    predicted_eq = [model_str.replace(' + ', '+') for model_str in predicted_eq]
     predicted_eq = [model_str.replace('+-', '-') for model_str in predicted_eq]
     predicted_eq = [model_str.replace(' ', '*') for model_str in predicted_eq]
     predicted_eq = [model_str.replace('^', '**') for model_str in predicted_eq]
 
     for i in range(nvars):
-        predicted_eq = [model_str.replace(f'x{i}', f"X{i}")  for model_str in predicted_eq]
+        predicted_eq = [model_str.replace(f'x{i}', f"X{i}") for model_str in predicted_eq]
 
     model.print()
 
     sys.stdout.flush()
 
-    # topk = 5
+
     task.rand_draw_init_cond()
     print(f"PRINT Best Equations")
     print("=" * 20)

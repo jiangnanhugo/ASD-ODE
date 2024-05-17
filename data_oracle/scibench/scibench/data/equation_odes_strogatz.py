@@ -156,7 +156,7 @@ class STROGATZ_P_401(KnownEquation):
     _description = "Refined language death model for two languages"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 0.95), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['-0.8*x[0]*(1 - x[0])**1.2 + 0.2*x[0]**1.2 - 0.2*x[0]**2.2']
