@@ -32,7 +32,7 @@ do
     sbatch -A cis230379 --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="APPS-${eq_name}"
+#SBATCH --job-name="ODEF-${eq_name}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.$method.out
 #SBATCH --constraint=A
 #SBATCH --time=24:00:00
