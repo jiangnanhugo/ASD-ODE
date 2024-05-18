@@ -40,8 +40,7 @@ for i in range(1, 28):
     func = lambda x0, x1: true_equation.np_eq(t=None, x=[x0, x1]).tolist()
 
     fig = plt.figure(figsize=(3, 3))
-    Oscillator1 = PhasePortrait2D(func, Range=ranged, MeshDim=21, Title="",
-                                  xlabel=r"$x_1$", ylabel=r"$x_2$", fig=fig)
+    Oscillator1 = PhasePortrait2D(func, Range=ranged, MeshDim=21, Title="", xlabel=r"$x_1$", ylabel=r"$x_2$", fig=fig)
     fig, ax = Oscillator1.plot(color="grey")
     title = [r"\dot{x}_" + str(i + 1) + "=" + one_str for i, one_str in enumerate(true_equation.sympy_eq)]
     title = "n=2, " + f"ID={i}" + ": " + true_equation._description
