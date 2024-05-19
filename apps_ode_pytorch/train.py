@@ -56,7 +56,8 @@ def learn(
     for i in range(n_epochs):
         # Convert sequences into expressions that can be evaluated
         # Optimize constants of expressions using training data
-        grammar_expressions = grammar_model.construct_expression(sequences, active_mode=active_mode)
+        grammar_expressions = grammar_model.construct_expression(sequences)
+        grammar_expressions = grammar_model.expression_active_evalution(grammar_expressions, active_mode=active_mode)
 
         # Update the best set of expressions discovered
         for p in grammar_expressions:

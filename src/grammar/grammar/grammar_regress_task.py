@@ -31,11 +31,11 @@ class RegressTask(object):
         self.regions = self.dataX.rand_draw_regions(self.num_of_regions, self.width)
         return self.regions
 
-    def full_init_cond(self):
-        z = self.dataX.randn(sample_size=self.full_mesh_size).T
-
-        self.full_mesh = np.meshgrid(*z)
-        return self.full_mesh
+    def full_init_cond(self, full_mesh_size):
+        z = self.dataX.randn(sample_size=full_mesh_size)
+        full_mesh = np.meshgrid(*[z[i] for i in range(self.n_vars)])
+        self.full_mesh_init_cond = np.column_stack([ri.ravel() for ri in full_mesh])
+        return self.full_mesh_init_cond
 
     def draw_init_cond(self):
         if self.init_cond is not None:

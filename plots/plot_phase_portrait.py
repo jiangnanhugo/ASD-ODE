@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import rc
 
-from phaseportrait import PhasePortrait2D, PhasePortrait3D
+from phaseportrait import PhasePortrait2D, PhasePortrait3D, Trajectory3D
 import matplotlib.pyplot as plt
 from scibench.data import equation_object_loader
 import os
@@ -19,6 +19,7 @@ rc('text', usetex=True)
 plt.style.use("seaborn-v0_8-bright")
 
 
+# %%
 def replace_math_operator(title):
     title = "$" + ",".join(title) + "$"
     title = title.replace('**', '^')
@@ -43,7 +44,7 @@ for i in range(1, 28):
     Oscillator1 = PhasePortrait2D(func, Range=ranged, MeshDim=21, Title="", xlabel=r"$x_1$", ylabel=r"$x_2$", fig=fig)
     fig, ax = Oscillator1.plot(color="grey")
     title = [r"\dot{x}_" + str(i + 1) + "=" + one_str for i, one_str in enumerate(true_equation.sympy_eq)]
-    title = "n=2, " + f"ID={i}" + ": " + true_equation._description
+    title = f"Equation ID {i}" + ": " + true_equation._description
     print(title)
     fig.suptitle(title, fontsize=11)
     # plt.show()
@@ -52,6 +53,7 @@ for i in range(1, 28):
     plt.savefig(fname, bbox_inches='tight', pad_inches=0)
     plt.close()
 
+# %%
 for i in range(1, 11):
     name = f"vars3_prog{i}"
     true_equation = equation_object_loader(name)
@@ -60,16 +62,14 @@ for i in range(1, 11):
     func = lambda x0, x1, x2: true_equation.np_eq(t=None, x=[x0, x1, x2]).tolist()
 
     # fig, ax = plt.figure(figsize=(3, 3)).add_subplot(projection='3d')
-    Oscillator1 = PhasePortrait3D(func, Range=ranged, n_points=10000, Title="",
+    Oscillator1 = PhasePortrait3D(func, Range=ranged,MeshDim=6, n_points=20000, Title="",
                                   xlabel=r"$x_1$", ylabel=r"$x_2$", zlabel=r"$x_3$")
     fig, ax = Oscillator1.plot(color="grey")
     # title = [r"\dot{x}_" + str(i+1) + "=" + one_str for i, one_str in enumerate(true_equation.sympy_eq)]
     # title=replace_math_operator(title)
-    title = "n=3, " + f"ID={i}" + ": " + true_equation._description
+    title = f"Equation ID {i}" + ": " + true_equation._description
     print(title)
     fig.suptitle(title, fontsize=11)
-    # plt.show()
-    #
     fname = os.path.join(name + "_phase.correct.pdf")
     plt.savefig(fname, bbox_inches='tight', pad_inches=0)
     plt.close()

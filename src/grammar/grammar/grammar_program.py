@@ -50,7 +50,7 @@ class grammarProgram(object):
     used for optimizing the constants in the expressions.
     """
 
-    def __init__(self, non_terminal_nodes, optimizer="BFGS", metric_name='neg_mse', max_opt_iter=500, n_cores=1,
+    def __init__(self, input_var_Xs, optimizer="BFGS", metric_name='neg_mse', max_opt_iter=500, n_cores=1,
                  max_open_constants=20):
         """
         max_open_constants: the maximum number of allowed open constants in the expression.
@@ -60,7 +60,7 @@ class grammarProgram(object):
         self.max_open_constants = max_open_constants
         self.metric_name = metric_name
         self.n_cores = n_cores
-        self.non_terminal_nodes = non_terminal_nodes
+        self.input_var_Xs = input_var_Xs
         self.loss_func = all_metrics[metric_name]
         if self.n_cores > 1:
             self.pool = ProcessPool(nodes=self.n_cores)
@@ -88,7 +88,7 @@ class grammarProgram(object):
                 self.max_open_constants,
                 self.max_opt_iter,
                 self.optimizer,
-                self.non_terminal_nodes
+                self.input_var_Xs
             )
 
             one_expr.train_loss = train_loss
@@ -118,7 +118,7 @@ class grammarProgram(object):
         max_open_constantes = [self.max_open_constants for _ in range(self.n_cores)]
         max_opt_iteres = [self.max_opt_iter for _ in range(self.n_cores)]
         optimizeres = [self.optimizer for _ in range(self.n_cores)]
-        non_terminal_nodes = [self.non_terminal_nodes for _ in range(self.n_cores)]
+        input_var_Xs = [self.input_var_Xs for _ in range(self.n_cores)]
         print("NCORES:", self.n_cores)
         print("many_expr_templates {}".format(len(many_expr_templates)))
         for i, ti in enumerate(many_expr_templates):
@@ -130,7 +130,7 @@ class grammarProgram(object):
                                init_cond_ncores, time_span_ncores, t_eval_ncores,
                                true_trajectories_ncores,
                                input_var_Xes, evaluate_losses,
-                               max_open_constantes, max_opt_iteres, optimizeres, non_terminal_nodes)
+                               max_open_constantes, max_opt_iteres, optimizeres, input_var_Xs)
         result = list(chain.from_iterable(result))
         print("Done with optimization!")
         sys.stdout.flush()

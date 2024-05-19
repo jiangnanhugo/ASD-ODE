@@ -105,7 +105,7 @@ class ContextFreeGrammar(object):
         print(filtered_rules)
         return filtered_rules
 
-    def construct_expression(self, many_seq_of_rules, active_mode='phase_portrait'):
+    def construct_expression(self, many_seq_of_rules, ):
         """
         mode
         - "default": validate on randomly chosen data
@@ -134,7 +134,9 @@ class ContextFreeGrammar(object):
                 self.task.init_cond, self.task.time_span, self.task.t_evals,
                 true_trajectories,
                 self.input_var_Xs)
+        return many_expressions
 
+    def expression_active_evalution(self, many_expressions, active_mode='phase_portrait',full_mesh_size=1):
         # evaluate the fitted expressions on new validation data;
         if active_mode == 'default':
             init_cond = self.task.draw_init_cond()
@@ -144,7 +146,7 @@ class ContextFreeGrammar(object):
         elif active_mode == 'query_by_committee':
             init_cond = self.task.full_init_cond()
         elif active_mode == 'full':
-            init_cond = self.task.full_init_cond()
+            init_cond = self.task.full_init_cond(full_mesh_size)
 
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
@@ -237,5 +239,3 @@ class ContextFreeGrammar(object):
             else:
                 print('        ', pr, end="\n")
         print("=" * 20)
-
-

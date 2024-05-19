@@ -412,11 +412,11 @@ class STROGATZ_P_144(KnownEquation):
 class STROGATZ_P_157(KnownEquation):
     _eq_name = 'vars2_prog3'
     _operator_set = ['add', 'sub', 'mul', 'const']
-    _description = "Lotka-Volterra competition model (Strogatz version with sheeps and rabbits)"
+    _description = "Lotka-Volterra competition model (Strogatz version)"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 4.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 3.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[0]*(-x[0] - 2.0*x[1] + 3.0)', 'x[1]*(-x[0] - x[1] + 2.0)']
@@ -548,7 +548,7 @@ class STROGATZ_P_1901(KnownEquation):
 class STROGATZ_P_191(KnownEquation):
     _eq_name = 'vars2_prog11'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
-    _description = "Frictionless bead on a rotating hoop (dimensionless)"
+    _description = "Frictionless bead on a rotating hoop"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
@@ -582,7 +582,7 @@ class STROGATZ_P_194(KnownEquation):
 class STROGATZ_P_195(KnownEquation):
     _eq_name = 'vars2_prog13'
     _operator_set = ['add', 'sub', 'mul', 'const', 'sin', 'cos']
-    _description = "Pendulum with non-linear damping, no driving (dimensionless)"
+    _description = "Pendulum with non-linear damping, no driving"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
@@ -616,7 +616,7 @@ class STROGATZ_P_200(KnownEquation):
 class STROGATZ_P_214(KnownEquation):
     _eq_name = 'vars2_prog15'
     _operator_set = ['add', 'sub', 'mul', 'const']
-    _description = "Van der Pol oscillator (simplified form from Strogatz)"
+    _description = "Van der Pol oscillator (simplified form)"
 
     def __init__(self):
         self.vars_range_and_types = [UniformSampling((-10, 10.0), only_positive=True),
@@ -633,7 +633,7 @@ class STROGATZ_P_214(KnownEquation):
 class STROGATZ_P_207(KnownEquation):
     _eq_name = 'vars2_prog16'
     _operator_set = ['add', 'sub', 'mul', 'const']
-    _description = "Glycolytic oscillator, e.g., ADP and F6P in yeast (dimensionless)"
+    _description = "Glycolytic oscillator, e.g., ADP and F6P in yeast"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
@@ -667,7 +667,7 @@ class STROGATZ_P_217(KnownEquation):
 class STROGATZ_P_238(KnownEquation):
     _eq_name = 'vars2_prog18'
     _operator_set = ['add', 'sub', 'mul', 'n2', 'n3', 'const']
-    _description = "Cell cycle model by Tyson for interaction between protein cdc2 and cyclin (dimensionless)"
+    _description = "Cell cycle model by Tyson for interaction between protein cdc2 and cyclin"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
@@ -684,10 +684,10 @@ class STROGATZ_P_238(KnownEquation):
 class STROGATZ_P_260(KnownEquation):
     _eq_name = 'vars2_prog19'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
-    _description = "Reduced model for chlorine dioxide-iodine-malonic acid rection (dimensionless)"
+    _description = "Reduced model for chlorine dioxide-iodine-malonic acid reaction"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+        self.vars_range_and_types = [LogUniformSampling((-8, 8), only_positive=True),
                                      LogUniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
@@ -703,7 +703,7 @@ class STROGATZ_P_260(KnownEquation):
 class STROGATZ_P_269(KnownEquation):
     _eq_name = 'vars2_prog20'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
-    _description = "Driven pendulum with linear damping / Josephson junction (dimensionless)"
+    _description = "Driven pendulum with linear damping / Josephson junction"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
@@ -737,7 +737,7 @@ class STROGATZ_P_300(KnownEquation):
 class STROGATZ_P_288(KnownEquation):
     _eq_name = 'vars2_prog22'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
-    _description = "Isothermal autocatalytic reaction model by Gray and Scott 1985 (dimensionless)"
+    _description = "Isothermal autocatalytic reaction model"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
