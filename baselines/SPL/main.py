@@ -4,7 +4,7 @@ import os
 import sys
 
 from mcts_model import MCTS
-from production_rules import  get_production_rules
+from production_rules import get_production_rules
 from sympy import lambdify, Symbol
 
 import random
@@ -13,6 +13,34 @@ from scibench.symbolic_data_generator import DataX, compute_time_derivative
 from scibench.symbolic_equation_evaluator import Equation_evaluator
 from grammar.grammar_regress_task import RegressTask
 from program import Program
+from regress_task import symbolicRegressionTask
+from grammar.minimize_coefficients import execute
+
+
+class SymbolicDifferentialEquations(object):
+    """
+    this class is used to represent symbolic ordinary differential equations.
+    For n variables settings, there will be n total expressions.
+    """
+
+    def __init__(self, list_of_sympy_equations):
+        # self.traversal = list_of_rules
+        self.fitted_eq = list_of_sympy_equations
+        self.all_metrics = None
+
+    def __repr__(self):
+        return "Eq=[{}]".format(",\t ".join(self.fitted_eq))
+
+
+def print_expressions(pr, task, input_var_Xs):
+    pred_trajectories = execute(pr.fitted_eq,
+                                task.init_cond, task.time_span, task.t_evals,
+                                input_var_Xs)
+    dict_of_result = task.evaluate_all_losses(pred_trajectories)
+    print('-' * 30)
+    for metric_name in dict_of_result:
+        print(f"{metric_name} {dict_of_result[metric_name]}")
+    print('-' * 30)
 
 
 def run_mcts(
@@ -60,14 +88,14 @@ def run_mcts(
                           max_opt_iter=max_opt_iter,
                           eta=eta)
 
-        start = time.time()
-        _, good_modules = mcts_model.MCTS_run_orig(num_episodes,
-                                                   num_rollouts=num_rollouts,
-                                                   verbose=True,
-                                                   is_first_round=True,
-                                                   print_freq=5)
 
-        mcts_model.print_hofs(-2, verbose=True)
+        _, good_modules = mcts_model.MCTS_run_orig(
+            num_episodes,
+            num_rollouts=num_rollouts,
+            verbose=True,
+            print_freq=5)
+
+        mcts_model.print_hofs(verbose=True)
 
         if not best_modules:
             best_modules = good_modules
@@ -82,19 +110,22 @@ def run_mcts(
         max_module += module_grow_step
         exploration_rate *= 1.2
     print("final hof")
-    mcts_model.print_hofs(-2, verbose=True)
+    mcts_model.print_hofs(verbose=True)
+    return good_modules[-1]
 
 
-def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, optimizer, num_episodes):
+def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, num_episodes):
+    optimizer = 'BFGS'
+
     data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
     dataX = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
-    operators_set=data_query_oracle.operators_set
+    operators_set = data_query_oracle.operators_set
     input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
     time_span = (0.0001, 10)
-    trajectory_time_steps = 100
+    trajectory_time_steps = 1000
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
@@ -109,23 +140,31 @@ def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, op
 
     print("X_train.shape: {}, y_train.shape: {}".format(X_train.shape, y_train.shape))
     sys.stdout.flush()
-    # data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
-    # dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
-    # nvar = data_query_oracle.get_nvars()
-    # operators_set = data_query_oracle.get_operators_set()
-    #
-    # regress_batchsize = 256
-    allowed_input_tokens = np.ones(nvars, dtype=np.int32)
-    MCTS.task = task
-    MCTS.program = Program(nvars, optimizer)
-    MCTS.program.evalaute_loss = data_query_oracle.compute_metric
 
-    production_rules = get_production_rules(nvars, operators_set)
-    print("The production rules are:", production_rules)
-    start = time.time()
-    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-    end_time = time.time() - start
-    print("MCTS {} mins".format(np.round(end_time / 60, 3)))
+    topk = 1
+    for _ in range(topk):
+        one_predict_ode = []
+        for xi in range(nvars):
+            MCTS.task = symbolicRegressionTask(
+                batchsize=100,
+                n_input=nvars,
+                X_train=X_train[:, :, xi].reshape(-1, 1),
+                y_train=y_train[:, :, xi].reshape(-1, 1),
+                metric_name=metric_name,
+            )
+            MCTS.program = Program(nvars, optimizer)
+            MCTS.program.evalaute_loss = MCTS.task.metric
+
+            production_rules = get_production_rules(nvars, operators_set)
+            print("The production rules are:", production_rules)
+            start = time.time()
+            model_str = run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+            end_time = time.time() - start
+            print("MCTS {} mins".format(np.round(end_time / 60, 3)))
+            one_predict_ode.append(model_str)
+        temp = SymbolicDifferentialEquations(one_predict_ode)
+        print_expressions(temp, task, input_var_Xs)
+    print("=" * 20)
 
 
 if __name__ == '__main__':
@@ -134,14 +173,8 @@ if __name__ == '__main__':
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
 
     parser.add_argument("--num_init_conds", type=int, default=5, help="batch of initial condition of dataset.")
-    parser.add_argument('--optimizer',
-                        nargs='?',
-                        choices=['BFGS', 'L-BFGS-B', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo',
-                                 'direct'],
-                        help='list servers, storage, or both (default: %(default)s)')
 
-    parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
-    parser.add_argument("--num_per_episodes", type=int, default=30, help="the number of episode for MCTS.")
+    parser.add_argument("--num_episodes", type=int, default=100, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0,
                         help="This parameter adds the standard deviation of the noise")
@@ -158,6 +191,5 @@ if __name__ == '__main__':
     print(args)
 
     # run Monte Carlo Tree Search
-    mcts(args.equation_name, args.metric_name, args.num_init_conds, args.noise_type, args.noise_scale, args.optimizer,
-         args.num_episodes
-         )
+    mcts(args.equation_name, args.num_init_conds, args.metric_name, args.noise_type, args.noise_scale,
+         args.num_episodes)

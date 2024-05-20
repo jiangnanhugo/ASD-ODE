@@ -14,6 +14,9 @@ from grammar.grammar_regress_task import RegressTask
 from grammar.grammar_program import grammarProgram
 from grammar.minimize_coefficients import execute
 
+from scipy.stats import kendalltau
+from itertools import combinations
+
 
 class SymbolicDifferentialEquations(object):
     """
@@ -22,9 +25,10 @@ class SymbolicDifferentialEquations(object):
     """
 
     def __init__(self, one_sympy_equations):
-        # self.traversal = list_of_rules
         self.fitted_eq = one_sympy_equations
+        self.train_loss = 0.0
         self.all_metrics = None
+        self.valid_loss = None
 
     def __repr__(self):
         return str(self.fitted_eq)
@@ -50,40 +54,70 @@ def read_expressions_from_file(expression_file):
     return expressions
 
 
-def normalised_kendall_tau_distance(values1, values2):
+def normalised_kendall_tau_distance(array1, array2):
     """Compute the Kendall tau distance.
     https://en.wikipedia.org/wiki/Kendall_tau_distance
     """
-    n = len(values1)
-    assert len(values2) == n, "Both lists have to be of equal length"
-    i, j = np.meshgrid(np.arange(n), np.arange(n))
-    a = np.argsort(values1)
-    b = np.argsort(values2)
-    ndisordered = np.logical_or(np.logical_and(a[i] < a[j], b[i] > b[j]),
-                                np.logical_and(a[i] > a[j], b[i] < b[j])).sum()
-    return ndisordered / (n * (n - 1))
+    # Extract valid_loss values
+    valid_losses1 = np.array([obj.valid_loss for obj in array1])[:3]
+
+    valid_losses2 = np.array([obj.valid_loss for obj in array2])[:3]
+
+    # Compute the Kendall Tau correlation coefficient
+    tau, _ = kendalltau(valid_losses1, valid_losses2)
+
+    # Compute the Kendall Tau distance
+    def kendall_tau_distance(tau, n):
+        return (1 - tau) * n * (n - 1) / 2
+
+    n = len(valid_losses1)  # Length of the rankings
+    distance = kendall_tau_distance(tau, n)
+
+    # Normalize the Kendall Tau distance
+    max_distance = n * (n - 1) / 2
+    normalized_distance = distance / max_distance
+
+    # print(f"Normalized Kendall Tau Distance: {normalized_distance}")
+    return normalized_distance
+
+
+def enlarge_effect(array1, array2):
+    array1 = np.array([obj.valid_loss for obj in array1])
+
+    array2 = np.array([obj.valid_loss for obj in array2])
+    cnt0, cnt_p1, cnt_n1 = 0, 0, 0
+    for i in range(len(array1)):
+        for j in range(i + 1, len(array1)):
+            if abs(array1[i] - array1[j]) <= abs(array2[i] - array2[j]):
+                cnt_p1 += 1
+            else:
+                cnt_n1 += 1
+    return cnt_p1, cnt_n1
 
 
 @click.command()
 @click.option('--equation_name', default="vars2_prog10", type=str, help="Name of equation")
-@click.option('--pred_expressions_file', default='/home/jiangnan/PycharmProjects/act_ode/ablation_study/pred_expressions/vars2_prog10.out', type=str,
+@click.option('--pred_expressions_file',
+              default='/home/jiangnan/PycharmProjects/act_ode/ablation_study/pred_expressions/vars2_prog10.out',
+              type=str,
               help="optimizer for the expressions")
-@click.option('--num_init_conds', default=10, type=int, help="batch of initial condition of dataset")
-@click.option('--num_regions', default=10, type=int, help="number of regions to be sampled")
+@click.option('--num_init_conds', default=20, type=int, help="batch of initial condition of dataset")
+@click.option('--num_regions', default=20, type=int, help="number of regions to be sampled")
 @click.option('--region_width', default=0.1, type=float, help="")
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--active_mode', default='phase_portrait', help="Number of cores for parallel evaluation")
-@click.option('--full_mesh_size', default=1000, type=int, help="")
+@click.option('--full_mesh_size', default=100, type=int, help="")
 def main(equation_name, pred_expressions_file, num_init_conds, num_regions, region_width, noise_type, noise_scale,
          active_mode, full_mesh_size):
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,   noise_type, noise_scale, metric_name='neg_mse')
+    data_query_oracle = Equation_evaluator(equation_name, num_init_conds, noise_type, noise_scale,
+                                           metric_name='neg_mse')
     grammar_expressions = read_expressions_from_file(pred_expressions_file)
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
 
-    time_span = (0.0001, 2)
-    trajectory_time_steps = 1000
+    time_span = (0.01, 0.1)
+    trajectory_time_steps = 10
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
                        nvars,
@@ -113,31 +147,61 @@ def main(equation_name, pred_expressions_file, num_init_conds, num_regions, regi
 
     grammar_model.task = task
     grammar_model.program = program
+    num_repetitions = 5
 
-    print("deep model setup.....")
+    phase_pred_list = []
+    default_pred_list = []
+    region=None
+    for i in range(num_repetitions):
+        #####
+        temp = copy.deepcopy(grammar_expressions)
+        start = time.time()
+        top_pred_default = grammar_model.expression_active_evalution(temp, active_mode='default')
+        default_pred_list.append(top_pred_default)
+        #####
+        end_time = time.time() - start
+        # Update the best set of expressions discovered
+
+        print("default time {} mins".format(np.round(end_time / 60, 3)))
+
+        start = time.time()
+        temp = copy.deepcopy(grammar_expressions)
+        top_pred = grammar_model.expression_active_evalution(temp, active_mode=active_mode, given_region=region)
+        region=grammar_model.regions
+        phase_pred_list.append(top_pred)
+        #####
+        end_time = time.time() - start
+        # Update the best set of expressions discovered
+
+        print("{} time {} mins".format(active_mode, np.round(end_time / 60, 3)))
+
+        ###
+        pos, neg = enlarge_effect(top_pred_default, top_pred)
+        print("pos={} neg={}".format(pos, neg))
+        ###
+
+    #
     temp = copy.deepcopy(grammar_expressions)
     start = time.time()
-    correct_topk = grammar_model.expression_active_evalution(temp,
-                                                             active_mode='full',
-                                                             full_mesh_size=full_mesh_size)
+    # correct_topk = grammar_model.expression_active_evalution(temp,
+    #                                                          active_mode='full',
+    #                                                          full_mesh_size=full_mesh_size)
     end_time = time.time() - start
 
-    print("{} time {} mins".format(active_mode, np.round(end_time / 60, 3)))
+    print("full time {} mins".format(np.round(end_time / 60, 3)))
     #####
-    temp = copy.deepcopy(grammar_expressions)
-    start = time.time()
-    grammar_expressions = grammar_model.expression_active_evalution(temp, active_mode=active_mode)
-    #####
-    end_time = time.time() - start
-    # Update the best set of expressions discovered
-    for p in grammar_expressions:
-        grammar_model.update_topK_expressions(p)
-    topk = grammar_expressions
-
-    grammar_model.print_topk_expressions(verbose=True)
-    print("{} time {} mins".format(active_mode, np.round(end_time / 60, 3)))
-    kendall_tau_score = normalised_kendall_tau_distance(topk, correct_topk)
-    print("kendall_tau_score: {}".format(kendall_tau_score))
+    total_score = 0
+    for one, another in combinations(phase_pred_list, 2):
+        kendall_tau_score = normalised_kendall_tau_distance(one, another)
+        total_score += kendall_tau_score
+        print("kendall_tau_score between {} and full data : {}".format(active_mode, kendall_tau_score))
+        #
+    total_score_default = 0.0
+    for one, another in combinations(default_pred_list, 2):
+        kendall_tau_score = normalised_kendall_tau_distance(one, another)
+        total_score_default += kendall_tau_score
+        print("kendall_tau_score between default and full data : {}".format(kendall_tau_score))
+    print(f"toal score of phase portrait: {total_score}, default {total_score_default}")
 
 
 if __name__ == '__main__':

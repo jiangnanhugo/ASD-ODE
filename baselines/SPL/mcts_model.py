@@ -26,7 +26,7 @@ class MCTS(object):
                  aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500):
         # number of input variables
-        self.nvars = self.task.data_query_oracle.get_nvars()
+        self.nvars = self.task.n_input
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
         self.base_grammars = base_grammars
         self.aug_grammars = aug_grammars
@@ -81,13 +81,12 @@ class MCTS(object):
         ntn = self.get_non_terminal_nodes(action) + ntn
 
         if not ntn:
-            self.task.rand_draw_init_cond()
-            y_true = self.task.evaluate()
+            X_train_batch, y_train_batch = self.task.rand_draw_X()
             expr_template = production_rules_to_expr(state.split(','))
             reward, eq, _, _ = self.program.optimize(expr_template,
                                                      len(state.split(',')),
-                                                     self.task.init_cond,
-                                                     y_true,
+                                                     X_train_batch,
+                                                     y_train_batch,
                                                      self.input_var_Xs,
                                                      eta=self.eta,
                                                      max_opt_iter=self.max_opt_iter)
@@ -328,13 +327,13 @@ class MCTS(object):
                 break
 
         print("#QN:", len(self.QN.keys()))
-        self.print_hofs(-1, verbose=True)
+        self.print_hofs(verbose=True)
         sys.stdout.flush()
         print([x[1] for x in self.hall_of_fame], reward_threhold)
 
         return reward_his, self.hall_of_fame
 
-    def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False,
+    def MCTS_run_orig(self, num_episodes, num_rollouts=20, verbose=False, print_freq=5,
                       reward_threhold=10):
         """
         Monte Carlo Tree Search algorithm
@@ -354,16 +353,12 @@ class MCTS(object):
             if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
                 print("#QN:", len(self.QN.keys()))
-                self.print_hofs(-2, verbose=True)
+                self.print_hofs(verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)
 
-            if not is_first_round:
-                state = 'f->B'
-                ntn = ['B']
-            else:
-                state = 'f->A'
-                ntn = ['A']
+            state = 'f->A'
+            ntn = ['A']
             unvisited_children = self.get_unvisited_children(state, ntn[0])
 
             # scenario 1: if current parent node fully expanded, follow ucb_policy
@@ -425,36 +420,16 @@ class MCTS(object):
 
         return reward_his, self.hall_of_fame
 
-    def print_hofs(self, flag, verbose=False):
-        if flag == -1:
-            old_vf = copy.copy(self.program.get_vf())
-            self.program.vf = [1, ] * self.nvars
-            self.task.set_allowed_inputs(self.program.get_vf())
-            print("new vf for HOF ranking", self.program.get_vf(), self.task.fixed_column)
-        self.task.rand_draw_init_cond()
-        print(f"PRINT HOF (free variables={self.task.fixed_column})")
+    def print_hofs(self, verbose=False):
+        self.task.rand_draw_X()
         print("=" * 20)
         for pr in self.hall_of_fame[-len(self.hall_of_fame):]:
             if verbose:
                 print('        ' + str(get_state(pr)), end="\n")
-                self.print_reward_function_all_metrics(pr[2])
+                self.task.reward_function(pr[2], self.input_var_Xs)
             else:
                 print('        ' + str(get_state(pr)), end="\n")
         print("=" * 20)
-        if flag == -1:
-            self.program.vf = old_vf
-            self.task.set_allowed_inputs(old_vf)
-            print("reset old vf", self.program.get_vf(), self.task.fixed_column)
-
-    def print_reward_function_all_metrics(self, expr_str):
-        """used for print the error for all metrics between the predicted program `p` and true program."""
-        y_hat = execute(expr_str, self.task.init_cond.T, self.input_var_Xs)
-        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.init_cond, y_hat)
-        # dict_of_result['tree_edit_distance'] = self.task.data_query_oracle.compute_normalized_tree_edit_distance(expr_str)
-        print('-' * 30)
-        for mertic_name in dict_of_result:
-            print(f"{mertic_name} {dict_of_result[mertic_name]}")
-        print('-' * 30)
 
 
 def get_state(pr):

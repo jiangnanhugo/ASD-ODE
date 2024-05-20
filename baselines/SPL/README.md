@@ -1,6 +1,6 @@
 :
 
-# Monte Carlo Tree Search for Symbolic Regression and Adapation to Control Variable Experimentation
+# Monte Carlo Tree Search for Symbolic Regression
 
 THe MCTS baseline is modified from paper: SymbolicPhysicsLearner
 

@@ -6,6 +6,7 @@ from ProGED.parameter_estimation import fit_models
 from ProGED.utils.generate_data_ODE_systems import generate_ODE_data
 from ProGED.configs import settings
 from ProGED.equation_discoverer import EqDisco
+
 np.random.seed(0)
 
 print("dx = 10(y - x) \n"
@@ -42,8 +43,7 @@ ED.generate_models()
 
 models = ModelBox()
 for mi in ED.models:
-    models.add_model([str(xi) for xi in mi.expr],symbols={"x": ["x0", "x1", "x2"], "const": "C"})
-
+    models.add_model([str(xi) for xi in mi.expr], symbols={"x": ["x0", "x1", "x2"], "const": "C"})
 
 settings['task_type'] = 'differential'
 settings["parameter_estimation"]["task_type"] = 'differential'
@@ -62,7 +62,6 @@ start = time.time()
 models = fit_models(models, data, settings=settings)
 duration = time.time() - start
 print(weight)
-print([10, 28, -2.66667])
 for i in range(len(models)):
     params = list(models[i].params.values())
     print(params, f'{weight}')

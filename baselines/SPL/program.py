@@ -25,9 +25,7 @@ class Program(object):
     def __init__(self, n_vars, optimizer="BFGS"):
         """
         opt_num_expr:  # number of experiments done for optimization
-        vf: indicator vector for free variables. vf[i]=1 for xi is a free variable
         """
-        self.vf = [0, ] * n_vars
 
         self.n_vars = n_vars
         self.optimizer = optimizer
@@ -36,15 +34,7 @@ class Program(object):
         self.optimized_obj = []
         self.cache = {}
 
-    def set_vf(self, xi: int):
-        """set of free variables"""
 
-        if 0 <= xi < len(self.vf):
-            self.vf[xi] = 1
-            print('xi is:', xi, ', new vf is:', self.vf)
-
-    def get_vf(self):
-        return self.vf
 
     def optimize(self, eq, tree_size: int, data_X, y_true, input_var_Xs, eta=0.9999, max_opt_iter=1000, verbose=False):
         """
@@ -121,11 +111,7 @@ class Program(object):
                     up = [5] * num_changing_consts
                     bounds = list(zip(lw, up))
                     opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
-                # elif self.optimizer == "direct":
-                #     lw = [-10] * num_changing_consts
-                #     up = [10] * num_changing_consts
-                #     bounds = list(zip(lw, up))
-                #     opt_result = direct(f, bounds, maxiter=max_opt_iter)
+
 
                 t_optimized_constants = opt_result['x']
                 c_lst = t_optimized_constants.tolist()
@@ -150,15 +136,13 @@ class Program(object):
 
                 eq = pretty_print_expr(parse_expr(eq_est))
 
-                print('\t reward',
-                      eta ** tree_size * float(-np.log10(1e-60 - self.evalaute_loss(y_pred, y_true, var_ytrue))),
-                      '\t loss:', -self.evalaute_loss(y_pred, y_true, var_ytrue),
-                      'simp:', eq)
+                print('\t loss:', -self.evalaute_loss(y_pred, y_true, var_ytrue),
+                      'Eq:', eq)
             except Exception as e:
                 print(e)
                 return -np.inf, eq, 0, np.inf
 
-        r = eta ** tree_size * float(-np.log10(1e-60 - self.evalaute_loss(y_pred, y_true, var_ytrue)))
+        r = self.evalaute_loss(y_pred, y_true, var_ytrue)
 
         return r, eq, t_optimized_constants, t_optimized_obj
 
@@ -192,21 +176,10 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
     return y_hat
 
 
-def execute_eval(expr_str: str, data_X: np.ndarray, input_var_Xs, simulated_steps: int, dt: float):
-    """
-    evaluate the output of expression with the given input.
-    consts: list of constants.
-    """
-    try:
-        y_hat = eval(expr_str)
-    except TypeError as e:
-        print(e)
 
-    return y_hat
 
 
 def simplify_template(eq):
-    orig = eq
     for i in range(10):
         eq = eq.replace('(C+C)', 'C')
         eq = eq.replace('sqrt(C)', 'C')

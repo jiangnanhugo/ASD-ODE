@@ -6,7 +6,6 @@ from scibench.symbolic_data_generator import DataX, compute_time_derivative
 import numpy as np
 from grammar.grammar_regress_task import RegressTask
 from scibench.symbolic_equation_evaluator import Equation_evaluator
-from sympy.parsing.sympy_parser import parse_expr
 from grammar.minimize_coefficients import execute
 from sympy import lambdify, Symbol
 import sys
@@ -24,7 +23,6 @@ class SymbolicDifferentialEquations(object):
     def __init__(self, list_of_sympy_equations):
         # self.traversal = list_of_rules
         self.fitted_eq = list_of_sympy_equations
-        self.invalid = False
         self.all_metrics = None
 
     def __repr__(self):
