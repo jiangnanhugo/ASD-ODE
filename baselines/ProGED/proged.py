@@ -47,7 +47,7 @@ def print_expressions(pr, task, input_var_Xs):
     print('-' * 30)
 
 
-def proged_predict(system, nvars, inits, trajectory_time_steps,candidate_equation_size=10):
+def proged_predict(system, nvars, inits, trajectory_time_steps,candidate_equation_size=100):
     generation_settings = {
         "initial_time": 0,  # initial time
         "simulation_step": 0.001,  # simulation step /s
