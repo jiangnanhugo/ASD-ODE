@@ -34,7 +34,7 @@ class ThomasAttractor(KnownEquation):
 class AizawaAttractor(KnownEquation):
     # Aizawa attractor
     _eq_name = 'Aizawa-attractor'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'n2','n3', 'const']
     expr_obj_thres = 1e-6
 
     def __init__(self):

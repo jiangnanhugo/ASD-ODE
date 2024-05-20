@@ -66,7 +66,7 @@ def proged_predict(system, nvars, inits, trajectory_time_steps):
                  rhs_vars=all_symbols,
                  generator="grammar",
                  generator_template_name="universal",
-                 sample_size=100,
+                 sample_size=200,
                  verbosity=1)
 
     ED.generate_models()
@@ -94,9 +94,11 @@ def proged_predict(system, nvars, inits, trajectory_time_steps):
     print('duration seconds: ', duration)
     all_expressions = []
     for i in range(len(models)):
-        params = list(models[i].params.values())
-        print(params, f'{weight}')
-        all_expressions.append(models[i].nice_print(return_string=True))
+        # params = list(models[i].params.values())
+        # print(params, f'{weight}')
+        pred_expr=models[i].nice_print(return_string=True)
+        if len(pred_expr)>0:
+            all_expressions.append(pred_expr)
 
     return all_expressions
 
@@ -135,14 +137,19 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
         x_init.flatten(),
         trajectory_time_steps)
     topK=[]
+    print('-'*30)
     for one_expr in all_pred_exprs:
+
         pred_trajectories = execute(one_expr,
                                     x_init, task.time_span, task.t_evals,
                                     input_var_Xs)
         metric = task.evaluate_loss(pred_trajectories)
+        if np.isnan(metric) or np.isinf(metric):
+            continue
+        print(one_expr, metric)
         topK.append((one_expr, metric))
     sorted_list = sorted(topK, key=lambda x: x[1])
-    print(sorted_list)
+
     for one_pred_ode in all_pred_exprs:
         temp = SymbolicDifferentialEquations(one_pred_ode)
 

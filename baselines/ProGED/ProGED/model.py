@@ -333,8 +333,7 @@ class Model:
         for i, iexpr in enumerate(self.expr):
             if self.valid:
                 string_to_print.append(str(round_constants(self.full_expr(self.params)[i], n=round_params)))
-            else:
-                string_to_print.append(str(self.expr[i]))
+
 
         print(string_to_print)
 
