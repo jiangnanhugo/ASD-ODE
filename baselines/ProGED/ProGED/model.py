@@ -329,12 +329,12 @@ class Model:
                     expr = expr.subs(a, round(a, n))
             return expr
 
-        string_to_print = ""
+        string_to_print = []
         for i, iexpr in enumerate(self.expr):
             if self.valid:
-                string_to_print += f"{self.lhs_vars[i]} = {round_constants(self.full_expr(self.params)[i], n=round_params)}\n"
+                string_to_print.append(str(round_constants(self.full_expr(self.params)[i], n=round_params)))
             else:
-                string_to_print += f"{self.lhs_vars[i]} = {self.expr[i]}\n"
+                string_to_print.append(str(self.expr[i]))
 
         print(string_to_print)
 

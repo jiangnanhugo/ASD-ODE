@@ -33,7 +33,7 @@ def replace_math_operator(title):
     return title
 
 
-for i in range(1, 28):
+for i in range(10, 11):
     name = f"vars2_prog{i}"
     true_equation = equation_object_loader(name)
     ranged = [xi.range for xi in true_equation.vars_range_and_types]

@@ -136,18 +136,23 @@ class ContextFreeGrammar(object):
                 self.input_var_Xs)
         return many_expressions
 
-    def expression_active_evalution(self, many_expressions, active_mode='phase_portrait',full_mesh_size=1):
+    def expression_active_evalution(self, many_expressions, active_mode='phase_portrait', full_mesh_size=1,
+                                    given_region=None):
         # evaluate the fitted expressions on new validation data;
         if active_mode == 'default':
-            init_cond = self.task.draw_init_cond()
+            init_cond = self.task.rand_draw_init_cond()
         elif active_mode == 'phase_portrait':
-            regions = self.task.rand_draw_regions()
-            init_cond = self.sketch_phase_portraits(many_expressions, regions)
+            if given_region is None:
+                self.regions = self.task.rand_draw_regions()
+            else:
+                self.regions = given_region
+            init_cond = self.sketch_phase_portraits(many_expressions, self.regions)
+            self.task.init_cond = init_cond
         elif active_mode == 'query_by_committee':
             init_cond = self.task.full_init_cond()
         elif active_mode == 'full':
             init_cond = self.task.full_init_cond(full_mesh_size)
-
+            self.task.init_cond = init_cond
         for one_expression in many_expressions:
             if one_expression.train_loss is not None and one_expression.train_loss != -np.inf:
 
@@ -161,7 +166,7 @@ class ContextFreeGrammar(object):
 
             else:
                 one_expression.valid_loss = -np.inf
-            print(one_expression)
+            print("valid_loss:", one_expression.valid_loss, "Eq:", one_expression)
         return many_expressions
 
     def sketch_phase_portraits(self, list_of_odes, list_of_regions, num_init_cond_each_region=11):
@@ -175,10 +180,10 @@ class ContextFreeGrammar(object):
         # 5 return the region with maximum disagreement
         """
         # 1. find_fixed_points
-        num_of_regions = len(list_of_regions)
 
         disagree_score = -1
         most_disagreed_init_conds = []
+        selected = None
         for region_i in list_of_regions:
             phase_portait_in_region = []
             batch_drawed_inits = self.task.rand_draw_init_cond(num_init_cond_each_region, region_i)
@@ -192,6 +197,8 @@ class ContextFreeGrammar(object):
             if cur_disagreement_score > disagree_score:
                 most_disagreed_init_conds = batch_drawed_inits
                 disagree_score = cur_disagreement_score
+                selected = region_i
+        print(f"region {selected} disagreement_score={disagree_score} is selected")
         return most_disagreed_init_conds
 
     def update_topK_expressions(self, one_fitted_expression: SymbolicDifferentialEquations):

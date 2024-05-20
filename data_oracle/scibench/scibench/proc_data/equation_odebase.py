@@ -245,7 +245,7 @@ class BIOMD0000000552(KnownEquation):
 class BIOMD0000000485(KnownEquation):
     _eq_name = 'vars2_prog14'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'pow']
-    _description = "Cao2013 - Application of ABSIS method in the bistable SchlÃ¶gl model"
+    _description = "Cao2013 - Application of ABSIS method in the bistable Schlagl model"
     def __init__(self):
         
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True), LogUniformSampling((1e-2, 10.0), only_positive=True)]
