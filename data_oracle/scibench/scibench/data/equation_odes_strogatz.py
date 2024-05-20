@@ -551,8 +551,8 @@ class STROGATZ_P_191(KnownEquation):
     _description = "Frictionless bead on a rotating hoop"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [LogUniformSampling((-10, 10.0), only_positive=True),
+                                     LogUniformSampling((-4, 4.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[1]', '(cos(x[0]) - 0.93)*sin(x[0])']

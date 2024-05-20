@@ -91,16 +91,14 @@ def proged_predict(system, nvars, inits, trajectory_time_steps,candidate_equatio
     start = time.time()
     models = fit_models(models, data, settings=settings)
     duration = time.time() - start
-    print('duration seconds: ', duration)
+
     all_expressions = []
     for i in range(len(models)):
-        # params = list(models[i].params.values())
-        # print(params, f'{weight}')
         pred_expr = models[i].nice_print(return_string=True)
         if len(pred_expr) > 0:
             all_expressions.append(pred_expr)
 
-    return all_expressions
+    return all_expressions, duration
 
 
 @click.command()
@@ -119,7 +117,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
 
     time_span = (0.001, 1)
-    trajectory_time_steps = 1000
+    trajectory_time_steps = 100
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(1,
@@ -131,7 +129,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
     print('-' * 30)
     task.rand_draw_init_cond()
     x_init = task.init_cond
-    all_pred_exprs = proged_predict(
+    all_pred_exprs, duration = proged_predict(
         data_query_oracle.true_equation.np_eq,
         nvars,
         x_init.flatten(),
@@ -149,12 +147,12 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
         print(one_expr, metric)
         topK.append((one_expr, metric))
     sorted_list = sorted(topK, key=lambda x: x[1])
-    task.num_init_conds = 500
+    task.num_init_conds = 100
     task.rand_draw_init_cond()
     for one_pred_ode, score in sorted_list:
         temp = SymbolicDifferentialEquations(one_pred_ode)
-
         print_expressions(temp, task, input_var_Xs)
+    print('ProGED seconds: {} sec'.format(duration))
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ def replace_math_operator(title):
     return title
 
 
-for i in range(10, 11):
+for i in range(10, 23):
     name = f"vars2_prog{i}"
     true_equation = equation_object_loader(name)
     ranged = [xi.range for xi in true_equation.vars_range_and_types]
@@ -43,8 +43,9 @@ for i in range(10, 11):
     fig = plt.figure(figsize=(3, 3))
     Oscillator1 = PhasePortrait2D(func, Range=ranged, MeshDim=21, Title="", xlabel=r"$x_1$", ylabel=r"$x_2$", fig=fig)
     fig, ax = Oscillator1.plot(color="grey")
-    title = [r"\dot{x}_" + str(i + 1) + "=" + one_str for i, one_str in enumerate(true_equation.sympy_eq)]
-    title = f"Equation ID {i}" + ": " + true_equation._description
+    # title = [r"\dot{x}_" + str(i + 1) + "=" + one_str for i, one_str in enumerate(true_equation.sympy_eq)]
+    title = f"Equation ID {i}"
+    #+ ": " + true_equation._description
     print(title)
     fig.suptitle(title, fontsize=11)
     # plt.show()
@@ -67,7 +68,7 @@ for i in range(1, 11):
     fig, ax = Oscillator1.plot(color="grey")
     # title = [r"\dot{x}_" + str(i+1) + "=" + one_str for i, one_str in enumerate(true_equation.sympy_eq)]
     # title=replace_math_operator(title)
-    title = f"Equation ID {i}" + ": " + true_equation._description
+    title = f"Equation ID {i}" #+ ": " + true_equation._description
     print(title)
     fig.suptitle(title, fontsize=11)
     fname = os.path.join(name + "_phase.correct.pdf")
