@@ -47,7 +47,7 @@ def print_expressions(pr, task, input_var_Xs):
     print('-' * 30)
 
 
-def proged_predict(system, nvars, inits, trajectory_time_steps):
+def proged_predict(system, nvars, inits, trajectory_time_steps,candidate_equation_size=10):
     generation_settings = {
         "initial_time": 0,  # initial time
         "simulation_step": 0.001,  # simulation step /s
@@ -66,7 +66,7 @@ def proged_predict(system, nvars, inits, trajectory_time_steps):
                  rhs_vars=all_symbols,
                  generator="grammar",
                  generator_template_name="universal",
-                 sample_size=200,
+                 sample_size=candidate_equation_size,
                  verbosity=1)
 
     ED.generate_models()
@@ -96,8 +96,8 @@ def proged_predict(system, nvars, inits, trajectory_time_steps):
     for i in range(len(models)):
         # params = list(models[i].params.values())
         # print(params, f'{weight}')
-        pred_expr=models[i].nice_print(return_string=True)
-        if len(pred_expr)>0:
+        pred_expr = models[i].nice_print(return_string=True)
+        if len(pred_expr) > 0:
             all_expressions.append(pred_expr)
 
     return all_expressions
@@ -110,7 +110,7 @@ def proged_predict(system, nvars, inits, trajectory_time_steps):
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
-    data_query_oracle = Equation_evaluator(equation_name, batch_size=1,
+    data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type=noise_type, noise_scale=noise_scale,
                                            metric_name=metric_name)
     print(data_query_oracle.vars_range_and_types_to_json)
@@ -136,8 +136,8 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
         nvars,
         x_init.flatten(),
         trajectory_time_steps)
-    topK=[]
-    print('-'*30)
+    topK = []
+    print('-' * 30)
     for one_expr in all_pred_exprs:
 
         pred_trajectories = execute(one_expr,
@@ -149,8 +149,9 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale):
         print(one_expr, metric)
         topK.append((one_expr, metric))
     sorted_list = sorted(topK, key=lambda x: x[1])
-
-    for one_pred_ode in all_pred_exprs:
+    task.num_init_conds = 500
+    task.rand_draw_init_cond()
+    for one_pred_ode, score in sorted_list:
         temp = SymbolicDifferentialEquations(one_pred_ode)
 
         print_expressions(temp, task, input_var_Xs)

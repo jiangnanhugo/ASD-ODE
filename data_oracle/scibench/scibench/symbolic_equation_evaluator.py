@@ -10,14 +10,14 @@ EQUATION_EXTENSION = ".in"
 
 
 class Equation_evaluator(object):
-    def __init__(self, true_equation_name, batch_size, noise_type='normal', noise_scale=0.0, metric_name="neg_nmse"):
+    def __init__(self, true_equation_name, noise_type='normal', noise_scale=0.0, metric_name="neg_nmse"):
         '''
         true_equation_name: the program name to map from X to Y
         noise_type, noise_scale: the type and scale of noise.
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
         self.eq_name = true_equation_name
-        self.batch_size = batch_size
+
 
         self.true_equation = equation_object_loader(true_equation_name)
         print("name:", self.true_equation._eq_name)
