@@ -4,11 +4,11 @@ basepath=/home/$USER/data/act_ode
 py3=/home/$USER/workspace/miniconda3/envs/py310/bin/python3
 
 type=Strogatz
-method=e2etransformer
+method=spl
 noise_type=normal
 noise_scale=0.0
-metric_name=inv_mse
-num_init_conds=5
+metric_name=neg_mse
+num_init_conds=100
 nvars=$1
 total_progs=$2
 for ei in {1..${total_progs}};
@@ -32,14 +32,14 @@ do
     sbatch -A cis230379 --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="E2E-${eq_name}"
+#SBATCH --job-name="SPL-${eq_name}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.$method.out
 #SBATCH --constraint=A
 #SBATCH --time=24:00:00
 
 
 hostname
-$py3 $basepath/baselines/E2ETransformer/main.py --equation_name $eq_name --pretrained_model_filepath $basepath/baselines/E2ETransformer/model.pt --mode cpu \
+$py3 $basepath/baselines/SPL/main.py --equation_name $eq_name \
 		--metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.$method.out
 EOT
 done

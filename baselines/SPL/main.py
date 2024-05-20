@@ -38,15 +38,16 @@ def print_expressions(pr, task, input_var_Xs):
                                 input_var_Xs)
     dict_of_result = task.evaluate_all_losses(pred_trajectories)
     print('-' * 30)
+    print(pr.fitted_eq)
     for metric_name in dict_of_result:
         print(f"{metric_name} {dict_of_result[metric_name]}")
     print('-' * 30)
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=40,
+        production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=20,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
-        num_transplant=1, norm_threshold=1e-10
+        num_transplant=1,
 ):
     """
     production_rules: rules to generate expressions
@@ -89,7 +90,7 @@ def run_mcts(
                           eta=eta)
 
 
-        _, good_modules = mcts_model.MCTS_run_orig(
+        _, hall_of_fame = mcts_model.MCTS_run_orig(
             num_episodes,
             num_rollouts=num_rollouts,
             verbose=True,
@@ -98,9 +99,9 @@ def run_mcts(
         mcts_model.print_hofs(verbose=True)
 
         if not best_modules:
-            best_modules = good_modules
+            best_modules = hall_of_fame
         else:
-            best_modules = sorted(list(set(best_modules + good_modules)), key=lambda x: x[1])
+            best_modules = sorted(list(set(best_modules + hall_of_fame)), key=lambda x: x[1])
 
         aug_grammars = [x[0] for x in best_modules[:num_aug]]
         print("AUG Grammars")
@@ -111,7 +112,7 @@ def run_mcts(
         exploration_rate *= 1.2
     print("final hof")
     mcts_model.print_hofs(verbose=True)
-    return good_modules[-1]
+    return hall_of_fame[-1][-1]
 
 
 def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, num_episodes):
@@ -141,29 +142,27 @@ def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, nu
     print("X_train.shape: {}, y_train.shape: {}".format(X_train.shape, y_train.shape))
     sys.stdout.flush()
 
-    topk = 1
-    for _ in range(topk):
-        one_predict_ode = []
-        for xi in range(nvars):
-            MCTS.task = symbolicRegressionTask(
-                batchsize=100,
-                n_input=nvars,
-                X_train=X_train[:, :, xi].reshape(-1, 1),
-                y_train=y_train[:, :, xi].reshape(-1, 1),
-                metric_name=metric_name,
-            )
-            MCTS.program = Program(nvars, optimizer)
-            MCTS.program.evalaute_loss = MCTS.task.metric
+    one_predict_ode = []
+    for xi in range(nvars):
+        MCTS.task = symbolicRegressionTask(
+            batchsize=100,
+            n_input=nvars,
+            X_train=X_train[:, :, xi].reshape(-1, 1),
+            y_train=y_train[:, :, xi].reshape(-1, 1),
+            metric_name=metric_name,
+        )
+        MCTS.program = Program(nvars, optimizer)
+        MCTS.program.evalaute_loss = MCTS.task.metric
 
-            production_rules = get_production_rules(nvars, operators_set)
-            print("The production rules are:", production_rules)
-            start = time.time()
-            model_str = run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-            end_time = time.time() - start
-            print("MCTS {} mins".format(np.round(end_time / 60, 3)))
-            one_predict_ode.append(model_str)
-        temp = SymbolicDifferentialEquations(one_predict_ode)
-        print_expressions(temp, task, input_var_Xs)
+        production_rules = get_production_rules(nvars, operators_set)
+        print("The production rules are:", production_rules)
+        start = time.time()
+        model_str = run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+        end_time = time.time() - start
+        print("SPL {} mins".format(np.round(end_time / 60, 3)))
+        one_predict_ode.append(str(model_str))
+    temp = SymbolicDifferentialEquations(one_predict_ode)
+    print_expressions(temp, task, input_var_Xs)
     print("=" * 20)
 
 
@@ -172,9 +171,9 @@ if __name__ == '__main__':
     parser.add_argument("--equation_name", help="the filename of the true program.")
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
 
-    parser.add_argument("--num_init_conds", type=int, default=5, help="batch of initial condition of dataset.")
+    parser.add_argument("--num_init_conds", type=int, default=50, help="batch of initial condition of dataset.")
 
-    parser.add_argument("--num_episodes", type=int, default=100, help="the number of episode for MCTS.")
+    parser.add_argument("--num_episodes", type=int, default=10, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0,
                         help="This parameter adds the standard deviation of the noise")
