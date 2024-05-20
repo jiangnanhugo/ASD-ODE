@@ -36,7 +36,7 @@ do
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.$method.out
 #SBATCH --constraint=A
 #SBATCH --time=24:00:00
-
+#SBATCH --mem=8GB
 
 hostname
 $py3 $basepath/baselines/odeformer/baseline_odeformer.py --pretrain_basepath $pretrain_basepath --equation_name $eq_name \
