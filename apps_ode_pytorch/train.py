@@ -137,7 +137,7 @@ def learn(
 
     print(f"""Time Elapsed: {round(float(time.time() - start), 2)}s
             Epochs Required: {i + 1}
-            Best Performance: {round(best_performance, 3)}
+            Best Performance: {best_performance}
             Best Expression: {best_expression}""")
 
     return epoch_best_rewards, epoch_best_expressions, best_performance, best_expression

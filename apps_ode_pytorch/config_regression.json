@@ -1,6 +1,6 @@
 {
    "training" : {
-      "sample_batch_size" : 30,
+      "sample_batch_size" : 50,
       "risk_factor_epsilon" : 0.5,
       "alpha" : 0.5,
       "verbose" : true,
