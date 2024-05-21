@@ -38,11 +38,11 @@ threshold_values = {
 @click.option('--active_mode', default='default', help="use which active learning algorithm")
 @click.option('--time_sequence_drop_rate', default=0, type=float, help="simulate irregular time sequence")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, num_regions, noise_type, noise_scale,
-         max_len,
-         total_iterations, n_cores, use_gpu, active_mode, time_sequence_drop_rate):
+         max_len, total_iterations, n_cores, use_gpu, active_mode, time_sequence_drop_rate):
     data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
-                                           metric_name=metric_name)
+                                           metric_name=metric_name,
+                                           time_sequence_drop_rate=time_sequence_drop_rate)
     # print(data_query_oracle.vars_range_and_types_to_json)
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()

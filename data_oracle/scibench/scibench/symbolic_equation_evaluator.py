@@ -10,14 +10,14 @@ EQUATION_EXTENSION = ".in"
 
 
 class Equation_evaluator(object):
-    def __init__(self, true_equation_name, noise_type='normal', noise_scale=0.0, metric_name="neg_nmse"):
+    def __init__(self, true_equation_name, noise_type='normal', noise_scale=0.0, metric_name="neg_nmse",
+                 time_sequence_drop_rate=0):
         '''
         true_equation_name: the program name to map from X to Y
         noise_type, noise_scale: the type and scale of noise.
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
         self.eq_name = true_equation_name
-
 
         self.true_equation = equation_object_loader(true_equation_name)
         print("name:", self.true_equation._eq_name)
@@ -40,6 +40,7 @@ class Equation_evaluator(object):
         self.noise_type = noise_type
         self.noise_scale = noise_scale
         self.noises = construct_noise(self.noise_type)
+        self.time_sequence_drop_rate = time_sequence_drop_rate
 
     def evaluate(self, x_init_conds: list, time_span: tuple, t_evals: np.ndarray) -> np.ndarray:
         """
@@ -66,9 +67,21 @@ class Equation_evaluator(object):
         """
         pred_trajectories = pred_trajectories
         true_trajectories = self.evaluate(X_init_cond, time_span, t_evals)
+        # apply irregular time seuqence
+        # Generate a random binary mask with the specified rho
+        random_mask = np.random.choice([0, 1],
+                                       size=(true_trajectories.shape[0], true_trajectories.shape[1]),
+                                       p=[self.time_sequence_drop_rate, 1 - self.time_sequence_drop_rate])
+
+        # Expand the mask to match the shape of traj and pred_traj
+        expanded_mask = np.expand_dims(random_mask, axis=2)
+        # Apply the mask to the time steps
+        masked_pred_traj = pred_trajectories * expanded_mask
+        masked_true_traj = true_trajectories * expanded_mask
+        #
 
         if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'inv_mse']:
-            loss_val = self.metric(true_trajectories, pred_trajectories, np.var(true_trajectories))
+            loss_val = self.metric(masked_true_traj, masked_pred_traj, np.var(masked_true_traj))
         else:
             raise NotImplementedError(self.metric_name, "is not implemented....")
         return loss_val
