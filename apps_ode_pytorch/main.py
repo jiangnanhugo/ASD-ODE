@@ -12,10 +12,10 @@ from grammar.grammar_program import grammarProgram
 from active_deep_symbolic_regression import ActDeepSymbolicRegression
 
 threshold_values = {
-    'neg_mse': {'reward_threshold': 1e-6},
-    'neg_nmse': {'reward_threshold': 1e-6},
-    'neg_nrmse': {'reward_threshold': 1e-3},
-    'neg_rmse': {'reward_threshold': 1e-3},
+    'neg_mse': {'reward_threshold': -1e-6},
+    'neg_nmse': {'reward_threshold': -1e-6},
+    'neg_nrmse': {'reward_threshold': -1e-3},
+    'neg_rmse': {'reward_threshold': -1e-3},
     'inv_mse': {'reward_threshold': 1 / (1 + 1e-6)},
     'inv_nmse': {'reward_threshold': 1 / (1 + 1e-6)},
     'inv_nrmse': {'reward_threshold': 1 / (1 + 1e-6)},
@@ -35,8 +35,9 @@ threshold_values = {
 @click.option('--total_iterations', default=100, help="Number of learning iterations")
 @click.option('--n_cores', default=1, help="Number of cores for parallel evaluation")
 @click.option('--use_gpu', default=-1, help="use GPU or cpu for training")
+@click.option('--active_mode', default='default', help="use which active learning algorithm")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, num_regions, noise_type, noise_scale, max_len,
-         total_iterations, n_cores, use_gpu):
+         total_iterations, n_cores, use_gpu,active_mode):
     data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
@@ -46,7 +47,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     function_set = data_query_oracle.get_operators_set()
 
     time_span = (0.0001, 2)
-    trajectory_time_steps = 4
+    trajectory_time_steps = 100
     max_opt_iter = 50
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,
@@ -102,7 +103,8 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     model.setup(device)
     epoch_best_rewards, epoch_best_expressions, best_reward, best_expression = model.train(
         threshold_values[metric_name]['reward_threshold'],
-        total_iterations
+        total_iterations,
+        active_mode
     )
 
     # Plot best rewards each epoch
@@ -115,7 +117,7 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     end_time = time.time() - start
 
     grammar_model.print_topk_expressions(verbose=True)
-    print("Final act_dso time {} mins".format(np.round(end_time / 60, 3)))
+    print("APPS time {} mins".format(np.round(end_time / 60, 3)))
 
 
 if __name__ == '__main__':

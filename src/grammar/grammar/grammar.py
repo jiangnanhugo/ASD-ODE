@@ -105,7 +105,7 @@ class ContextFreeGrammar(object):
         print(filtered_rules)
         return filtered_rules
 
-    def construct_expression(self, many_seq_of_rules, ):
+    def construct_expression(self, many_seq_of_rules):
         """
         mode
         - "default": validate on randomly chosen data
@@ -136,7 +136,8 @@ class ContextFreeGrammar(object):
                 self.input_var_Xs)
         return many_expressions
 
-    def expression_active_evalution(self, many_expressions, active_mode='phase_portrait', full_mesh_size=1,
+    def expression_active_evalution(self, many_expressions, active_mode='phase_portrait',
+                                    full_mesh_size=1,
                                     given_region=None):
         # evaluate the fitted expressions on new validation data;
         if active_mode == 'default':
@@ -199,6 +200,8 @@ class ContextFreeGrammar(object):
                 disagree_score = cur_disagreement_score
                 selected = region_i
         print(f"region {selected} disagreement_score={disagree_score} is selected")
+        if selected is None:
+            self.task.rand_draw_init_cond(num_init_cond_each_region)
         return most_disagreed_init_conds
 
     def update_topK_expressions(self, one_fitted_expression: SymbolicDifferentialEquations):

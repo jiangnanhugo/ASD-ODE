@@ -1,5 +1,5 @@
 from .base import EQUATION_CLASS_DICT, get_eq_obj
-from .equation_odes_sindy import *
+from .equation_odes_odebase import *
 from .equation_odes_strogatz import *
 
 

@@ -68,7 +68,7 @@ class ActDeepSymbolicRegression(object):
         # Perform the regression task
         self.optim = optim
 
-    def train(self, reward_threshold, n_epochs):
+    def train(self, reward_threshold, n_epochs, active_mode):
         """
         use policy gradient to train model.
         return the best predicted expression
@@ -84,7 +84,8 @@ class ActDeepSymbolicRegression(object):
             n_epochs=n_epochs,
             risk_factor_epsilon=self.config_training['risk_factor_epsilon'],
             sample_batch_size=self.config_training['sample_batch_size'],
-            active_mode=self.config_training['active_mode'],
-            verbose=self.config_training['verbose']
+
+            verbose=self.config_training['verbose'],
+            active_mode=active_mode
         )
         return results

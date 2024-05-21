@@ -2,9 +2,11 @@
 # implementation of Deep Symbolic Regression.
 
 
-import numpy as np
 import time
+
+import numpy as np
 import torch
+
 from expression_decoder import NeuralExpressionDecoder
 from grammar.grammar import ContextFreeGrammar
 
@@ -65,6 +67,9 @@ def learn(
                 continue
             grammar_model.update_topK_expressions(p)
 
+        if i % 2 == 0:
+            grammar_model.print_topk_expressions(verbose=True)
+
         # Benchmark expressions (test dataset)
         # Compute rewards (or retrieve cached rewards)
         rewards = np.array([p.valid_loss for p in grammar_expressions])
@@ -79,6 +84,9 @@ def learn(
             best_expression = best_epoch_expression
 
         # Early stopping criteria
+        print("best_performance >= reward_threshold:",
+              best_performance, reward_threshold, best_performance >= reward_threshold)
+
         if best_performance >= reward_threshold:
             best_str = str(best_expression)
             if verbose:
@@ -129,7 +137,7 @@ def learn(
 
     print(f"""Time Elapsed: {round(float(time.time() - start), 2)}s
             Epochs Required: {i + 1}
-            Best Performance: {round(best_performance.item(), 3)}
+            Best Performance: {round(best_performance, 3)}
             Best Expression: {best_expression}""")
 
     return epoch_best_rewards, epoch_best_expressions, best_performance, best_expression

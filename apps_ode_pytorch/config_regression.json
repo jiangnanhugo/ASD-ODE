@@ -1,7 +1,6 @@
 {
    "training" : {
-      "active_mode": "phase_portrait",
-      "sample_batch_size" : 10,
+      "sample_batch_size" : 30,
       "risk_factor_epsilon" : 0.5,
       "alpha" : 0.5,
       "verbose" : true,
