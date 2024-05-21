@@ -3,7 +3,7 @@
 basepath=/home/$USER/data/act_ode
 py3=/home/$USER/workspace/miniconda3/envs/py310/bin/python3
 
-type=Strogatz
+type=odebase
 method=odeformer
 noise_type=normal
 noise_scale=0.0
@@ -14,7 +14,7 @@ total_progs=$2
 pretrain_basepath=$basepath/baselines/odeformer/
 for ei in {1..${total_progs}};
 do
-    eq_name=${nvars}_prog${ei}
+    eq_name=$method_${nvars}_prog${ei}
     echo "submit $eq_name"
     log_dir=$basepath/log/$(date +%F)
     echo $log_dir
