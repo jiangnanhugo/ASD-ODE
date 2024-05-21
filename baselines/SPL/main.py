@@ -45,8 +45,8 @@ def print_expressions(pr, task, input_var_Xs):
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=20,
-        max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
+        production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=50,
+        max_len=30, eta=0.9999, max_module_init=50, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=1,
 ):
     """
@@ -155,7 +155,7 @@ def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, nu
         MCTS.task = symbolicRegressionTask(
             batchsize=100,
             n_input=nvars,
-            X_train=X_train[:, :, xi].reshape(-1, 1),
+            X_train=X_train[:, :].reshape(-1, nvars),
             y_train=y_train[:, :, xi].reshape(-1, 1),
             metric_name=metric_name,
         )
@@ -181,7 +181,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--num_init_conds", type=int, default=50, help="batch of initial condition of dataset.")
 
-    parser.add_argument("--num_episodes", type=int, default=10, help="the number of episode for MCTS.")
+    parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0,
                         help="This parameter adds the standard deviation of the noise")

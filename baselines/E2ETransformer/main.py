@@ -49,7 +49,7 @@ def print_expressions(pr, task, input_var_Xs):
 @click.option('--pretrained_model_filepath', type=str, help="pertrained pytorch model filepath")
 @click.option('--mode', type=str, default='cpu', help="cpu or cuda")
 def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pretrained_model_filepath, mode):
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
+    data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
     dataX = DataX(data_query_oracle.vars_range_and_types_to_json)
@@ -87,7 +87,8 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
     for _ in range(topk):
         one_predict_ode = []
         for xi in range(nvars):
-            est.fit(X_train[:, :, xi].reshape(-1, 1), y_train[:, :, xi].reshape(-1, 1))
+            est.fit(X_train.reshape(-1, nvars),
+                    y_train[:, :, xi].reshape(-1, 1))
 
             replace_ops = {"add": "+", "mul": "*", "sub": "-", "pow": "**", "inv": "1/", 'nan': '1', 'inf': '1'}
             model_str = est.retrieve_tree(with_infos=True)["relabed_predicted_tree"].infix()
