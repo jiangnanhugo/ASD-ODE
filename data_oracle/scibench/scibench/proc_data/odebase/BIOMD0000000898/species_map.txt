@@ -1,5 +1,0 @@
-x1 = S_HSC
-x2 = A_PC
-x3 = D_TDSC
-x4 = L_LSC
-x5 = T_TDLC

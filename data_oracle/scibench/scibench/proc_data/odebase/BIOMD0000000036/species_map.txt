@@ -1,3 +1,0 @@
-x1 = EmptySet
-x2 = M
-x3 = P

@@ -1,5 +1,0 @@
-x1 = Ca_cyt
-x2 = CaER
-x3 = CaM
-x4 = CaPr
-x5 = Pr

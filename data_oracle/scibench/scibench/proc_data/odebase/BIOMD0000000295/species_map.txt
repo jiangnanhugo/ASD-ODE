@@ -1,5 +1,0 @@
-x1 = FC
-x2 = FCp
-x3 = FN
-x4 = FNp
-x5 = MF

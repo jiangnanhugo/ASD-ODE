@@ -6,7 +6,7 @@ from scibench.symbolic_data_generator import LogUniformSampling, UniformSampling
 @register_eq_class
 class STROGATZ_P_20(KnownEquation):
     _eq_name = 'vars1_prog1'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "RC-circuit (charging capacitor)"
 
     def __init__(self):
@@ -22,7 +22,7 @@ class STROGATZ_P_20(KnownEquation):
 @register_eq_class
 class STROGATZ_P_22(KnownEquation):
     _eq_name = 'vars1_prog2'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Population growth (naive)"
 
     def __init__(self):
@@ -38,7 +38,7 @@ class STROGATZ_P_22(KnownEquation):
 @register_eq_class
 class STROGATZ_P_221(KnownEquation):
     _eq_name = 'vars1_prog3'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Population growth with carrying capacity"
 
     def __init__(self):
@@ -65,8 +65,8 @@ class STROGATZ_P_38(KnownEquation):
             '(0.5*np.exp(1.04166666666667*x[0]) - 0.824360635350064)/(np.exp(1.04166666666667*x[0]) + 1.64872127070013)']
 
     def np_eq(self, t, x):
-        return np.array([(0.5 * np.exp(1.04166666666667 * x[0]) - 0.824360635350064) / (
-                np.exp(1.04166666666667 * x[0]) + 1.64872127070013)])
+        return np.array([(0.5 * np.exp(x[0]) - 0.824360635350064) / (
+                np.exp(x[0]) + 1.64872127070013)])
 
 
 @register_eq_class
@@ -88,7 +88,7 @@ class STROGATZ_P_381(KnownEquation):
 @register_eq_class
 class STROGATZ_P_39(KnownEquation):
     _eq_name = 'vars1_prog6'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Autocatalysis with one fixed abundant chemical"
 
     def __init__(self):
@@ -104,7 +104,7 @@ class STROGATZ_P_39(KnownEquation):
 @register_eq_class
 class STROGATZ_P_391(KnownEquation):
     _eq_name = 'vars1_prog7'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'log']
+    _operator_set = ['add', 'sub', 'mul', 'const', 'log']
     _description = "Gompertz law for tumor growth"
 
     def __init__(self):
@@ -120,7 +120,7 @@ class STROGATZ_P_391(KnownEquation):
 @register_eq_class
 class STROGATZ_P_392(KnownEquation):
     _eq_name = 'vars1_prog8'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
     _description = "Logistic equation with Allee effect"
 
     def __init__(self):
@@ -136,7 +136,7 @@ class STROGATZ_P_392(KnownEquation):
 @register_eq_class
 class STROGATZ_P_40(KnownEquation):
     _eq_name = 'vars1_prog9'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Language death model for two languages"
 
     def __init__(self):
@@ -152,23 +152,23 @@ class STROGATZ_P_40(KnownEquation):
 @register_eq_class
 class STROGATZ_P_401(KnownEquation):
     _eq_name = 'vars1_prog10'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'n2', 'const']
     _description = "Refined language death model for two languages"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 0.95), only_positive=True)]
         super().__init__(num_vars=1, vars_range_and_types=self.vars_range_and_types)
         x = self.x
-        self.sympy_eq = ['-0.8*x[0]*(1 - x[0])**1.2 + 0.2*x[0]**1.2 - 0.2*x[0]**2.2']
+        self.sympy_eq = ['-0.8*x[0]*(1 - x[0])**2 + 0.2*x[0]**2 - 0.2*x[0]**2']
 
     def np_eq(self, t, x):
-        return np.array([-0.8 * x[0] * (1 - x[0]) ** 1.2 + 0.2 * x[0] ** 1.2 - 0.2 * x[0] ** 2.2])
+        return np.array([-0.8 * x[0] * (1 - x[0]) ** 1 + 0.2 * x[0] ** 2 - 0.2 * x[0] ** 2])
 
 
 @register_eq_class
 class STROGATZ_P_41(KnownEquation):
     _eq_name = 'vars1_prog11'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'n3', 'const']
     _description = "Naive critical slowing down (statistical mechanics)"
 
     def __init__(self):
@@ -184,7 +184,7 @@ class STROGATZ_P_41(KnownEquation):
 @register_eq_class
 class STROGATZ_P_55(KnownEquation):
     _eq_name = 'vars1_prog12'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Photons in a laser (simple)"
 
     def __init__(self):
@@ -200,7 +200,7 @@ class STROGATZ_P_55(KnownEquation):
 @register_eq_class
 class STROGATZ_P_63(KnownEquation):
     _eq_name = 'vars1_prog13'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'const', 'sin', 'cos']
     _description = "Overdamped bead on a rotating hoop"
 
     def __init__(self):
@@ -249,7 +249,7 @@ class STROGATZ_P_76(KnownEquation):
 @register_eq_class
 class STROGATZ_P_87(KnownEquation):
     _eq_name = 'vars1_prog16'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const','n2']
     _description = "Landau equation (typical time scale tau = 1)"
 
     def __init__(self):
@@ -313,7 +313,7 @@ class STROGATZ_P_901(KnownEquation):
 @register_eq_class
 class STROGATZ_P_91(KnownEquation):
     _eq_name = 'vars1_prog20'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'n2']
     _description = "Autocatalytic gene switching (dimensionless)"
 
     def __init__(self):
@@ -329,7 +329,7 @@ class STROGATZ_P_91(KnownEquation):
 @register_eq_class
 class STROGATZ_P_92(KnownEquation):
     _eq_name = 'vars1_prog21'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'exp']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'negexp']
     _description = "Dimensionally reduced SIR infection model for dead people (dimensionless)"
 
     def __init__(self):
@@ -445,7 +445,7 @@ class LOTKA_VOLTERRA(KnownEquation):
 @register_eq_class
 class STROGATZ_P_169(KnownEquation):
     _eq_name = 'vars2_prog5'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
+    _operator_set = ['add', 'sub', 'mul', 'const', 'sin']
     _description = "Pendulum without friction"
 
     def __init__(self):
@@ -547,7 +547,7 @@ class STROGATZ_P_1901(KnownEquation):
 @register_eq_class
 class STROGATZ_P_191(KnownEquation):
     _eq_name = 'vars2_prog11'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'const', 'sin', 'cos']
     _description = "Frictionless bead on a rotating hoop"
 
     def __init__(self):
@@ -564,7 +564,7 @@ class STROGATZ_P_191(KnownEquation):
 @register_eq_class
 class STROGATZ_P_194(KnownEquation):
     _eq_name = 'vars2_prog12'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos', 'cot']
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'const', 'sin', 'cos', 'cot']
     _description = "Rotational dynamics of an object in a shear flow"
 
     def __init__(self):
@@ -683,7 +683,7 @@ class STROGATZ_P_238(KnownEquation):
 @register_eq_class
 class STROGATZ_P_260(KnownEquation):
     _eq_name = 'vars2_prog19'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const','n2']
     _description = "Reduced model for chlorine dioxide-iodine-malonic acid reaction"
 
     def __init__(self):
@@ -719,7 +719,7 @@ class STROGATZ_P_269(KnownEquation):
 @register_eq_class
 class STROGATZ_P_300(KnownEquation):
     _eq_name = 'vars2_prog21'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'abs']
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
     _description = "Driven pendulum with quadratic damping (dimensionless)"
 
     def __init__(self):
@@ -730,13 +730,14 @@ class STROGATZ_P_300(KnownEquation):
         self.sympy_eq = ['x[1]', '-0.64*x[1]*np.abs(x[1]) - np.sin(x[0]) + 1.67']
 
     def np_eq(self, t, x):
-        return np.array([x[1], -0.64 * x[1] * np.abs(x[1]) - np.sin(x[0]) + 1.67])
+        return np.array([x[1],
+                         -0.64 * x[1] * x[1] - np.sin(x[0]) + 1.67])
 
 
 @register_eq_class
 class STROGATZ_P_288(KnownEquation):
     _eq_name = 'vars2_prog22'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
     _description = "Isothermal autocatalytic reaction model"
 
     def __init__(self):
@@ -770,7 +771,7 @@ class STROGATZ_P_289(KnownEquation):
 @register_eq_class
 class STROGATZ_P_293(KnownEquation):
     _eq_name = 'vars2_prog24'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
     _description = "Bacterial respiration model for nutrients and oxygen levels"
 
     def __init__(self):
@@ -806,7 +807,7 @@ class STROGATZ_P_296(KnownEquation):
 @register_eq_class
 class STROGATZ_P_2961(KnownEquation):
     _eq_name = 'vars2_prog26'
-    _operator_set = ['add', 'sub', 'mul', 'const']
+    _operator_set = ['add', 'sub', 'mul','n2', 'const']
     _description = "Chemical oscillator model by Schnackenberg 1979 (dimensionless)"
 
     def __init__(self):
@@ -823,7 +824,7 @@ class STROGATZ_P_2961(KnownEquation):
 @register_eq_class
 class STROGATZ_P_301(KnownEquation):
     _eq_name = 'vars2_prog27'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos']
+    _operator_set = ['add', 'sub', 'mul', 'const', 'sin', 'cos']
     _description = "Oscillator death model by Ermentrout and Kopell 1990"
 
     def __init__(self):
@@ -840,7 +841,7 @@ class STROGATZ_P_301(KnownEquation):
 @register_eq_class
 class STROGATZ_P_82(KnownEquation):
     _eq_name = 'vars3_prog1'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Maxwell-Bloch equations (laser dynamics)"
 
     def __init__(self):
@@ -873,18 +874,17 @@ class MODEL_FOR_APOPTOSIS(KnownEquation):
                          '(7.95*x[0]*x[1]*(x[1] + 0.1) + 0.2*x[1]*(x[1] + 2.0) - x[2]*(0.6*x[1] + 0.06)*(x[1] + 0.1)*(x[1] + 2.0))/((x[1] + 0.1)*(x[1] + 2.0))']
 
     def np_eq(self, t, x):
-        return np.array([(-0.4 * x[0] * x[1] + (0.1 - 0.05 * x[0]) * (x[0] + 0.1)) / (x[0] + 0.1), (
-                -7.95 * x[0] * x[1] * (x[1] + 0.1) - 0.2 * x[1] * (x[1] + 2.0) + x[2] * (0.6 * x[1] + 0.06) * (
-                x[1] + 0.1) * (x[1] + 2.0)) / ((x[1] + 0.1) * (x[1] + 2.0)), (
-                                 7.95 * x[0] * x[1] * (x[1] + 0.1) + 0.2 * x[1] * (x[1] + 2.0) - x[2] * (
-                                 0.6 * x[1] + 0.06) * (x[1] + 0.1) * (x[1] + 2.0)) / (
-                                 (x[1] + 0.1) * (x[1] + 2.0))])
+        return np.array([(-0.4 * x[0] * x[1] + (0.1 - 0.05 * x[0]) * (x[0] + 0.1)) / (x[0] + 0.1),
+                         (-7.95 * x[0] * x[1] * (x[1] + 0.1) - 0.2 * x[1] * (x[1] + 2.0) + x[2] * (0.6 * x[1] + 0.06) * (
+                x[1] + 0.1) * (x[1] + 2.0)) / ((x[1] + 0.1) * (x[1] + 2.0)),
+                         (7.95 * x[0] * x[1] * (x[1] + 0.1) + 0.2 * x[1] * (x[1] + 2.0) - x[2] * (
+                                 0.6 * x[1] + 0.06) * (x[1] + 0.1) * (x[1] + 2.0)) / ((x[1] + 0.1) * (x[1] + 2.0))])
 
 
 @register_eq_class
 class STROGATZ_P_319(KnownEquation):
     _eq_name = 'vars3_prog3'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Lorenz equations in well-behaved periodic regime"
 
     def __init__(self):
@@ -902,7 +902,7 @@ class STROGATZ_P_319(KnownEquation):
 @register_eq_class
 class STROGATZ_P_3194(KnownEquation):
     _eq_name = 'vars3_prog4'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Lorenz equations in complex periodic regime"
 
     def __init__(self):
@@ -916,7 +916,8 @@ class STROGATZ_P_3194(KnownEquation):
 
     def np_eq(self, t, x):
         return np.array(
-            [-10.0 * x[0] + 10.0 * x[1], -x[0] * x[2] + 99.96 * x[0] - x[1], x[0] * x[1] - 2.6666666666666665 * x[2]])
+            [-10.0 * x[0] + 10.0 * x[1],
+             -x[0] * x[2] + 99.96 * x[0] - x[1], x[0] * x[1] - 2.67 * x[2]])
 
 
 @register_eq_class
@@ -936,13 +937,14 @@ class STROGATZ_P_3195(KnownEquation):
 
     def np_eq(self, t, x):
         return np.array(
-            [-10.0 * x[0] + 10.0 * x[1], -x[0] * x[2] + 28.0 * x[0] - x[1], x[0] * x[1] - 2.6666666666666665 * x[2]])
+            [-10.0 * x[0] + 10.0 * x[1],
+             -x[0] * x[2] + 28.0 * x[0] - x[1], x[0] * x[1] - 2.67 * x[2]])
 
 
 @register_eq_class
 class ROSSLER_ATTRACTOR(KnownEquation):
     _eq_name = 'vars3_prog6'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Rössler attractor (stable fixed point)"
 
     def __init__(self):
@@ -960,8 +962,8 @@ class ROSSLER_ATTRACTOR(KnownEquation):
 @register_eq_class
 class ROSSLER_ATTRACTOR_PERIODIC(KnownEquation):
     _eq_name = 'vars3_prog7'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
-    _description = "Rössler attractor (periodic)"
+    _operator_set = ['add', 'sub', 'mul', 'const']
+    _description = "Rossler attractor (periodic)"
 
     def __init__(self):
         self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
@@ -978,7 +980,7 @@ class ROSSLER_ATTRACTOR_PERIODIC(KnownEquation):
 @register_eq_class
 class ROSSLER_ATTRACTOR_CHAOTIC(KnownEquation):
     _eq_name = 'vars3_prog8'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Rössler attractor (chaotic)"
 
     def __init__(self):
@@ -990,7 +992,8 @@ class ROSSLER_ATTRACTOR_CHAOTIC(KnownEquation):
         self.sympy_eq = ['-5.0*x[1] - 5.0*x[2]', '5.0*x[0] + 1.0*x[1]', '5.0*x[0]*x[2] - 28.5*x[2] + 1.0']
 
     def np_eq(self, t, x):
-        return np.array([-5.0 * x[1] - 5.0 * x[2], 5.0 * x[0] + 1.0 * x[1], 5.0 * x[0] * x[2] - 28.5 * x[2] + 1.0])
+        return np.array([-5.0 * x[1] - 5.0 * x[2],
+                         5.0 * x[0] + 1.0 * x[1], 5.0 * x[0] * x[2] - 28.5 * x[2] + 1.0])
 
 
 @register_eq_class
@@ -1006,18 +1009,47 @@ class AIZAWA_ATTRACTOR_CHAOTIC(KnownEquation):
         super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['x[0]*x[2] - 0.7*x[0] - 3.5*x[1]', '3.5*x[0] + x[1]*x[2] - 0.7*x[1]',
-                         '0.1*x[0]**3*x[2] - 0.25*x[0]**2*x[2] - x[0]**2 - 0.25*x[1]**2*x[2] - x[1]**2 - 0.333333333333333*x[2]**3 + 0.95*x[2] + 0.65']
+                         '0.1*x[0]**3*x[2] - 0.25*x[0]**2*x[2] - x[0]**2 - 0.25*x[1]**2*x[2] - x[1]**2 - 0.33*x[2]**3 + 0.95*x[2] + 0.65']
 
     def np_eq(self, t, x):
-        return np.array([x[0] * x[2] - 0.7 * x[0] - 3.5 * x[1], 3.5 * x[0] + x[1] * x[2] - 0.7 * x[1],
-                         0.1 * x[0] ** 3 * x[2] - 0.25 * x[0] ** 2 * x[2] - x[0] ** 2 - 0.25 * x[1] ** 2 * x[2] - x[
-                             1] ** 2 - 0.333333333333333 * x[2] ** 3 + 0.95 * x[2] + 0.65])
+        return np.array([x[0] * x[2] - 0.7 * x[0] - 3.5 * x[1],
+                         3.5 * x[0] + x[1] * x[2] - 0.7 * x[1],
+                         0.1 * x[0] ** 3 * x[2] - 0.25 * x[0] ** 2 * x[2] - x[0] ** 2 - 0.25 * x[1] ** 2 * x[2] - x[1] ** 2 - 0.33 * x[2] ** 3 + 0.95 * x[2] + 0.65])
+
+# PROSE: Predicting Operators and Symbolic Expressions using Multimodal Transformers
+# https://arxiv.org/pdf/2309.16816.pdf
+@register_eq_class
+class AizawaAttractor(KnownEquation):
+    # Aizawa attractor
+    _eq_name = 'vars3_prog10'
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'n3', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.a = 0.95
+        self.b = 0.7
+        self.c = 0.6
+        self.d = 3.5
+        self.e = 0.25
+        self.f = 0.1
+
+        self.vars_range_and_types = [UniformSampling((-1.5, 1.5), only_positive=True),
+                                     UniformSampling((-1.5, 1.5), only_positive=True),
+                                     UniformSampling((-0.5, 1.5), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            (x[2] - self.b) * x[1] - self.d * x[1],
+            self.d * x[0] - (x[2] - self.b) * x[1],
+            self.c + self.a * x[2] - x[2] ** 3 / 3 - x[0] ** 2 + self.f * x[2] * x[0] ** 3,
+        ])
 
 
 @register_eq_class
 class CHEN_LEE_ATTRACTOR(KnownEquation):
-    _eq_name = 'vars3_prog10'
-    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _eq_name = 'vars3_prog11'
+    _operator_set = ['add', 'sub', 'mul', 'const']
     _description = "Chen-Lee attractor"
 
     def __init__(self):
@@ -1030,7 +1062,205 @@ class CHEN_LEE_ATTRACTOR(KnownEquation):
 
     def np_eq(self, t, x):
         return np.array(
-            [5.0 * x[0] - x[1] * x[2], x[0] * x[2] - 10.0 * x[1], 0.333333333333333 * x[0] * x[1] - 3.8 * x[2]])
+            [5.0 * x[0] - x[1] * x[2],
+             x[0] * x[2] - 10.0 * x[1],
+             0.333333333333333 * x[0] * x[1] - 3.8 * x[2]])
+
+
+@register_eq_class
+class DadrasAttractor(KnownEquation):
+    # Dadras attractor
+    _eq_name = 'vars3_prog12'
+    _operator_set = ['add', 'sub', 'mul', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.a = 1.25
+        self.b = 1.15
+        self.c = 0.75
+        self.d = 0.8
+        self.e = 4
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            x[1] / 2 - self.a * x[0] + self.b * x[1] * x[2],
+            self.c * x[1] - x[0] * x[2] / 2 + x[2] / 2,
+            self.d * x[0] * x[1] - self.e * x[2]
+        ])
+
+
+@register_eq_class
+class RosslerAttractor(KnownEquation):
+    # Dadras attractor
+    _eq_name = 'vars3_prog13'
+    _operator_set = ['add', 'sub', 'mul',  'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.a = 0.1
+        self.b = 0.1
+        self.c = 14
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            -x[1] - x[2],
+            x[0] + self.a * x[1],
+            self.b + x[2] * (x[1] - self.c)
+        ])
+
+
+@register_eq_class
+class HalvorsenAttractor(KnownEquation):
+    # Dadras attractor
+    _eq_name = 'vars3_prog14'
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.a = -0.35
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            self.a * x[0] - x[1] - x[2] - x[1] ** 2 / 4,
+            self.a * x[1] - x[2] - x[0] - x[2] ** 2 / 4,
+            self.a * x[2] - x[0] - x[1] - x[0] ** 2 / 4
+        ])
+
+
+@register_eq_class
+class RabinovichFabrikantEquation(KnownEquation):
+    # Dadras attractor
+    _eq_name = 'vars3_prog15'
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.alpha = 0.98
+        self.gamma = 0.1
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            x[1] * (x[2] - 1 + x[0] ** 2) + self.gamma * x[0],
+            x[0] * (3 * x[2] - 1 + x[1] ** 2) + self.gamma * x[1],
+            -2 * x[2] * (self.alpha + x[0] * x[1])
+        ])
+
+
+@register_eq_class
+class SprottLinzFAttractor(KnownEquation):
+    # Dadras attractor
+    _eq_name = 'vars3_prog16'
+    _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.a = 0.5
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            x[1] + x[2],
+            -x[0] + self.a * x[1],
+            x[1] ** 2 - x[2],
+        ])
+
+
+@register_eq_class
+class FourWingChaoticAttractor(KnownEquation):
+    # Dadras attractor
+    _eq_name = 'vars3_prog17'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.a = 0.2
+        self.b = 0.01
+        self.c = -0.4
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            self.a * x[0] + x[1] * x[2],
+            self.b * x[0] + self.c * x[1] - x[0] * x[2],
+            -x[2] - x[0] * x[1],
+        ])
+
+
+@register_eq_class
+class FourWingChaoticAttractor(KnownEquation):
+    # Dadras attractor
+    _eq_name = 'vars3_prog18'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'cos']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.alpha = 0.2
+        self.beta = 0.01
+        self.gamma = -0.4
+        self.delta = 0.02
+        self.omega = 0.5
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+        return np.array([
+            1,
+            x[2],
+            -self.delta * x[2] - self.alpha * x[1] - self.beta * x[1] ** 3 + self.gamma * np.cos(self.omega * x[0]),
+        ])
+
+
+@register_eq_class
+class ThomasAttractor(KnownEquation):
+    _eq_name = 'vars3_prog19'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.b = 0.17
+
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=self.vars_range_and_types)
+
+    def np_eq(self, t, x):
+            return np.array([
+            np.sin(x[1]) - self.b * x[0],
+            np.sin(x[2]) - self.b * x[1],
+            np.sin(x[0]) - self.b * x[2],
+        ])
 
 
 @register_eq_class
@@ -1076,4 +1306,232 @@ class SEIR_INFECTION_MODEL_PROPORTIONS(KnownEquation):
         self.sympy_eq = ['-0.28*x[0]*x[2]', '0.28*x[0]*x[2] - 0.47*x[1]', '0.47*x[1] - 0.3*x[2]', '0.3*x[2]']
 
     def np_eq(self, t, x):
-        return np.array([-0.28 * x[0] * x[2], 0.28 * x[0] * x[2] - 0.47 * x[1], 0.47 * x[1] - 0.3 * x[2], 0.3 * x[2]])
+        return np.array([-0.28 * x[0] * x[2],
+                         0.28 * x[0] * x[2] - 0.47 * x[1],
+                         0.47 * x[1] - 0.3 * x[2],
+                         0.3 * x[2]])
+
+
+@register_eq_class
+class PredatorPreyModel(KnownEquation):
+    _eq_name = 'vars4_prog3'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _description = "A predator-prey model with two prey and two predator species."
+
+    def __init__(self):
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 50.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 50.0), only_positive=True)]
+
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        x = self.x
+        self.sympy_eq = [
+            'x[0] * (1.5 - 0.1 * x[0] - 0.05 * x[1] - 0.02 * x[2])',
+            'x[1] * (-1.0 + 0.1 * x[0] - 0.07 * x[3] - 0.04 * x[1])',
+            'x[2] * (1.2 - 0.08 * x[2] - 0.04 * x[3] - 0.03 * x[0])',
+            'x[3] * (-0.8 + 0.09 * x[2] - 0.06 * x[1] - 0.05 * x[3])'
+        ]
+
+    def np_eq(self, t, x):
+        return np.array([
+            x[0] * (1.5 - 0.1 * x[0] - 0.05 * x[1] - 0.02 * x[2]),
+            x[1] * (-1.0 + 0.1 * x[0] - 0.07 * x[3] - 0.04 * x[1]),
+            x[2] * (1.2 - 0.08 * x[2] - 0.04 * x[3] - 0.03 * x[0]),
+            x[3] * (-0.8 + 0.09 * x[2] - 0.06 * x[1] - 0.05 * x[3])
+        ])
+
+
+@register_eq_class
+class LotkaVolterraModel(KnownEquation):
+    _eq_name = 'vars4_prog4'
+    _operator_set = ['add', 'sub', 'mul', 'const']
+    _description = "Lotka-Volterra equations for four competing species."
+
+    def __init__(self):
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True)]
+
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        x = self.x
+        self.sympy_eq = [
+            'x[0] * (1.0 - 0.1 * x[0] - 0.01 * x[1] - 0.02 * x[2] - 0.01 * x[3])',
+            'x[1] * (1.2 - 0.01 * x[0] - 0.1 * x[1] - 0.02 * x[2] - 0.01 * x[3])',
+            'x[2] * (0.8 - 0.02 * x[0] - 0.02 * x[1] - 0.1 * x[2] - 0.01 * x[3])',
+            'x[3] * (1.1 - 0.01 * x[0] - 0.01 * x[1] - 0.01 * x[2] - 0.1 * x[3])'
+        ]
+
+    def np_eq(self, t, x):
+        return np.array([
+            x[0] * (1.0 - 0.1 * x[0] - 0.01 * x[1] - 0.02 * x[2] - 0.01 * x[3]),
+            x[1] * (1.2 - 0.01 * x[0] - 0.1 * x[1] - 0.02 * x[2] - 0.01 * x[3]),
+            x[2] * (0.8 - 0.02 * x[0] - 0.02 * x[1] - 0.1 * x[2] - 0.01 * x[3]),
+            x[3] * (1.1 - 0.01 * x[0] - 0.01 * x[1] - 0.01 * x[2] - 0.1 * x[3])
+        ])
+
+
+@register_eq_class
+class ChemicalReactionNetwork(KnownEquation):
+    _eq_name = 'vars4_prog5'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _description = "A chemical reaction network involving four chemical species."
+
+    def __init__(self):
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        x = self.x
+        self.sympy_eq = [
+            -0.5 * x[0] + 0.2 * x[1] - 0.1 * x[0] * x[2],
+            0.5 * x[0] - 0.3 * x[1] + 0.4 * x[3],
+            -0.1 * x[0] * x[2] + 0.3 * x[3],
+            0.1 * x[0] * x[2] - 0.4 * x[3]
+        ]
+
+    def np_eq(self, t, x):
+        return np.array([
+            -0.5 * x[0] + 0.2 * x[1] - 0.1 * x[0] * x[2],
+            0.5 * x[0] - 0.3 * x[1] + 0.4 * x[3],
+            -0.1 * x[0] * x[2] + 0.3 * x[3],
+            0.1 * x[0] * x[2] - 0.4 * x[3]
+        ])
+
+
+
+
+
+@register_eq_class
+class SIRModelTwoStrains(KnownEquation):
+    _eq_name = 'vars4_prog6'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _description = "SIR model with two pathogen strains."
+
+    def __init__(self):
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 1.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 1.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 1.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 1.0), only_positive=True)]
+
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        x = self.x
+        self.sympy_eq = [
+            -0.3 * x[0] * x[1] - 0.2 * x[0] * x[2],
+            0.3 * x[0] * x[1] - 0.1 * x[1],
+            0.2 * x[0] * x[2] - 0.1 * x[2],
+            0.1 * x[1] + 0.1 * x[2]
+        ]
+
+    def np_eq(self, t, x):
+        return np.array([
+            -0.3 * x[0] * x[1] - 0.2 * x[0] * x[2],
+            0.3 * x[0] * x[1] - 0.1 * x[1],
+            0.2 * x[0] * x[2] - 0.1 * x[2],
+            0.1 * x[1] + 0.1 * x[2]
+        ])
+
+
+@register_eq_class
+class CoupledOscillators(KnownEquation):
+    _eq_name = 'vars4_prog7'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _description = "Describes the dynamics of two coupled oscillators."
+
+    def __init__(self):
+        self.vars_range_and_types = [UniformSampling((-10, 1.0), only_positive=True),
+                                     UniformSampling((-10, 1.0), only_positive=True),
+                                     UniformSampling((-10, 1.0), only_positive=True),
+                                     UniformSampling((-10, 1.0), only_positive=True)]
+        # self.vars_range_and_types = {'x1': (-10, 10), 'v1': (-10, 10), 'x2': (-10, 10), 'v2': (-10, 10)}
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        x1, v1, x2, v2 = self.x
+        self.sympy_eq = {'dx1dt': v1,
+                         'dv1dt': -2*x1 + 1.5*(x2 - x1),
+                         'dx2dt': v2,
+                         'dv2dt': -1.5*(x2 - x1) - 3*x2}
+
+    def np_eq(self, t, x):
+        return np.array([x[1],
+                         -2*x[0] + 1.5*(x[2] - x[0]),
+                         x[3],
+                         -1.5*(x[2] - x[0]) - 3*x[2]])
+
+@register_eq_class
+class FourSpeciesCompartmentalModel(KnownEquation):
+    _eq_name = 'vars4_prog8'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _description = "Describes the dynamics of four species in a compartmental model."
+
+    def __init__(self):
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True)]
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        self.sympy_eq = ['dx1dt = -0.1*x1 + 0.05*x2',
+                         'dx2dt = 0.1*x1 - (0.05 + 0.03)*x2 + 0.02*x3',
+                         'dx3dt = 0.03*x2 - (0.02 + 0.01)*x3 + 0.01*x4',
+                         'dx4dt = 0.01*x3 - 0.01*x4']
+
+    def np_eq(self, t, x):
+        return np.array([-0.1*x[0] + 0.05*x[1],
+                         0.1*x[0] - (0.05 + 0.03)*x[1] + 0.02*x[2],
+                         0.03*x[1] - (0.02 + 0.01)*x[2] + 0.01*x[3],
+                         0.01*x[2] - 0.01*x[3]])
+@register_eq_class
+class PharmacokineticModel(KnownEquation):
+    _eq_name = 'vars4_prog9'
+    _operator_set = ['add', 'sub', 'mul', 'div', 'const']
+    _description = "Describes the pharmacokinetics of a drug across four compartments."
+
+    def __init__(self):
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 100.0), only_positive=True)]
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        self.sympy_eq = [
+            'dC1dt = -0.1*C1 + 0.05*C2',
+            'dC2dt = 0.1*C1 - (0.05 + 0.03)*C2 + 0.02*C3',
+            'dC3dt = 0.03*C2 - (0.02 + 0.01)*C3 + 0.01*C4',
+            'dC4dt = 0.01*C3 - 0.01*C4'
+        ]
+
+    def np_eq(self, t, x):
+        return np.array([
+            -0.1*x[0] + 0.05*x[1],
+            0.1*x[0] - (0.05 + 0.03)*x[1] + 0.02*x[2],
+            0.03*x[1] - (0.02 + 0.01)*x[2] + 0.01*x[3],
+            0.01*x[2] - 0.01*x[3]
+        ])
+
+
+
+@register_eq_class
+class SEIRModel(KnownEquation):
+    _eq_name = 'vars4_prog10'
+    _operator_set = ['add', 'sub', 'mul', 'const']
+    _description = "Describes the SEIR model for infectious disease spread."
+
+    def __init__(self):
+        self.vars_range_and_types = [LogUniformSampling((1e-2, 1000.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 1000.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 1000.0), only_positive=True),
+                                     LogUniformSampling((1e-2, 1000.0), only_positive=True)]
+        super().__init__(num_vars=4, vars_range_and_types=self.vars_range_and_types)
+        self.sympy_eq = ['dSdt = -0.2*S*I',
+                         'dEdt = 0.2*S*I - 0.1*E',
+                         'dIdt = 0.1*E - 0.1*I',
+                         'dRdt = 0.1*I']
+
+    def np_eq(self, t, x):
+        return np.array([-0.2*x[0]*x[2],
+                         0.2*x[0]*x[2] - 0.1*x[1],
+                         0.1*x[1] - 0.1*x[2],
+                         0.1*x[2]])
+
+

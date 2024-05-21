@@ -1,4 +1,0 @@
-x1 = T_1
-x2 = T_2
-x3 = E_1_Innate
-x4 = E_2_Adaptive

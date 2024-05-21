@@ -1,5 +1,0 @@
-x1 = EC
-x2 = Z
-x3 = Rho
-x4 = Y
-x5 = Fraction_Inactive_Channels

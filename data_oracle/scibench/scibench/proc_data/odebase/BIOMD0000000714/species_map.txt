@@ -1,4 +1,0 @@
-x1 = P
-x2 = Nstar
-x3 = D
-x4 = C_A

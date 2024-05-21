@@ -1,4 +1,0 @@
-x1 = Enz
-x2 = Ts
-x3 = Tt
-x4 = To

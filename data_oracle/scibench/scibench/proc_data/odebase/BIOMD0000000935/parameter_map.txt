@@ -1,9 +1,0 @@
-k1 = a1
-k2 = b1
-k3 = k1
-k4 = n1
-k5 = a2
-k6 = b2
-k7 = k2
-k8 = n2
-k9 = nuclear

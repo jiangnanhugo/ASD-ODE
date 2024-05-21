@@ -1,4 +1,0 @@
-x1 = x_Tumor_Cells
-x2 = y_CD4_T_Cells
-x3 = z_Cytokine
-x4 = w_Healthy_Tissue

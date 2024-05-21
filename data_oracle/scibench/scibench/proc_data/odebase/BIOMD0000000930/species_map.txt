@@ -1,4 +1,0 @@
-x1 = Tumor_Cell_Population__T
-x2 = Effector_immune_cell_population__N
-x3 = Circulating_lymphocyte_population__C
-x4 = Chemotherapeutic_drug_concentration__M

@@ -1,8 +1,0 @@
-k1 = rho_C
-k2 = g_T
-k3 = alpha_1
-k4 = g_C
-k5 = tao_C
-k6 = rho_T
-k7 = alpha_2
-k8 = Solid_tumour

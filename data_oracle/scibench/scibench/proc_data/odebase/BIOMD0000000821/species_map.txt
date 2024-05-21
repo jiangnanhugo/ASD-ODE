@@ -1,3 +1,0 @@
-x1 = tumor_volume_x_1
-x2 = endothelial_volume_x_2
-x3 = concentration_of_administrated_inhibitor_x_3

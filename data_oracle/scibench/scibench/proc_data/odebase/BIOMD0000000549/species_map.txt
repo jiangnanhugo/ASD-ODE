@@ -1,2 +1,0 @@
-x1 = species_1
-x2 = species_2

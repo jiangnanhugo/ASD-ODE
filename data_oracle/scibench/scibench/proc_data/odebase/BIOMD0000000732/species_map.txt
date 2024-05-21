@@ -1,5 +1,0 @@
-x1 = Source
-x2 = Tumor
-x3 = Sink
-x4 = IL2
-x5 = Immune_cells

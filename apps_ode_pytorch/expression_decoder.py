@@ -1,10 +1,8 @@
-# the RNN model used to sample expressions. Supports batched
+# the decoder model used to sample expressions. Supports batched
 # sampling of variable length sequences. Can select RNN, LSTM, or GRU models.
 
 import torch.nn as nn
-import torch.nn.functional as F
 import torch
-import numpy as np
 
 
 class NeuralExpressionDecoder(nn.Module):

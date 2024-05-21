@@ -1,4 +1,0 @@
-x1 = Z
-x2 = Y
-x3 = Wt
-x4 = W_star

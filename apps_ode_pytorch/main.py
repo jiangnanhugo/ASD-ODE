@@ -37,7 +37,7 @@ threshold_values = {
 @click.option('--use_gpu', default=-1, help="use GPU or cpu for training")
 def main(config_template, optimizer, equation_name, metric_name, num_init_conds, num_regions, noise_type, noise_scale, max_len,
          total_iterations, n_cores, use_gpu):
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
+    data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
     # print(data_query_oracle.vars_range_and_types_to_json)

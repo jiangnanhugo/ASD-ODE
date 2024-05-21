@@ -1,2 +1,0 @@
-x1 = Normal_cells
-x2 = Tumor_cells

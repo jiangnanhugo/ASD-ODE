@@ -1,7 +1,0 @@
-k1 = a
-k2 = K
-k3 = a0
-k4 = y
-k5 = Ie
-k6 = u
-k7 = tumor_microenvironment

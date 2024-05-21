@@ -51,7 +51,7 @@ def detect_function_set(one_ode):
     return function_set_base
 
 
-def main():
+def main(verbose=False):
     from strogatz_equations import equations
     fw = open(os.path.join("strogatz.py"), 'w')
     fw.write(prefix)
@@ -62,21 +62,22 @@ def main():
         expressions = one_eq['eq']
 
         consts = one_eq['consts'][0]
-        x = [Symbol(f'x_{i}') for i in range(one_eq['dim'])]
-
+        x = [Symbol(f'x[{i}]') for i in range(one_eq['dim'])]
 
         for i in range(len(consts)):
             expressions = expressions.replace(f'c_{i}', str(consts[i]))
-        if one_eq['dim']==1:
-            print(idx_dicts[one_eq['dim']] + 1, " & ", one_eq['eq_description'] + " \\\\")
-        else:
-            temp=" & \multicolumn{}".format(one_eq['dim'])
-            print(idx_dicts[one_eq['dim']] + 1, temp,"{l}{", one_eq['eq_description'] + "} \\\\")
-        for i, ei in enumerate(expressions.split(' | ')):
-            print(" & $\dot{x}_",end="")
-            ei=ei.replace('sin','\sin').replace('cos','\cos').replace('exp','\exp').replace('log','\log').replace('cot','\cot')
-            print("{} = {}$ ".format(i,ei), end=" ")
-        print(" \\\\ \hline")
+        if verbose:
+            if one_eq['dim'] == 1:
+                print(idx_dicts[one_eq['dim']] + 1, " & ", one_eq['eq_description'] + " \\\\")
+            else:
+                temp = " & \multicolumn{}".format(one_eq['dim'])
+                print(idx_dicts[one_eq['dim']] + 1, temp, "{l}{", one_eq['eq_description'] + "} \\\\")
+            for i, ei in enumerate(expressions.split(' | ')):
+                print(" & $\dot{x}_", end="")
+                ei = ei.replace('sin', '\sin').replace('cos', '\cos').replace('exp', '\exp').replace('log', '\log').replace(
+                    'cot', '\cot')
+                print("{} = {}$ ".format(i, ei), end=" ")
+            print(" \\\\ \hline")
         expressions = expressions.replace('^', '**')
         expressions = expressions.split(' | ')
         expressions = [simplify(parse_expr(eq).expand()) for eq in expressions]
@@ -97,7 +98,7 @@ def main():
         expressions = expressions.split(' | ')
         description = one_eq['eq_description']
         idx_dicts[one_eq['dim']] += 1
-        name = "vars{}_prog{}".format(one_eq['dim'], idx_dicts[one_eq['dim']])
+        name = "strogatz_vars{}_prog{}".format(one_eq['dim'], idx_dicts[one_eq['dim']])
 
         class_name = one_eq['source']
         class_name = class_name.replace('.', "_")

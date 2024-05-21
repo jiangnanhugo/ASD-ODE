@@ -1,4 +1,0 @@
-x1 = CAR_T_cells
-x2 = Leukaemic_B_cells
-x3 = B_cells_healthy
-x4 = B_cell_progenitors

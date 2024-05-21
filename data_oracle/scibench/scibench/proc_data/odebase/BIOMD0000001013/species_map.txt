@@ -1,2 +1,0 @@
-x1 = CAR_T_cells
-x2 = Tumour_cells

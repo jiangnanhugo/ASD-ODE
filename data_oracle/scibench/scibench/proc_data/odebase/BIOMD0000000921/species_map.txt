@@ -1,5 +1,0 @@
-x1 = G
-x2 = M
-x3 = C_T
-x4 = T_beta
-x5 = I_gamma

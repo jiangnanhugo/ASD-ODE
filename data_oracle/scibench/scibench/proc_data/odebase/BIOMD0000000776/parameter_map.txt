@@ -1,8 +1,0 @@
-k1 = b
-k2 = N
-k3 = C0
-k4 = t1
-k5 = t2
-k6 = Ninf
-k7 = Ncrit
-k8 = tme

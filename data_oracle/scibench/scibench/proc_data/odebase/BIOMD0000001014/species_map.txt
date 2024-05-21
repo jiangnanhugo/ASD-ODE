@@ -1,5 +1,0 @@
-x1 = CAR_T_cells_on_tumour
-x2 = Tumour_cells
-x3 = CAR_T_cells_off_tumour
-x4 = B_cells
-x5 = CAR_T_cells_total

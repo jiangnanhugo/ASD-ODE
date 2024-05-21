@@ -1,3 +1,0 @@
-x1 = naive_Tcells
-x2 = eff_Tcells
-x3 = tumor_cells

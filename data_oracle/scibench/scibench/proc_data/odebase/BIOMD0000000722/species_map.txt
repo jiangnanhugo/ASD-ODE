@@ -1,5 +1,0 @@
-x1 = Active_TGF_beta
-x2 = Macrophages
-x3 = VEGF
-x4 = LECs
-x5 = Capillaries

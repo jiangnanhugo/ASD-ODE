@@ -30,7 +30,7 @@ def fill_template(expressions, class_name, name, nvars, description, function_se
     elements = ", ".join([element for _ in range(int(nvars))])
     return template.format(class_name, name, function_set, description, elements, nvars,
                            expressions,
-                           ", ".join(expressions))
+                           ", \n".join(expressions))
 
 
 def detect_function_set(one_ode):
@@ -52,13 +52,15 @@ def detect_function_set(one_ode):
     return function_set_base
 
 
-def main():
+def main(verbose=False):
+    file_name_list = []
+
     for root, dirs, files in os.walk("odebase/", topdown=False):
-        file_name_list = []
+
         for name in dirs:
             file_name_list.append(os.path.join(root, name))
     all_equations = dict()
-    content = open(os.path.join(root, "odebase-description.csv"), 'r').readlines()
+    content = open(os.path.join("odebase/odebase-description.csv"), 'r').readlines()
     description = dict()
     for line in content:
         spl = line.split(",")
@@ -68,7 +70,7 @@ def main():
         eq_name = fi[8:]
         cont = open(os.path.join(fi, 'parameters.txt'), 'r').readlines()
         equation_cont = open(os.path.join(fi, 'odes.txt'), 'r').readlines()
-        print(equation_cont)
+        # print(equation_cont)
         for ki in cont:
             ki_splited = ki.split("=")
             key = ki_splited[0].strip()
@@ -83,11 +85,12 @@ def main():
                 continue
             ith = int(one_eq[0].strip()[7:-5]) - 1
             one_ode[ith] = one_eq[1].strip()
-        print(one_ode)
-        expressions=" | ".join(one_ode).replace("[", "_").replace("]", '')
+        # if '425' in eq_name:
+        #     print(one_ode)
+        expressions = " | ".join(one_ode).replace("[", "_").replace("]", '')
         for i in range(int(description[eq_name][1])):
             if f'x_{i}' in expressions:
-                expressions = expressions.replace(f'x_{i}', f'x_{i-1}')
+                expressions = expressions.replace(f'x_{i}', f'x_{i - 1}')
         descrpt = description[eq_name][0].replace("_", "-")
         if descrpt[0] == '"' or descrpt[0] == "'":
             descrpt = descrpt[1:-1]
@@ -106,27 +109,32 @@ def main():
         expressions = one_eq['eq']
 
         # consts = one_eq['consts'][0]
-        x = [Symbol(f'x{i}') for i in range(one_eq['nvars'])]
-        if mode == one_eq['nvars']:
-            if one_eq['nvars'] == 1:
-                print(idx_dicts[one_eq['nvars']] + 1, " & ", one_eq['eq_description'] + " \\\\")
-            else:
-
-                print(idx_dicts[one_eq['nvars']] + 1,  "&", one_eq['eq_description'] + " \\\\")
-            for i, ei in enumerate(expressions.split(' | ')):
-                print(" & $\dot{x}_", end="")
-                ei = str(parse_expr(ei.replace('^', '**')).expand().evalf(n=4)).replace('**', '^')
-                ei = ei.replace('sin', '\sin').replace('cos', '\cos').replace('exp', '\exp').replace('log',
-                                                                                                     '\log').replace(
-                    'cot', '\cot').replace("*","")
-                print("{} = {}$ \\\\".format(i, ei), end="\n")
-            print("  \hline")
+        # x = [Symbol(f'x[{i}]') for i in range(one_eq['nvars'])]
+        if verbose:
+            if mode == one_eq['nvars']:
+                if one_eq['nvars'] == 1:
+                    print(idx_dicts[one_eq['nvars']] + 1, " & ", one_eq['eq_description'] + " \\\\")
+                else:
+                    print(idx_dicts[one_eq['nvars']] + 1, "&", one_eq['eq_description'] + " \\\\")
+                for i, ei in enumerate(expressions.split(' | ')):
+                    print(" & $\dot{x}_", end="")
+                    ei = str(parse_expr(ei.replace('^', '**')).expand().evalf(n=4)).replace('**', '^')
+                    ei = ei.replace('sin', '\sin').replace('cos', '\cos').replace('exp', '\exp').replace('log',
+                                                                                                         '\log').replace(
+                        'cot', '\cot').replace("*", "")
+                    print("{} = {}$ \\\\".format(i, ei), end="\n")
+                print("  \hline")
         expressions = expressions.replace('^', '**')
         expressions = expressions.split(' | ')
         expressions = [parse_expr(eq).evalf(n=4).expand() for eq in expressions]
 
         expressions = " | ".join([str(ei) for ei in expressions])
-
+        expressions = expressions.replace('x_0', 'x[0]')
+        expressions = expressions.replace('x_1', 'x[1]')
+        expressions = expressions.replace('x_2', 'x[2]')
+        expressions = expressions.replace('x_3', 'x[3]')
+        expressions = expressions.replace('x_4', 'x[4]')
+        expressions = expressions.replace('x_5', 'x[5]')
         expressions = expressions.replace('exp', 'np.exp')
         expressions = expressions.replace('log', 'np.log')
         expressions = expressions.replace('sin', 'np.sin')
@@ -138,10 +146,12 @@ def main():
         for i in range(one_eq['nvars']):
             if f'x_{i}' in expressions:
                 expressions = expressions.replace(f'x_{i}', f'x[{i}]')
+            if f'x{i}' in expressions:
+                expressions = expressions.replace(f'x{i}', f'x[{i}]')
         expressions = expressions.split(' | ')
         description = one_eq['eq_description']
         idx_dicts[one_eq['nvars']] += 1
-        name = "vars{}_prog{}".format(one_eq['nvars'], idx_dicts[one_eq['nvars']])
+        name = "odebase_vars{}_prog{}".format(one_eq['nvars'], idx_dicts[one_eq['nvars']])
 
         class_name = key
         class_name = class_name.replace('.', "_")
@@ -150,11 +160,13 @@ def main():
         class_name = class_name.upper()
 
         line = fill_template(expressions, class_name, name, one_eq['nvars'], description, function_set)
+        print(line)
         text_line_dict[one_eq['nvars']][idx_dicts[one_eq['nvars']]] = line
-    fw = open(os.path.join("equation_odebase.py"), 'w')
+    fw = open("../data/equation_odes_odebase.py", 'w')
     fw.write(prefix)
     for i in range(1, 6):
         for j in range(1, idx_dicts[i] + 1):
+            print(text_line_dict[i][j])
             fw.write(text_line_dict[i][j] + '\n')
     fw.close()
     print(idx_dicts)
