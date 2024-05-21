@@ -89,7 +89,6 @@ def run_mcts(
                           max_opt_iter=max_opt_iter,
                           eta=eta)
 
-
         _, hall_of_fame = mcts_model.MCTS_run_orig(
             num_episodes,
             num_rollouts=num_rollouts,
@@ -115,12 +114,14 @@ def run_mcts(
     return hall_of_fame[-1][-1]
 
 
-def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, num_episodes):
+def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, num_episodes,
+         time_sequence_drop_rate=0.0):
     optimizer = 'BFGS'
 
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
+    data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
-                                           metric_name=metric_name)
+                                           metric_name=metric_name,
+                                           time_sequence_drop_rate=time_sequence_drop_rate)
     dataX = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
     operators_set = data_query_oracle.operators_set
@@ -137,6 +138,13 @@ def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, nu
 
     task.rand_draw_init_cond()
     true_trajectories = task.evaluate()
+    random_mask = np.random.choice([0, 1],
+                                   size=(true_trajectories.shape[0], true_trajectories.shape[1]),
+                                   p=[time_sequence_drop_rate, 1 - time_sequence_drop_rate])
+
+    # Expand the mask to match the shape of traj and pred_traj
+    expanded_mask = np.expand_dims(random_mask, axis=2)
+    true_trajectories = true_trajectories * expanded_mask
     X_train, y_train = compute_time_derivative(true_trajectories, t_eval)
 
     print("X_train.shape: {}, y_train.shape: {}".format(X_train.shape, y_train.shape))
@@ -177,6 +185,8 @@ if __name__ == '__main__':
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0,
                         help="This parameter adds the standard deviation of the noise")
+    parser.add_argument("--time_sequence_drop_rate", type=float, default=0.0,
+                        help="simulate irregular time sequence")
 
     args = parser.parse_args()
 
@@ -191,4 +201,4 @@ if __name__ == '__main__':
 
     # run Monte Carlo Tree Search
     mcts(args.equation_name, args.num_init_conds, args.metric_name, args.noise_type, args.noise_scale,
-         args.num_episodes)
+         args.num_episodes, args.time_sequence_drop_rate)
