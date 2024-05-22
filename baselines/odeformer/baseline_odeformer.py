@@ -75,7 +75,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
     nvars = data_query_oracle.get_nvars()
 
     time_span = (0.0001, 10)
-    trajectory_time_steps = 1000
+    trajectory_time_steps = 500
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(1,
@@ -85,7 +85,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
                        time_span, t_eval)
     dstr = SymbolicTransformerRegressor(from_pretrained=True, pretrain_basepath=pretrain_basepath)
 
-    model_args = {'beam_size': 1000,
+    model_args = {'beam_size': 200,
                   'beam_temperature': 0.1}
     dstr.set_model_args(model_args)
 
