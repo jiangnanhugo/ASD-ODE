@@ -116,10 +116,10 @@ def main(config_template, optimizer, equation_name, metric_name, num_init_conds,
     print(best_expression)
 
     #####
-    end_time = time.time() - start
+    used = time.time() - start
 
     grammar_model.print_topk_expressions(verbose=True)
-    print("APPS time {} mins".format(np.round(end_time / 60, 3)))
+    print("APPS time {} mins".format(np.round(used / 60, 3)))
 
 
 if __name__ == '__main__':

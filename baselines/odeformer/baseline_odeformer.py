@@ -85,7 +85,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
                        time_span, t_eval)
     dstr = SymbolicTransformerRegressor(from_pretrained=True, pretrain_basepath=pretrain_basepath)
 
-    model_args = {'beam_size': 200,
+    model_args = {'beam_size': 1000,
                   'beam_temperature': 0.1}
     dstr.set_model_args(model_args)
 
@@ -96,10 +96,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
                                                t_eval,
                                                time_sequence_drop_rate)
     print("after irregular time sequence:",x_train.shape, t_train.shape)
-    # print("train trajectory data:")
-    # for xi in x_train:
-    #     print("[", ", ".join(map(str, xi)), "],")
-    # print('-' * 30)
+
     st = time.time()
     dstr.fit(t_train, x_train)
 
@@ -128,7 +125,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
     for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'inv_mse']:
         print(metric_name, all_metrics[metric_name](all_true_traj, all_pred_traj, np.var(all_true_traj)))
     print('-' * 30)
-    print('ODEFormer time:', used)
+    print("ODEFormer time {} mins".format(np.round(used / 60, 3)))
 
 
 if __name__ == "__main__":
