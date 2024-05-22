@@ -8,7 +8,7 @@ method=pysindy
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
-num_init_conds=5
+num_init_conds=50
 nvars=$1
 total_progs=$2
 set -x

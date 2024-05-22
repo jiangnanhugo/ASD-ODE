@@ -76,9 +76,9 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, mo
     task.rand_draw_init_cond()
     true_trajectories = task.evaluate()
     st = time.time()
-    optimizer = ps.STLSQ(threshold=1e-30)
+    optimizer = ps.STLSQ(threshold=1e-4)
 
-    library = ps.PolynomialLibrary(degree=4)
+    library = ps.PolynomialLibrary(degree=2)
     model = ps.SINDy(
         optimizer=optimizer,
         feature_library=library
