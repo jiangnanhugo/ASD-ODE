@@ -9,13 +9,12 @@ noise_type=normal
 noise_scale=0.0
 irregular_rate=0.1
 metric_name=inv_mse
-
 num_init_conds=5
 nvars=$1
 total_progs=$2
 for ei in {1..${total_progs}};
 do
-    eq_name=${nvars}_prog${ei}
+    eq_name=${type}_${nvars}_prog${ei}
     echo "submit $eq_name"
     log_dir=$basepath/log/$(date +%F)
     echo $log_dir
