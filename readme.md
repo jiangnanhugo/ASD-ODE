@@ -1,4 +1,4 @@
-# README: Active Symbolic Discovery of Ordinary Differential Equations
+# README: Active Discovery of Ordinary Differential Equations via Phase Portrait Sketching
 
 ## 1. Prerequisite of using these methods
 
@@ -24,12 +24,10 @@ pip install -e .
 ### Methods
 
 - `apps_ode_pytorch`: the proposed method.
-- `ProGED`: from https://github.com/brencej/ProGED.
-- `SPL`: symbolic physics learner, from https://github.com/isds-neu/SymbolicPhysicsLearner.
-- `baseline/E2E`: End to end transformer for symbolic regression, from https://github.com/facebookresearch/symbolicregression.
-- `gp`: genetic programming  (GP), from https://github.com/jiangnanhugo/cvgp
-- `dso_classic`: the codebase for DSR, VPG, PQT and GPMeld, from https://github.com/dso-org/deep-symbolic-optimization
-- `odeformer`: ODEFormer: Symbolic Regression of Dynamical Systems with Transformers.
+- `baselines/ProGED`: from https://github.com/brencej/ProGED.
+- `baselines/SPL`: symbolic physics learner, from https://github.com/isds-neu/SymbolicPhysicsLearner.
+- `baselines/E2E`: End to end transformer for symbolic regression, from https://github.com/facebookresearch/symbolicregression.
+- `baselines/odeformer`: ODEFormer: Symbolic Regression of Dynamical Systems with Transformers.
 
 #### Extra
 
