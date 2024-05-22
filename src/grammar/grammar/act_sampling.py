@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+from sklearn.cluster import KMeans
 
 batch_based_metrics = {
     "neg_mse": lambda y, y_hat: np.mean((y - y_hat) ** 2),
@@ -31,6 +32,46 @@ def compute_disagreement_score(arrays, metric_function):
 
     return upper_triangle_sum
 
+
+#####
+def deep_coreset(data, sample_size=30, n_clusters=5):
+    kmeans = KMeans(n_clusters=n_clusters)
+    kmeans.fit(data)
+
+    # Get cluster labels for each instance
+    cluster_labels = kmeans.labels_
+
+    # Step 2: Sample Diverse Samples from Each Cluster
+
+    # Sample size from each cluster
+    sample_size = 3
+
+    diverse_samples = []
+
+    # Iterate through each cluster
+    for cluster_id in range(n_clusters):
+        # Extract instances belonging to the current cluster
+        cluster_data = data[cluster_labels == cluster_id]
+
+        # If the cluster has fewer data points than the sample size, sample all instances
+        if len(cluster_data) <= sample_size:
+            cluster_samples = cluster_data
+        else:
+            # Compute pairwise distances between instances in the cluster
+            distances = np.linalg.norm(cluster_data[:, None] - cluster_data, axis=-1)
+
+            # Compute diversity score for each instance
+            diversity_scores = np.sum(distances, axis=1)
+
+            # Select diverse samples based on diversity scores
+            sorted_indices = np.argsort(diversity_scores)
+            selected_indices = sorted_indices[:sample_size]
+            cluster_samples = cluster_data[selected_indices]
+
+        diverse_samples.append(cluster_samples)
+
+    # Concatenate diverse samples from all clusters
+    diverse_samples_array = np.concatenate(diverse_samples, axis=0)
 
 
 #####

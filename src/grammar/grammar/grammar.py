@@ -136,9 +136,9 @@ class ContextFreeGrammar(object):
                 self.input_var_Xs)
         return many_expressions
 
-    def expression_active_evalution(self, many_expressions, active_mode='phase_portrait',
-                                    full_mesh_size=1,
-                                    given_region=None):
+    def expression_active_evaluation(self, many_expressions, active_mode='phase_portrait',
+                                     full_mesh_size=1,
+                                     given_region=None):
         # evaluate the fitted expressions on new validation data;
         if active_mode == 'default':
             init_cond = self.task.rand_draw_init_cond()

@@ -110,7 +110,7 @@ def enlarge_effect(array1, array2):
 @click.option('--full_mesh_size', default=100, type=int, help="")
 def main(equation_name, pred_expressions_file, num_init_conds, num_regions, region_width, noise_type, noise_scale,
          active_mode, full_mesh_size):
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds, noise_type, noise_scale,
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale,
                                            metric_name='neg_mse')
     grammar_expressions = read_expressions_from_file(pred_expressions_file)
     dataXgen = DataX(data_query_oracle.vars_range_and_types_to_json)
@@ -129,7 +129,7 @@ def main(equation_name, pred_expressions_file, num_init_conds, num_regions, regi
 
     # get basic production rules
     program = grammarProgram(
-        input_var_Xs='X1',
+        non_terminal_nodes='X1',
         optimizer='BFGS',
         metric_name='neg_mse',
         n_cores=1,
@@ -151,12 +151,12 @@ def main(equation_name, pred_expressions_file, num_init_conds, num_regions, regi
 
     phase_pred_list = []
     default_pred_list = []
-    region=None
+    region = None
     for i in range(num_repetitions):
         #####
         temp = copy.deepcopy(grammar_expressions)
         start = time.time()
-        top_pred_default = grammar_model.expression_active_evalution(temp, active_mode='default')
+        top_pred_default = grammar_model.expression_active_evaluation(temp, active_mode='default')
         default_pred_list.append(top_pred_default)
         #####
         end_time = time.time() - start
@@ -166,8 +166,8 @@ def main(equation_name, pred_expressions_file, num_init_conds, num_regions, regi
 
         start = time.time()
         temp = copy.deepcopy(grammar_expressions)
-        top_pred = grammar_model.expression_active_evalution(temp, active_mode=active_mode, given_region=region)
-        region=grammar_model.regions
+        top_pred = grammar_model.expression_active_evaluation(temp, active_mode=active_mode, given_region=region)
+        region = grammar_model.regions
         phase_pred_list.append(top_pred)
         #####
         end_time = time.time() - start
