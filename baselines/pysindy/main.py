@@ -52,10 +52,10 @@ def print_expressions(pr, task, input_var_Xs):
 @click.option('--num_init_conds', default=10, type=int, help="batch of initial condition of dataset")
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
-@click.option('--pretrained_model_filepath', type=str, help="pertrained pytorch model filepath")
+# @click.option('--pretrained_model_filepath', type=str, help="pertrained pytorch model filepath")
 @click.option('--mode', type=str, default='cpu', help="cpu or cuda")
-def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pretrained_model_filepath, mode):
-    data_query_oracle = Equation_evaluator(equation_name, num_init_conds,
+def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, mode):
+    data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
                                            metric_name=metric_name)
     dataX = DataX(data_query_oracle.vars_range_and_types_to_json)

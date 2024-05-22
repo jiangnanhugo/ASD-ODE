@@ -2,6 +2,18 @@ import numpy as np
 import json
 
 
+def irregular_time_sequence(true_trajectories, time_sequence, time_sequence_drop_rate):
+    random_mask = np.random.choice([0, 1],
+                                   size=(true_trajectories.shape[0]),
+                                   p=[time_sequence_drop_rate, 1 - time_sequence_drop_rate])
+
+    # Apply the mask to the time steps
+    masked_true_traj = true_trajectories[random_mask != 0]
+
+    masked_time_sequence = time_sequence[random_mask != 0]
+    return masked_true_traj, masked_time_sequence
+
+
 def compute_time_derivative(batch_of_trajectories, t_evals):
     """
     compute the time derivative through finite difference
@@ -38,7 +50,8 @@ class DataX(object):
         if one_region is None:
             list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
         else:
-            list_of_X = [one_sampler(sample_size, ranged) for one_sampler, ranged in zip(self.data_X_samplers, one_region)]
+            list_of_X = [one_sampler(sample_size, ranged) for one_sampler, ranged in
+                         zip(self.data_X_samplers, one_region)]
         return np.stack(list_of_X, axis=0).squeeze()
 
     def rand_draw_regions(self, num_of_regions, width_fraction=1):
@@ -66,8 +79,6 @@ class DefaultSampling(object):
 
     def draw_regions(self):
         return
-
-
 
     def to_dict(self):
         return {'name': self.name,

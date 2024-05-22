@@ -15,11 +15,11 @@ from scibench.symbolic_data_generator import DataX
 
 from sympy import Symbol, simplify
 from grammar.grammar_regress_task import RegressTask
-from grammar.production_rules import get_production_rules, construct_non_terminal_nodes_and_start_symbols
 from grammar.minimize_coefficients import execute
 
+
 import matplotlib.pyplot as plt
-from scibench.data import equation_object_loader
+from scibench.symbolic_data_generator import irregular_time_sequence
 import os
 
 palette = ['#ff3b30', '#4cd964', '#ffcc00', '#007aff', '#5856d6', '#ff9500', '#5ac8fa', '#ff2d55', '#969783']
@@ -38,18 +38,6 @@ metric_name = 'neg_mse'
 time_sequence_drop_rate = 0.5
 
 
-def irregular_time_squence(true_trajectories, time_sequence, time_sequence_drop_rate,
-                           ):
-    random_mask = np.random.choice([0, 1],
-                                   size=(true_trajectories.shape[0]),
-                                   p=[time_sequence_drop_rate, 1 - time_sequence_drop_rate])
-
-    # Apply the mask to the time steps
-    masked_true_traj = true_trajectories[random_mask != 0]
-    # masked_true_traj = true_trajectories * expanded_mask
-    masked_time_sequence = time_sequence[random_mask != 0]
-    # masked_time_sequence = time_sequence * random_mask
-    return masked_true_traj, masked_time_sequence
 
 
 def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", loc='lower right', ylabel=False):
@@ -83,7 +71,7 @@ def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", 
         init_conds = init_conds.reshape(1, nvars)
         task.init_cond = init_conds
     true_trajectories = task.evaluate()[0]
-    irregular_true_trajectories, irregular_time = irregular_time_squence(true_trajectories,
+    irregular_true_trajectories, irregular_time = irregular_time_sequence(true_trajectories,
                                                                          t_eval,
                                                                          time_sequence_drop_rate)
     input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
