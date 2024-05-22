@@ -13,7 +13,7 @@ nvars=$1
 total_progs=$2
 set -x
 for ei in {1..${total_progs}}; do
-	eq_name=${nvars}_prog${ei}
+	eq_name=${type}_${nvars}_prog${ei}
 	echo "submit $eq_name"
 
 	dump_dir=$basepath/result/${type}/$(date +%F)
