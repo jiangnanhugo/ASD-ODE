@@ -687,8 +687,8 @@ class STROGATZ_P_260(KnownEquation):
     _description = "Reduced model for chlorine dioxide-iodine-malonic acid reaction"
 
     def __init__(self):
-        self.vars_range_and_types = [LogUniformSampling((-8, 8), only_positive=True),
-                                     LogUniformSampling((1e-2, 10.0), only_positive=True)]
+        self.vars_range_and_types = [UniformSampling((-8, 8), only_positive=True),
+                                     UniformSampling((1e-2, 10.0), only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=self.vars_range_and_types)
         x = self.x
         self.sympy_eq = ['(-4.0*x[0]*x[1] + (8.9 - x[0])*(x[0]**2 + 1))/(x[0]**2 + 1)',
@@ -1024,7 +1024,7 @@ class AizawaAttractor(KnownEquation):
     _eq_name = 'vars3_prog10'
     _operator_set = ['add', 'sub', 'mul', 'n2', 'n3', 'const']
     expr_obj_thres = 1e-6
-
+    _description = "Aizawa attractor"
     def __init__(self):
         self.a = 0.95
         self.b = 0.7
@@ -1073,6 +1073,7 @@ class DadrasAttractor(KnownEquation):
     _eq_name = 'vars3_prog12'
     _operator_set = ['add', 'sub', 'mul', 'const']
     expr_obj_thres = 1e-6
+    _description = "attractor"
 
     def __init__(self):
         self.a = 1.25
@@ -1100,6 +1101,7 @@ class RosslerAttractor(KnownEquation):
     _eq_name = 'vars3_prog13'
     _operator_set = ['add', 'sub', 'mul',  'const']
     expr_obj_thres = 1e-6
+    _description = "attractor"
 
     def __init__(self):
         self.a = 0.1
@@ -1125,6 +1127,7 @@ class HalvorsenAttractor(KnownEquation):
     _eq_name = 'vars3_prog14'
     _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
     expr_obj_thres = 1e-6
+    _description = "attractor"
 
     def __init__(self):
         self.a = -0.35
@@ -1148,6 +1151,7 @@ class RabinovichFabrikantEquation(KnownEquation):
     _eq_name = 'vars3_prog15'
     _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
     expr_obj_thres = 1e-6
+    _description = "attractor"
 
     def __init__(self):
         self.alpha = 0.98
@@ -1172,6 +1176,7 @@ class SprottLinzFAttractor(KnownEquation):
     _eq_name = 'vars3_prog16'
     _operator_set = ['add', 'sub', 'mul', 'n2', 'const']
     expr_obj_thres = 1e-6
+    _description = "attractor"
 
     def __init__(self):
         self.a = 0.5
@@ -1195,6 +1200,7 @@ class FourWingChaoticAttractor(KnownEquation):
     _eq_name = 'vars3_prog17'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
+    _description = "attractor"
 
     def __init__(self):
         self.a = 0.2
@@ -1220,6 +1226,7 @@ class FourWingChaoticAttractor(KnownEquation):
     _eq_name = 'vars3_prog18'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'cos']
     expr_obj_thres = 1e-6
+    _description = "attractor"
 
     def __init__(self):
         self.alpha = 0.2
@@ -1246,7 +1253,7 @@ class ThomasAttractor(KnownEquation):
     _eq_name = 'vars3_prog19'
     _operator_set = ['add', 'sub', 'mul', 'div', 'const', 'sin']
     expr_obj_thres = 1e-6
-
+    _description = "attractor"
     def __init__(self):
         self.b = 0.17
 

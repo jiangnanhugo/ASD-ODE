@@ -55,16 +55,17 @@ def print_expressions(pr, task, input_var_Xs):
 @click.option('--noise_type', default='normal', type=str, help="")
 @click.option('--noise_scale', default=0.0, type=float, help="")
 # @click.option('--pretrained_model_filepath', type=str, help="pertrained pytorch model filepath")
-@click.option('--mode', type=str, default='cpu', help="cpu or cuda")
-def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, mode):
+@click.option('--time_sequence_drop_rate', type=float, default=0, help="")
+def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, time_sequence_drop_rate):
     data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
-                                           metric_name=metric_name)
+                                           metric_name=metric_name,
+                                           time_sequence_drop_rate=time_sequence_drop_rate)
     dataX = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
     input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
-    time_span = (0.0001, 10)
-    trajectory_time_steps = 1000
+    time_span = (0.0001, 1)
+    trajectory_time_steps = 100
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(num_init_conds,

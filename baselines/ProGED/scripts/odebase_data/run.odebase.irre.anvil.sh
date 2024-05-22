@@ -3,7 +3,7 @@
 basepath=/home/$USER/data/act_ode
 py3=/home/$USER/workspace/miniconda3/envs/py310/bin/python3
 
-type=Strogatz
+type=odebase
 method=proged
 noise_type=normal
 noise_scale=0.0
