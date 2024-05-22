@@ -150,7 +150,7 @@ class ContextFreeGrammar(object):
             init_cond = self.sketch_phase_portraits(many_expressions, self.regions)
             self.task.init_cond = init_cond
         elif active_mode == 'query_by_committee':
-            init_cond = self.task.full_init_cond()
+            init_cond = self.task.optimize_by_qbc_init_cond()
         elif active_mode == 'full':
             init_cond = self.task.full_init_cond(full_mesh_size)
             self.task.init_cond = init_cond

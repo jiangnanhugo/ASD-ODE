@@ -72,6 +72,7 @@ def deep_coreset(data, sample_size=20, n_clusters=5):
 
     # Concatenate diverse samples from all clusters
     diverse_samples_array = np.concatenate(diverse_samples, axis=0)
+    print("coreset sampled output:",diverse_samples_array.shape)
     return diverse_samples_array
 
 

@@ -50,10 +50,12 @@ def print_expressions(pr, task, input_var_Xs):
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--pretrained_model_filepath', type=str, help="pertrained pytorch model filepath")
 @click.option('--mode', type=str, default='cpu', help="cpu or cuda")
-def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pretrained_model_filepath, mode):
+@click.option('--time_sequence_drop_rate', default=0, type=float, help="simulate irregular time sequence")
+def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pretrained_model_filepath, mode,time_sequence_drop_rate):
     data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
-                                           metric_name=metric_name)
+                                           metric_name=metric_name,
+                                           time_sequence_drop_rate=time_sequence_drop_rate)
     dataX = DataX(data_query_oracle.vars_range_and_types_to_json)
     nvars = data_query_oracle.get_nvars()
     input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
@@ -107,6 +109,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
         print_expressions(temp, task, input_var_Xs)
     print("=" * 20)
     used = time.time() - st
+    print("E2E time: {}".format(used))
 
 
 if __name__ == "__main__":
