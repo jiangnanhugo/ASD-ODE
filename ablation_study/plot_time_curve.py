@@ -52,7 +52,7 @@ def irregular_time_squence(true_trajectories, time_sequence, time_sequence_drop_
     return masked_true_traj, masked_time_sequence
 
 
-def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", loc='lower right'):
+def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", loc='lower right', ylabel=False):
     # equation_name = f"vars2_prog{eq_id}"
     data_query_oracle = Equation_evaluator(equation_name,
                                            noise_type, noise_scale,
@@ -94,18 +94,20 @@ def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", 
     print(irregular_time.shape)
     plt.figure(figsize=(3.5, 3.5))
     for dim in range(nvars):
-        plt.plot(t_eval, pred_trajectories[:, dim], color=f'C{dim}', alpha=.2, lw=5,
+        plt.plot(t_eval, pred_trajectories[:, dim], color=palette[1], alpha=.8, lw=3,
                  label='Predicted ' + r"$x_{}$".format(dim + 1))
-        plt.plot(irregular_time, irregular_true_trajectories[:, dim], ls="None", marker='.', alpha=.3, color=f'C{dim}',
+        plt.plot(irregular_time, irregular_true_trajectories[:, dim], ls="None", marker='.', alpha=.8,
+                 color=palette[3],
                  label='True ' + r"$x_{}$".format(dim + 1))
     plt.grid(False)
     plt.xlabel("Time Sequence (second)", fontsize=16)
-    plt.ylabel("Variable Value", fontsize=16)
+    if ylabel==True:
+        plt.ylabel("Variable Value", fontsize=16)
     # plt.legend(loc='upper right')
     legend = plt.legend(loc=loc)
 
     # Remove the boundary and background color
-    legend.get_frame().set_edgecolor('none')
+    # legend.get_frame().set_edgecolor('none')
     legend.get_frame().set_facecolor('none')
     # plt.show()
     # true_equation = equation_object_loader(name)
@@ -134,7 +136,7 @@ plot('vars2_prog5', ['1.04*X1', '-0.02-0.77*X0'], np.array([0, 1]),
 name = 'apps.at01'
 plot('vars2_prog5', ['X1', '-0.895*sin(X0)'], np.array([0, 1]),
      title='APPS (our) Prediction\n' + r'$\phi=(x_2, 0.895\sin(x_1))$',
-     name=name)
+     name=name, ylabel=True)
 
 name = "odeformer.at4neg1"
 plot('vars2_prog5', ['1.04*X1', '-0.02-0.77*X0'], np.array([4, -1]),
