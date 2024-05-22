@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from scipy.integrate import solve_ivp
 from pysindy.utils import lorenz
@@ -73,15 +75,17 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, mo
 
     task.rand_draw_init_cond()
     true_trajectories = task.evaluate()
-    optimizer = ps.STLSQ(threshold=1e-6)
+    st = time.time()
+    optimizer = ps.STLSQ(threshold=1e-30)
 
-    library = ps.PolynomialLibrary(degree=2)
+    library = ps.PolynomialLibrary(degree=4)
     model = ps.SINDy(
         optimizer=optimizer,
         feature_library=library
     )
 
     model.fit(true_trajectories, t_eval)
+    used = time.time() - st
     predicted_eq = model.equations()
     predicted_eq = [model_str.replace(' + ', '+') for model_str in predicted_eq]
     predicted_eq = [model_str.replace('+-', '-') for model_str in predicted_eq]
@@ -95,7 +99,6 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, mo
 
     sys.stdout.flush()
 
-
     task.rand_draw_init_cond()
     print(f"PRINT Best Equations")
     print("=" * 20)
@@ -104,6 +107,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, mo
     print(temp)
     print_expressions(temp, task, input_var_Xs)
     print("=" * 20)
+    print("SINDy time:", used)
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ from grammar.grammar import ContextFreeGrammar
 from grammar.grammar_regress_task import RegressTask
 from grammar.grammar_program import grammarProgram
 from grammar.minimize_coefficients import execute
-
+from grammar.act_sampling import deep_coreset
 from scipy.stats import kendalltau
 from itertools import combinations
 
@@ -163,6 +163,22 @@ def main(equation_name, pred_expressions_file, num_init_conds, num_regions, regi
         # Update the best set of expressions discovered
 
         print("default time {} mins".format(np.round(end_time / 60, 3)))
+
+        #####
+        temp = copy.deepcopy(grammar_expressions)
+        start = time.time()
+        task.init_cond = task.full_init_cond(full_mesh_size)
+        true_traj=task.evaluate()
+        true_traj = true_traj.reshape(true_traj.shape[0], -1)
+        deep_coreset(true_traj)
+        # top_pred_default = grammar_model.expression_active_evaluation(temp, active_mode='default')
+        default_pred_list.append(top_pred_default)
+        #####
+        end_time = time.time() - start
+        # Update the best set of expressions discovered
+
+        print("default time {} mins".format(np.round(end_time / 60, 3)))
+        #####
 
         start = time.time()
         temp = copy.deepcopy(grammar_expressions)

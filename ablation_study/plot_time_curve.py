@@ -1,5 +1,4 @@
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sympy import *
@@ -16,7 +15,6 @@ from scibench.symbolic_data_generator import DataX
 from sympy import Symbol, simplify
 from grammar.grammar_regress_task import RegressTask
 from grammar.minimize_coefficients import execute
-
 
 import matplotlib.pyplot as plt
 from scibench.symbolic_data_generator import irregular_time_sequence
@@ -36,8 +34,6 @@ noise_type = 'normal'
 noise_scale = 0.1
 metric_name = 'neg_mse'
 time_sequence_drop_rate = 0.5
-
-
 
 
 def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", loc='lower right', ylabel=False):
@@ -72,8 +68,8 @@ def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", 
         task.init_cond = init_conds
     true_trajectories = task.evaluate()[0]
     irregular_true_trajectories, irregular_time = irregular_time_sequence(true_trajectories,
-                                                                         t_eval,
-                                                                         time_sequence_drop_rate)
+                                                                          t_eval,
+                                                                          time_sequence_drop_rate)
     input_var_Xs = [Symbol(f'X{i}') for i in range(nvars)]
     pred_trajectories = execute(our_predict_eq, init_conds, time_span, t_eval, input_var_Xs)[0]
     print(pred_trajectories.shape)
@@ -89,7 +85,7 @@ def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", 
                  label='True ' + r"$x_{}$".format(dim + 1))
     plt.grid(False)
     plt.xlabel("Time Sequence (second)", fontsize=16)
-    if ylabel==True:
+    if ylabel == True:
         plt.ylabel("Variable Value", fontsize=16)
     # plt.legend(loc='upper right')
     legend = plt.legend(loc=loc)
@@ -97,18 +93,6 @@ def plot(equation_name, our_predict_eq, init_conds=None, title="", name="test", 
     # Remove the boundary and background color
     # legend.get_frame().set_edgecolor('none')
     legend.get_frame().set_facecolor('none')
-    # plt.show()
-    # true_equation = equation_object_loader(name)
-    # ranged = [xi.range for xi in true_equation.vars_range_and_types]
-    # print(name, ranged, true_equation)
-    # func = lambda x0, x1: true_equation.np_eq(t=None, x=[x0, x1]).tolist()
-    #
-    # fig = plt.figure(figsize=(3, 3))
-    # fig, ax = Oscillator1.plot(color="grey")
-    # # title = [r"\dot{x}_" + str(i + 1) + "=" + one_str for i, one_str in enumerate(true_equation.sympy_eq)]
-    # title = f"Equation ID {i}"
-    # # + ": " + true_equation._description
-    # print(title)
     plt.title(title, fontsize=16)
     # # plt.show()
     # #
@@ -129,20 +113,8 @@ plot('vars2_prog5', ['X1', '-0.895*sin(X0)'], np.array([0, 1]),
 name = "odeformer.at4neg1"
 plot('vars2_prog5', ['1.04*X1', '-0.02-0.77*X0'], np.array([4, -1]),
      title='ODEFormer Prediction\n' + r'$\phi=(1.04x_2, -0.02-0.77x_1)$',
-     name=name, loc= 'lower left',)
+     name=name, loc='lower left', )
 name = 'apps.at4neg1'
 plot('vars2_prog5', ['X1', '-0.895*sin(X0)'], np.array([4, -1]),
      title='APPS (our) Prediction\n' + r'$\phi=(x_2, 0.895\sin(x_1))$',
-     name=name, loc= 'lower left',)
-
-# def pred_by_odeformer(x_0, x_1):
-#     return  0.9846 * x_1, -0.7883 * x_0
-# name = "test5"
-# plot('vars2_prog5', ['0.9846*X1', '-0.7883*X0'], np.array([0, 1]),
-#      title='ODEFormer Prediction '+r'$\phi=(0.9846x_2, -0.7883x_1)$',
-#      name=name)
-#
-# name = "test6"
-# plot('vars2_prog5', ['0.9846*X1', '-0.7883*X0'], np.array([4, -1]),
-#      title='ODEFormer Prediction '+r'$\phi=(0.9846x_2, -0.7883x_1)$',
-#      name=name)
+     name=name, loc='lower left', )

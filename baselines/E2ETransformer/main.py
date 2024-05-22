@@ -1,3 +1,5 @@
+import time
+
 import torch
 import click
 import sympy as sp
@@ -84,6 +86,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
     task.rand_draw_init_cond()
     print(f"PRINT Best Equations")
     print("=" * 20)
+    st = time.time()
     for _ in range(topk):
         one_predict_ode = []
         for xi in range(nvars):
@@ -103,6 +106,7 @@ def main(equation_name, metric_name, num_init_conds, noise_type, noise_scale, pr
 
         print_expressions(temp, task, input_var_Xs)
     print("=" * 20)
+    used = time.time() - st
 
 
 if __name__ == "__main__":

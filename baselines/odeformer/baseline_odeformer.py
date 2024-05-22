@@ -74,8 +74,8 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
 
     nvars = data_query_oracle.get_nvars()
 
-    time_span = (0.0001, 5)
-    trajectory_time_steps = 500
+    time_span = (0.0001, 10)
+    trajectory_time_steps = 1000
 
     t_eval = np.linspace(time_span[0], time_span[1], trajectory_time_steps)
     task = RegressTask(1,
@@ -128,7 +128,7 @@ def main(pretrain_basepath, equation_name, metric_name, num_init_conds, noise_ty
     for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'inv_mse']:
         print(metric_name, all_metrics[metric_name](all_true_traj, all_pred_traj, np.var(all_true_traj)))
     print('-' * 30)
-    print('Total ODEFormer time:', used)
+    print('ODEFormer time:', used)
 
 
 if __name__ == "__main__":

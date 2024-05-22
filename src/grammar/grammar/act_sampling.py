@@ -34,7 +34,10 @@ def compute_disagreement_score(arrays, metric_function):
 
 
 #####
-def deep_coreset(data, sample_size=30, n_clusters=5):
+def deep_coreset(data, sample_size=20, n_clusters=5):
+    """
+    data of shape  (n_samples, n_features)
+    """
     kmeans = KMeans(n_clusters=n_clusters)
     kmeans.fit(data)
 
@@ -42,10 +45,7 @@ def deep_coreset(data, sample_size=30, n_clusters=5):
     cluster_labels = kmeans.labels_
 
     # Step 2: Sample Diverse Samples from Each Cluster
-
     # Sample size from each cluster
-    sample_size = 3
-
     diverse_samples = []
 
     # Iterate through each cluster
@@ -72,6 +72,7 @@ def deep_coreset(data, sample_size=30, n_clusters=5):
 
     # Concatenate diverse samples from all clusters
     diverse_samples_array = np.concatenate(diverse_samples, axis=0)
+    return diverse_samples_array
 
 
 #####
