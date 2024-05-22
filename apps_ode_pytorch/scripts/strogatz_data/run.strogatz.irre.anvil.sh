@@ -45,7 +45,7 @@ hostname
 $py3 $basepath/apps_ode_pytorch/main.py $basepath/apps_ode_pytorch/config_regression.json --equation_name $eq_name \
     --time_sequence_drop_rate $irregular_rate\
 		--optimizer $opt --metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale \
-		 --n_cores $n_cores  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.irregulate$irregular_rate.opt$opt.$method.out
+		 --n_cores $n_cores  >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.irre$irregular_rate.opt$opt.$method.out
 
 EOT
 done
