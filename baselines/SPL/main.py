@@ -151,6 +151,7 @@ def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, nu
     sys.stdout.flush()
 
     one_predict_ode = []
+    start = time.time()
     for xi in range(nvars):
         MCTS.task = symbolicRegressionTask(
             batchsize=100,
@@ -164,14 +165,16 @@ def mcts(equation_name, num_init_conds, metric_name, noise_type, noise_scale, nu
 
         production_rules = get_production_rules(nvars, operators_set)
         print("The production rules are:", production_rules)
-        start = time.time()
+
         model_str = run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-        end_time = time.time() - start
-        print("SPL {} mins".format(np.round(end_time / 60, 3)))
+
         one_predict_ode.append(str(model_str))
+    end_time = time.time() - start
+
     temp = SymbolicDifferentialEquations(one_predict_ode)
     print_expressions(temp, task, input_var_Xs)
     print("=" * 20)
+    print("SPL {} mins".format(np.round(end_time / 60, 3)))
 
 
 if __name__ == '__main__':
@@ -181,7 +184,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--num_init_conds", type=int, default=50, help="batch of initial condition of dataset.")
 
-    parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
+    parser.add_argument("--num_episodes", type=int, default=100, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0,
                         help="This parameter adds the standard deviation of the noise")

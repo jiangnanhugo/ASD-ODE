@@ -80,19 +80,19 @@ def normalised_kendall_tau_distance(array1, array2):
     # print(f"Normalized Kendall Tau Distance: {normalized_distance}")
     return normalized_distance
 
-
-def enlarge_effect(array1, array2):
-    array1 = np.array([obj.valid_loss for obj in array1])
-
-    array2 = np.array([obj.valid_loss for obj in array2])
-    cnt0, cnt_p1, cnt_n1 = 0, 0, 0
-    for i in range(len(array1)):
-        for j in range(i + 1, len(array1)):
-            if abs(array1[i] - array1[j]) <= abs(array2[i] - array2[j]):
-                cnt_p1 += 1
-            else:
-                cnt_n1 += 1
-    return cnt_p1, cnt_n1
+#
+# def enlarge_effect(array1, array2):
+#     array1 = np.array([obj.valid_loss for obj in array1])
+#
+#     array2 = np.array([obj.valid_loss for obj in array2])
+#     cnt0, cnt_p1, cnt_n1 = 0, 0, 0
+#     for i in range(len(array1)):
+#         for j in range(i + 1, len(array1)):
+#             if abs(array1[i] - array1[j]) <= abs(array2[i] - array2[j]):
+#                 cnt_p1 += 1
+#             else:
+#                 cnt_n1 += 1
+#     return cnt_p1, cnt_n1
 
 
 @click.command()
@@ -108,6 +108,7 @@ def enlarge_effect(array1, array2):
 @click.option('--noise_scale', default=0.0, type=float, help="")
 @click.option('--active_mode', default='phase_portrait', help="Number of cores for parallel evaluation")
 @click.option('--full_mesh_size', default=100, type=int, help="")
+
 def main(equation_name, pred_expressions_file, num_init_conds, num_regions, region_width, noise_type, noise_scale,
          active_mode, full_mesh_size):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale,
@@ -165,35 +166,46 @@ def main(equation_name, pred_expressions_file, num_init_conds, num_regions, regi
         print("default time {} mins".format(np.round(end_time / 60, 3)))
 
         #####
-        temp = copy.deepcopy(grammar_expressions)
-        start = time.time()
-        task.init_cond = task.full_init_cond(full_mesh_size)
-        true_traj=task.evaluate()
-        true_traj = true_traj.reshape(true_traj.shape[0], -1)
-        deep_coreset(true_traj)
-        # top_pred_default = grammar_model.expression_active_evaluation(temp, active_mode='default')
-        default_pred_list.append(top_pred_default)
-        #####
-        end_time = time.time() - start
-        # Update the best set of expressions discovered
+        if active_mode =='coreset':
+            temp = copy.deepcopy(grammar_expressions)
+            start = time.time()
+            task.init_cond = task.full_init_cond(full_mesh_size)
+            true_traj=task.evaluate()
+            true_traj = true_traj.reshape(true_traj.shape[0], -1)
+            deep_coreset(true_traj)
+            # top_pred_default = grammar_model.expression_active_evaluation(temp, active_mode='default')
+            default_pred_list.append(top_pred_default)
+            #####
+            end_time = time.time() - start
+            # Update the best set of expressions discovered
 
-        print("default time {} mins".format(np.round(end_time / 60, 3)))
-        #####
+            print("default time {} mins".format(np.round(end_time / 60, 3)))
+            #####
+        elif active_mode =='qbc':
+            start = time.time()
+            temp = copy.deepcopy(grammar_expressions)
+            top_pred = grammar_model.expression_active_evaluation(temp, active_mode='query_by_committee', given_region=region)
+            region = grammar_model.regions
+            phase_pred_list.append(top_pred)
+            #####
+            end_time = time.time() - start
+            # Update the best set of expressions discovered
 
-        start = time.time()
-        temp = copy.deepcopy(grammar_expressions)
-        top_pred = grammar_model.expression_active_evaluation(temp, active_mode=active_mode, given_region=region)
-        region = grammar_model.regions
-        phase_pred_list.append(top_pred)
-        #####
-        end_time = time.time() - start
-        # Update the best set of expressions discovered
+            print("{} time {} mins".format(active_mode, np.round(end_time / 60, 3)))
+        elif active_mode == 'phase':
+            start = time.time()
+            temp = copy.deepcopy(grammar_expressions)
+            top_pred = grammar_model.expression_active_evaluation(temp, active_mode='phase_portrait',
+                                                                  given_region=region)
+            region = grammar_model.regions
+            phase_pred_list.append(top_pred)
+            #####
+            end_time = time.time() - start
+            # Update the best set of expressions discovered
 
-        print("{} time {} mins".format(active_mode, np.round(end_time / 60, 3)))
+            print("{} time {} mins".format(active_mode, np.round(end_time / 60, 3)))
 
-        ###
-        pos, neg = enlarge_effect(top_pred_default, top_pred)
-        print("pos={} neg={}".format(pos, neg))
+
         ###
 
     #
