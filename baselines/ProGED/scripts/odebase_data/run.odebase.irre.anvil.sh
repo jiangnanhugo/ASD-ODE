@@ -3,12 +3,13 @@
 basepath=/home/$USER/data/act_ode
 py3=/home/$USER/workspace/miniconda3/envs/py310/bin/python3
 
-type=odebase
+type=Strogatz
 method=proged
 noise_type=normal
 noise_scale=0.0
+irregular_rate=0.1
 metric_name=neg_mse
-num_init_conds=10
+num_init_conds=5
 nvars=$1
 total_progs=$2
 for ei in {1..${total_progs}};
@@ -31,13 +32,17 @@ do
     sbatch -A cis230379 --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="ProGED-${eq_name}"
+#SBATCH --job-name="ODEF-${eq_name}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.$method.out
 #SBATCH --constraint=A
 #SBATCH --time=24:00:00
+#SBATCH --mem=8GB
 
 hostname
+
 $py3 $basepath/baselines/ProGED/proged.py --equation_name $eq_name \
-		--metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.$method.out
+--time_sequence_drop_rate $irregular_rate \
+		--metric_name $metric_name --num_init_conds $num_init_conds --noise_type $noise_type \
+		--noise_scale $noise_scale >$dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.irre$irregular_rate.$method.out
 EOT
 done
